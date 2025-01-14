@@ -37,7 +37,6 @@ class _ProfilePageState extends State<ProfilePage> {
         title: Text(widget.title),
       ),
       body: buildUserInfoDisplay(),
-      bottomNavigationBar: buildAppNavigationBar(context, 1)
     );
   
   }

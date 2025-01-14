@@ -37,6 +37,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               Song(image: '', name: 'Wonderwall', artist: 'Oasis', bpm: 120, favourite: true), 
                             ];
 
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController _searchController = TextEditingController();
@@ -52,8 +53,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
             hintStyle: TextStyle(color: Colors.grey),
             contentPadding: EdgeInsets.all(15),
             prefixIcon: Icon(Icons.search),
-            // hintStyle: TextStyle(color: Colors.white54),
-            border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
           ),
           onChanged: (value) {
             // Perform search functionality here

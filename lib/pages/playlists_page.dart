@@ -85,7 +85,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
                            maxHeight: MediaQuery.of(context).size.height - 300,
                            minHeight: 0
       ),
-      bottomNavigationBar: buildAppNavigationBar(context, 3),
+      //bottomNavigationBar: buildAppNavigationBar(context, 3),
       floatingActionButton: Visibility(visible: !pc.isAttached || !pc.isPanelShown, child:FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.primary,
           //tooltip: 'Add  playlist',

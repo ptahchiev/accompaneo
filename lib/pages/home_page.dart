@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
         const Section(title: 'Most Popular', viewAll: true),
         const Section(title: 'Your favourites', viewAll: true)
       ]),
-      bottomNavigationBar: buildAppNavigationBar(context, 0)
+      //bottomNavigationBar: buildAppNavigationBar(context, 0)
     );
   }
 }

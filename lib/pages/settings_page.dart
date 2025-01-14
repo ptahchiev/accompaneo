@@ -24,8 +24,7 @@ class _SettingsPageState extends State<SettingsPage> {
             const Section(title: 'Most Popular', viewAll: false),
             const Section(title: 'Your favourites', viewAll: false),
           ],
-        ),
-      bottomNavigationBar: buildAppNavigationBar(context, 2)
+        )
     );
   }
 }
