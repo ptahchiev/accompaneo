@@ -3,9 +3,10 @@ import 'pages/home_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/playlists_page.dart';
+import 'pages/playlist_page.dart';
 
 void main() {
-  runApp(const AccompaneoApp());
+  runApp(Accompaneo());
 }
 
 class _AccompaneoState extends State<AccompaneoApp> {
@@ -23,17 +24,21 @@ class _AccompaneoState extends State<AccompaneoApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Accompaneo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
-        useMaterial3: true,
-      ),
-      home: 
+    return 
         Scaffold(
           appBar: AppBar(
-            title: const Text('BottomNavigationBar Demo'),
+            title: const Text('Accompaneo'),
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.search),
+                tooltip: 'Search',
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])));
+                },
+              )],
           ),
+          
           body: IndexedStack(index: _selectedIndex,children: _pages),
           bottomNavigationBar: 
           NavigationBar(
@@ -50,6 +55,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
             //type: BottomNavigationBarType.fixed,
             //backgroundColor: Colors.white,
             onDestinationSelected: _onItemTapped,
+            animationDuration: Duration(milliseconds: 400),
             destinations: <NavigationDestination>[
               NavigationDestination(
                 icon: Container(padding: EdgeInsets.symmetric(vertical: 10),child: Icon(Icons.home)),
@@ -68,12 +74,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
                 label: 'Playlists',
               )
             ],
-          ))
-      
-      
-      
-     // const PlaylistsPage(title: 'Accompaneo'),
-    );
+          ));
   }
 
   void _onItemTapped(int index) {
@@ -83,7 +84,22 @@ class _AccompaneoState extends State<AccompaneoApp> {
   }
 }
 
-class AccompaneoApp  extends StatefulWidget {
+class Accompaneo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Accompaneo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
+        useMaterial3: true,
+      ),
+      home: AccompaneoApp()
+    );
+  }
+}
+
+
+class AccompaneoApp extends StatefulWidget {
 
   @override
   State<AccompaneoApp> createState() => _AccompaneoState();

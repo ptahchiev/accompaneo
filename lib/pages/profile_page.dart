@@ -1,14 +1,6 @@
 import 'dart:async';
 
-import 'package:accompaneo/widgets/app_navigationbar_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:accompaneo/pages/edit_description.dart';
-import 'package:accompaneo/pages/edit_email.dart';
-import 'package:accompaneo/pages/edit_image.dart';
-import 'package:accompaneo/pages/edit_name.dart';
-import 'package:accompaneo/pages/edit_phone.dart';
-import '../user/user.dart';
-import '../widgets/display_image_widget.dart';
 import '../user/user_data.dart';
 
 // This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
@@ -32,10 +24,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       resizeToAvoidBottomInset:false,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
       body: buildUserInfoDisplay(),
     );
   

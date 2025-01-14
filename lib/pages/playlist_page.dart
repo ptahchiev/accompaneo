@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:accompaneo/song/song.dart';
-import 'package:accompaneo/widgets/new_playlist_widget.dart';
-import 'package:accompaneo/widgets/app_navigationbar_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class PlaylistPage extends StatefulWidget {

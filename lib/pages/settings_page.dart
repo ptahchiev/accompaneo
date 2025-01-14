@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:accompaneo/widgets/section_widget.dart';
-import 'package:accompaneo/widgets/app_navigationbar_widget.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.title});

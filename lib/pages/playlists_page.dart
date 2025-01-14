@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'playlist_page.dart';
 import 'package:accompaneo/widgets/new_playlist_widget.dart';
-import 'package:accompaneo/widgets/app_navigationbar_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class PlaylistsPage extends StatefulWidget {
@@ -73,10 +72,6 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
       body: SlidingUpPanel(backdropEnabled: true, 
                            body: createPlaylist(entries), 
                            controller: pc, 

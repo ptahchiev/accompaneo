@@ -1,7 +1,5 @@
-import 'package:accompaneo/widgets/app_navigationbar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:accompaneo/widgets/section_widget.dart';
-import 'playlist_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -19,18 +17,6 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       resizeToAvoidBottomInset:false,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: 'Search',
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])));
-            },
-          )],
-      ),
       body:  ListView(children: [
         const Section(title: 'Genres', viewAll: false),
         const Section(title: 'Artists', viewAll: false),
