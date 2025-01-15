@@ -98,15 +98,12 @@ class Section extends StatelessWidget {
     final CarouselController controller = CarouselController(initialItem: 0);
 
     return Column(children: [
-          // SearchBar(hintText: "Search...",),
-          //Column(children: [
           Container(
                 color: Theme.of(context).cardColor,
                 padding: EdgeInsets.all(5),
                 child: 
                   Row(
                     children: [
-                      //Expanded(child: Divider(color: Colors.grey.shade200)),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
@@ -130,8 +127,12 @@ class Section extends StatelessWidget {
             constraints: BoxConstraints(maxHeight: height / 5),
             child: CarouselView.weighted(
               controller: controller,
+              elevation: 5.0,
+              backgroundColor: Colors.transparent,
+              //overlayColor: MaterialColor(Colors.red, Colors.black),
               scrollDirection: Axis.horizontal,
-              itemSnapping: true,
+              itemSnapping: false,
+              reverse: true,
               flexWeights: const <int>[1, 1, 1],
               children: ImageInfo.values.map((ImageInfo image) {
                 return HeroLayoutCard(imageInfo: image);

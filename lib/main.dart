@@ -64,18 +64,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
           NavigationBar(
             elevation: 0,
             selectedIndex: _selectedIndex,
-            //iconSize: 20,
-            // selectedFontSize: 20,
-            // selectedIconTheme: IconThemeData(color: Colors.amberAccent, size: 40),
-            // selectedItemColor: Colors.red,
-            // selectedItemColor: Colors.amberAccent,
-            // selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-            // showSelectedLabels: false,
-            // showUnselectedLabels: false,
-            //type: BottomNavigationBarType.fixed,
-            //backgroundColor: Colors.white,
             onDestinationSelected: _onItemTapped,
-            animationDuration: Duration(milliseconds: 400),
             destinations: <NavigationDestination>[
               NavigationDestination(
                 icon: Container(padding: EdgeInsets.symmetric(vertical: 10),child: Icon(Icons.home)),

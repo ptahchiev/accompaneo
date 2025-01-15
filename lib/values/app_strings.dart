@@ -35,4 +35,9 @@ class AppStrings {
   static const String confirmPassword = 'Confirm Password';
   static const String pleaseReEnterPassword = 'Please, Re-Enter Password';
   static const String passwordNotMatched = 'Password not matched!';
+
+  static const String newPlaylist = 'New Playlist';
+  static const String playlistName = 'Playlist Name';
+  static const String pleaseEnterPlaylistName = 'Please, Enter Playlist Name';
+  static const String invalidPlaylistName = 'Invalid Playlist Name';
 }

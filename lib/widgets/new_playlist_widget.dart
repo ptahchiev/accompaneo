@@ -1,59 +1,118 @@
 import 'package:flutter/material.dart';
+import '../utils/helpers/snackbar_helper.dart';
+import '../widgets/app_text_form_field.dart';
+import '../values/app_strings.dart';
+import '../values/app_theme.dart';
 
-final _formKey = GlobalKey<FormState>();
 
-Widget buildNewPlaylistWidget(BuildContext context, int selectedIndex) {
-    BorderRadiusGeometry radius = BorderRadius.only(
-      topLeft: Radius.circular(24.0),
-      topRight: Radius.circular(24.0),
-    );
+class NewPlaylistWidget extends StatefulWidget {
 
-    return Scaffold(appBar: AppBar(
-      backgroundColor: Colors.white,
-      title: Icon(Icons.drag_handle),
-      centerTitle: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: radius
-      )),
-      backgroundColor: Colors.transparent,
-      body:   ClipRRect(
-      borderRadius: radius, child: Form(
-                      key: _formKey,
-                      
-                      child: Column(
-                        children: <Widget>[
-                          Align(
-                            alignment: Alignment.topCenter,
-                            child: Text(
-                            'New playlist',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          )),
-                          Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 16),
-                              child: TextField(decoration: InputDecoration(border: UnderlineInputBorder(), labelText: 'Enter playlist name'))
-                          ),
-                          ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.primary,
-                              foregroundColor: Colors.white,
-                              elevation: 3,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32.0)),
-                              minimumSize: const Size(200, 50),
-                            ),
-                            onPressed: () {
-                              // Validate returns true if the form is valid, or false otherwise.
-                              if (_formKey.currentState!.validate()) {
-                                // If the form is valid, display a snackbar. In the real world,
-                                // you'd often call a server or save the information in a database.
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Processing Data'), duration: Duration(seconds: 1),),
-                                );
-                              }
-                            },
-                            child: const Text('Submit'),
-                          ),
-                        ],
-                      ),
-                  ))
+  const NewPlaylistWidget({super.key});
+
+  @override
+  _NewPlaylistWidgetState createState() => _NewPlaylistWidgetState();
+}
+
+class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
+
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController nameController;
+  final ValueNotifier<bool> fieldValidNotifier = ValueNotifier(false);
+
+  void initializeControllers() {
+    nameController = TextEditingController()..addListener(controllerListener);
+  }
+
+  void disposeControllers() {
+    nameController.dispose();
+  }
+
+  void controllerListener() {
+    final name = nameController.text;
+
+    if (name.isEmpty) return;
+  }
+
+  @override
+  void initState() {
+    initializeControllers();
+  }
+
+  @override
+  void dispose() {
+    disposeControllers();
+  }
+
+    @override
+    Widget build(BuildContext context) {
+
+      BorderRadiusGeometry radius = BorderRadius.only(
+        topLeft: Radius.circular(24.0),
+        topRight: Radius.circular(24.0),
       );
+
+      return Scaffold(appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: Icon(Icons.drag_handle),
+        centerTitle: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: radius
+        )),
+        backgroundColor: Colors.transparent,    
+        body: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 30),
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Text(AppStrings.newPlaylist, style: AppTheme.sectionTitle,
+                      ))
+                    ),
+                    AppTextFormField(
+                      autofocus: true,
+                      labelText: AppStrings.playlistName,
+                      keyboardType: TextInputType.name,
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) => _formKey.currentState?.validate(),
+                      validator: (value) {
+                        return value!.isEmpty
+                            ? AppStrings.pleaseEnterPlaylistName
+                            : value.length < 4
+                                ? AppStrings.invalidPlaylistName
+                                : null;
+                      },
+                      controller: nameController,
+                    ),
+                    ValueListenableBuilder(
+                      valueListenable: fieldValidNotifier,
+                      builder: (_, isValid, __) {
+                        return FilledButton(
+                          onPressed: isValid
+                              ? () {
+                                  SnackbarHelper.showSnackBar(
+                                    AppStrings.registrationComplete,
+                                  );
+                                  nameController.clear();
+                                }
+                              : null,
+                          child: const Text(AppStrings.submit),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          ],
+        ),
+      );
+    }
 }

@@ -75,18 +75,19 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
       body: SlidingUpPanel(backdropEnabled: true, 
                            body: createPlaylist(entries), 
                            controller: pc, 
-                           panel: buildNewPlaylistWidget(context, 1),
+                           panel: NewPlaylistWidget(),
                            borderRadius: radius,
                            maxHeight: MediaQuery.of(context).size.height - 300,
                            minHeight: 0
       ),
       //bottomNavigationBar: buildAppNavigationBar(context, 3),
-      floatingActionButton: Visibility(visible: !pc.isAttached || !pc.isPanelShown, child:FloatingActionButton(
+      floatingActionButton: Visibility(visible: true, child:FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.primary,
           //tooltip: 'Add  playlist',
           shape: const CircleBorder(),
           onPressed: () {
             pc.open();
+            __toggleCreatePlaylistOpen();
           },
           child: _isCreatePlaylistOpen ? const Icon(Icons.close, color: Colors.white, size: 28) : const Icon(Icons.add, color: Colors.white, size: 28),
       )),
