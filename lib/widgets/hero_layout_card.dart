@@ -22,19 +22,25 @@ class HeroLayoutCard extends StatelessWidget {
         alignment: AlignmentDirectional.bottomStart,
         children: <Widget>[
           ClipRect(
-            child: OverflowBox(
-              maxWidth: width * 7 / 8,
-              minWidth: width * 7 / 8,
-              child: 
-                  imageInfo.url.isNotEmpty ?
-                    Image(
-                      fit: BoxFit.cover,
-                      image: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/material/${imageInfo.url}'))
-                    :
-                    FittedBox(fit: BoxFit.cover, child: Container(color:Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white)))
-            ),
+              child: OverflowBox(
+                maxWidth: width * 7 / 8,
+                minWidth: width * 7 / 8,
+                child: 
+                    imageInfo.url.isNotEmpty ?
+                      Image(
+                          fit: BoxFit.cover,
+                          image: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/material/${imageInfo.url}'),
+                      )
+                      :
+                      FittedBox(fit: BoxFit.cover, child: Container(color:Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white)))
+              ),
           ),
-          
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent.withOpacity(0), Colors.black]))),
           Visibility(
             visible: imageInfo.title.isNotEmpty && imageInfo.subtitle.isNotEmpty,
             child: 
@@ -50,7 +56,7 @@ class HeroLayoutCard extends StatelessWidget {
                       softWrap: false,
                       style: Theme.of(context)
                           .textTheme
-                          .headlineMedium
+                          .bodyMedium
                           ?.copyWith(color: Colors.white),
                     ),
                     const SizedBox(height: 10),
@@ -60,7 +66,7 @@ class HeroLayoutCard extends StatelessWidget {
                       softWrap: false,
                       style: Theme.of(context)
                           .textTheme
-                          .bodyMedium
+                          .bodySmall
                           ?.copyWith(color: Colors.white),
                     )
                   ],
