@@ -28,7 +28,6 @@ void main() {
   FlutterNativeSplash.remove();
 }
 
-
 class _AccompaneoState extends State<AccompaneoApp> {
 
   int _selectedIndex = 0;
@@ -39,6 +38,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
     SettingsPage(title: 'Settings'),
     PlaylistsPage(title: 'Playlists')
   ];
+
 
 
   // This widget is the root of your application.
@@ -59,31 +59,31 @@ class _AccompaneoState extends State<AccompaneoApp> {
               )],
           ),
           
-          body: IndexedStack(index: _selectedIndex,children: _pages),     
+          body: IndexedStack(index: _selectedIndex,children: _pages),
           bottomNavigationBar: 
-          NavigationBar(
-            elevation: 0,
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: _onItemTapped,
-            destinations: <NavigationDestination>[
-              NavigationDestination(
-                icon: Container(padding: EdgeInsets.symmetric(vertical: 10),child: Icon(Icons.home)),
-                label: 'Home',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.settings_rounded),
-                label: 'Settings',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.headphones),
-                label: 'Playlists',
-              )
-            ],
-          ));
+            NavigationBar(
+              elevation: 0,
+              selectedIndex: _selectedIndex,
+              onDestinationSelected: _onItemTapped,
+              destinations: <NavigationDestination>[
+                NavigationDestination(
+                  icon: Container(padding: EdgeInsets.symmetric(vertical: 10),child: Icon(Icons.home)),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.settings_rounded),
+                  label: 'Settings',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.headphones),
+                  label: 'Playlists',
+                )
+              ],
+            ));
   }
 
   void _onItemTapped(int index) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:accompaneo/song/song.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class PlaylistPage extends StatefulWidget {
 
@@ -73,7 +72,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                           borderRadius: BorderRadius.circular(50.0),
                                           child: Image(
                                                       fit: BoxFit.cover,
-                                                      
                                                       image: NetworkImage(
                                                           'https://flutter.github.io/assets-for-api-docs/assets/material/${songs[index].image}'),
                                                     )) : Icon(Icons.music_note, color: Colors.white, size: 28)),

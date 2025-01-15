@@ -99,7 +99,7 @@ class Section extends StatelessWidget {
 
     return Column(children: [
           Container(
-                color: Theme.of(context).cardColor,
+                color: Colors.transparent,
                 padding: EdgeInsets.all(5),
                 child: 
                   Row(
@@ -127,7 +127,7 @@ class Section extends StatelessWidget {
             constraints: BoxConstraints(maxHeight: height / 5),
             child: CarouselView.weighted(
               controller: controller,
-              elevation: 5.0,
+              elevation: 2.0,
               backgroundColor: Colors.transparent,
               //overlayColor: MaterialColor(Colors.red, Colors.black),
               scrollDirection: Axis.horizontal,

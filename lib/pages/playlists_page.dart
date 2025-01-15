@@ -19,7 +19,7 @@ class CardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: EdgeInsets.all(10.0),
       child: Column(
         children: [
