@@ -32,10 +32,8 @@ class _RegisterPageState extends State<RegisterPage> {
   void initializeControllers() {
     nameController = TextEditingController()..addListener(controllerListener);
     emailController = TextEditingController()..addListener(controllerListener);
-    passwordController = TextEditingController()
-      ..addListener(controllerListener);
-    confirmPasswordController = TextEditingController()
-      ..addListener(controllerListener);
+    passwordController = TextEditingController()..addListener(controllerListener);
+    confirmPasswordController = TextEditingController()..addListener(controllerListener);
   }
 
   void disposeControllers() {
@@ -58,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (AppRegex.emailRegex.hasMatch(email) &&
         AppRegex.passwordRegex.hasMatch(password) &&
-        AppRegex.passwordRegex.hasMatch(confirmPassword)) {
+        AppRegex.passwordRegex.hasMatch(confirmPassword) && password ==  confirmPassword) {
       fieldValidNotifier.value = true;
     } else {
       fieldValidNotifier.value = false;
