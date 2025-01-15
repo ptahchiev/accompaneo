@@ -39,8 +39,6 @@ class _AccompaneoState extends State<AccompaneoApp> {
     PlaylistsPage(title: 'Playlists')
   ];
 
-
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

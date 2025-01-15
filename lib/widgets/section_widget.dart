@@ -1,87 +1,33 @@
+import 'package:accompaneo/song/image_data.dart';
 import 'package:flutter/material.dart';
 import '../values/app_theme.dart';
 import '../pages/playlist_page.dart';
+import 'package:accompaneo/widgets/hero_layout_card.dart';
 
-enum ImageInfo {
-  image0('The Flow', 'Sponsored | Season 1 Now Streaming',
-      'content_based_color_scheme_1.png'),
-  image1('Through the Pane', 'Sponsored | Season 1 Now Streaming',
-      'content_based_color_scheme_2.png'),
-  image2('Iridescence', 'Sponsored | Season 1 Now Streaming',
-      'content_based_color_scheme_3.png'),
-  image3('Sea Change', 'Sponsored | Season 1 Now Streaming',
-      'content_based_color_scheme_4.png'),
-  image4('Blue Symphony', 'Sponsored | Season 1 Now Streaming',
-      'content_based_color_scheme_5.png'),
-  image5('When It Rains', 'Sponsored | Season 1 Now Streaming',
-      'content_based_color_scheme_6.png');
+List<ImageData> images=[
+  ImageData(title: 'The Flow', subtitle: 'Sponsored | Season 1 Now Streaming',
+      url:'content_based_color_scheme_1.png'),
 
+  ImageData(title:'Through the Pane', subtitle: 'Sponsored | Season 1 Now Streaming',
+      url: 'content_based_color_scheme_2.png'),
 
-  const ImageInfo(this.title, this.subtitle, this.url);
-  final String title;
-  final String subtitle;
-  final String url;
-}
+  ImageData(title: 'Iridescence', subtitle: 'Sponsored | Season 1 Now Streaming',
+      url: 'content_based_color_scheme_3.png'),
 
-class HeroLayoutCard extends StatelessWidget {
-  const HeroLayoutCard({
-    super.key,
-    required this.imageInfo,
-  });
+  ImageData(title:'Sea Change', subtitle: 'Sponsored | Season 1 Now Streaming',
+       url: 'content_based_color_scheme_4.png'),
 
-  final ImageInfo imageInfo;
+  ImageData(title:'Blue Symphony', subtitle: 'Sponsored | Season 1 Now Streaming',
+      url: 'content_based_color_scheme_5.png'),
 
-  @override
-  Widget build(BuildContext context) {
-    final double width = MediaQuery.sizeOf(context).width;
-    return Stack(
-        alignment: AlignmentDirectional.bottomStart,
-        children: <Widget>[
-          ClipRect(
-            child: OverflowBox(
-              maxWidth: width * 7 / 8,
-              minWidth: width * 7 / 8,
-              child: Image(
-                fit: BoxFit.cover,
-                image: NetworkImage(
-                    'https://flutter.github.io/assets-for-api-docs/assets/material/${imageInfo.url}'),
-              ),
-            ),
-          ),
-          
+  ImageData(title: 'When It Rains', subtitle: 'Sponsored | Season 1 Now Streaming',
+      url: 'content_based_color_scheme_6.png'),
 
-          Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  imageInfo.title,
-                  overflow: TextOverflow.clip,
-                  softWrap: false,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineMedium
-                      ?.copyWith(color: Colors.white),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  imageInfo.subtitle,
-                  overflow: TextOverflow.clip,
-                  softWrap: false,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Colors.white),
-                )
-              ],
-            ),
-          ),
-        ]);
-  }
-}
+  ImageData(title: 'AAAA', subtitle: 'Sponsored | Season 1 Now Streaming',
+      url: ''),
 
+  ImageData(title: '', subtitle: '', url: 'content_based_color_scheme_6.png')    
+];
 
 class Section extends StatelessWidget {
 
@@ -132,9 +78,9 @@ class Section extends StatelessWidget {
               //overlayColor: MaterialColor(Colors.red, Colors.black),
               scrollDirection: Axis.horizontal,
               itemSnapping: false,
-              reverse: true,
+              reverse: false,
               flexWeights: const <int>[1, 1, 1],
-              children: ImageInfo.values.map((ImageInfo image) {
+              children: images.map((ImageData image) {
                 return HeroLayoutCard(imageInfo: image);
               }).toList(),
             ),

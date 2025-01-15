@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:accompaneo/song/song.dart';
+import 'package:accompaneo/song/image_data.dart';
+import 'package:accompaneo/widgets/hero_layout_card.dart';
+import '../values/app_theme.dart';
 
 class PlaylistPage extends StatefulWidget {
 
@@ -59,44 +62,66 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
       body:  ListView(
                 children: [
-                  Center(child: Text('Your favourites', style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black))),
-                  Center(child: Text('${songs.length} songs', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black))),
-                  Divider(),
-                      ListView.builder(
-                              itemCount: songs.length,
-                              shrinkWrap: true,
-                              physics: ClampingScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return ListTile(
-                                        leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: songs[index].image != '' ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(50.0),
-                                          child: Image(
-                                                      fit: BoxFit.cover,
-                                                      image: NetworkImage(
-                                                          'https://flutter.github.io/assets-for-api-docs/assets/material/${songs[index].image}'),
-                                                    )) : Icon(Icons.music_note, color: Colors.white, size: 28)),
-                                        
-                                        
-                                        
-                                        
-                                        // songs[index].image != '' ? Image(
-                                        //               fit: BoxFit.cover,
-                                        //               image: NetworkImage(
-                                        //                   'https://flutter.github.io/assets-for-api-docs/assets/material/${songs[index].image}'),
-                                        //             ) : 
-                                        //             FittedBox(child: Icon(Icons.music_note, color: Colors.white, size: 35), fit: BoxFit.fill),
-                                                
-                                        
-                                        
-                                        
-                                        //CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
-                                        title: Text(songs[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
-                                        subtitle: Text(songs[index].artist),
-                                        trailing: IconButton(icon: songs[index].favourite ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined), onPressed: () { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(duration: Duration(seconds: 1), content: Text('Song added to favourites')));})
-                                        //onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => screens[index]))
-                                );
-                              },
-                        )
+                  //Center(child: Text('Your favourites', style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black))),
+                  //Center(child: Text('${songs.length} songs', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black))),
+                  //Divider(),
+                  Container(
+                        color: Colors.transparent,
+                        padding: EdgeInsets.all(15),
+                        child: 
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Text(
+                                  'Your Favourites',
+                                  style: AppTheme.sectionTitle,
+                                ),
+                              ),
+                              Expanded(child: Divider(color: Colors.grey.shade500)),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${songs.length} songs')),
+                              )
+                            ],
+                          ),
+                  ),                  
+                  ListView.builder(
+                          itemCount: songs.length,
+                          shrinkWrap: true,
+                          physics: ClampingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              //leading: HeroLayoutCard(imageInfo: ImageData(title: '', subtitle: '', url: songs[index].image)),
+                                    leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: songs[index].image != '' ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      child: Image(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(
+                                                      'https://flutter.github.io/assets-for-api-docs/assets/material/${songs[index].image}'),
+                                                )) : Icon(Icons.music_note, color: Colors.white, size: 28)),
+                                    
+                                    
+                                    
+                                    
+                                    // // songs[index].image != '' ? Image(
+                                    // //               fit: BoxFit.cover,
+                                    // //               image: NetworkImage(
+                                    // //                   'https://flutter.github.io/assets-for-api-docs/assets/material/${songs[index].image}'),
+                                    // //             ) : 
+                                    // //             FittedBox(child: Icon(Icons.music_note, color: Colors.white, size: 35), fit: BoxFit.fill),
+                                            
+                                    
+                                    
+                                    
+                                    //CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
+                                    title: Text(songs[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
+                                    subtitle: Text(songs[index].artist),
+                                    trailing: IconButton(icon: songs[index].favourite ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined), onPressed: () { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(duration: Duration(seconds: 1), content: Text('Song added to favourites')));})
+                                    //onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => screens[index]))
+                            );
+                          },
+                    )
 
 
 

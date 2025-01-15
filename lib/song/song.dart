@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Song {
   String image;
   String name;
