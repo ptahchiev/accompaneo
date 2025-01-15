@@ -1,13 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'pages/home_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/playlists_page.dart';
 import 'pages/playlist_page.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'values/app_routes.dart';
+import 'values/app_theme.dart';
+import 'utils/helpers/navigation_helper.dart';
+import 'utils/helpers/snackbar_helper.dart';
+import 'routes.dart';
+
 
 void main() {
-  runApp(Accompaneo());
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light),
+  );
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
+    (_) => runApp(Accompaneo()),
+  );
+
+  FlutterNativeSplash.remove();
 }
+
 
 class _AccompaneoState extends State<AccompaneoApp> {
 
@@ -39,7 +59,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
               )],
           ),
           
-          body: IndexedStack(index: _selectedIndex,children: _pages),
+          body: IndexedStack(index: _selectedIndex,children: _pages),     
           bottomNavigationBar: 
           NavigationBar(
             elevation: 0,
@@ -89,10 +109,11 @@ class Accompaneo extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Accompaneo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
-        useMaterial3: true,
-      ),
+      initialRoute: AppRoutes.login,
+      theme: AppTheme.themeData,
+      navigatorKey: NavigationHelper.key,
+      scaffoldMessengerKey: SnackbarHelper.key,
+      onGenerateRoute: Routes.generateRoute,
       home: AccompaneoApp()
     );
   }

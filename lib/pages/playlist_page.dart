@@ -94,7 +94,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                         //CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
                                         title: Text(songs[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
                                         subtitle: Text(songs[index].artist),
-                                        trailing: IconButton(icon: songs[index].favourite ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined), onPressed: () { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Song added to favourites')));})
+                                        trailing: IconButton(icon: songs[index].favourite ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined), onPressed: () { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(duration: Duration(seconds: 1), content: Text('Song added to favourites')));})
                                         //onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => screens[index]))
                                 );
                               },
