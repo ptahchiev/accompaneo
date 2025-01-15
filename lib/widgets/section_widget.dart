@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../values/app_theme.dart';
-
+import '../pages/playlist_page.dart';
 
 enum ImageInfo {
   image0('The Flow', 'Sponsored | Season 1 Now Streaming',
@@ -118,7 +118,9 @@ class Section extends StatelessWidget {
                       Visibility(visible: viewAll,
                           child: Align(
                             alignment: Alignment.centerRight,
-                            child: IconButton(icon: Icon(Icons.arrow_circle_right_outlined), onPressed: () {}),
+                            child: IconButton(icon: Icon(Icons.arrow_circle_right_outlined), onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])));
+                            }),
                           )
                       )
                     ],

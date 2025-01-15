@@ -1,6 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../utils/helpers/snackbar_helper.dart';
+
+import '../widgets/app_text_form_field.dart';
+import '../utils/helpers/navigation_helper.dart';
+import '../values/app_constants.dart';
+import '../values/app_regex.dart';
+import '../values/app_routes.dart';
+import '../values/app_strings.dart';
+import '../values/app_theme.dart';
 import '../user/user_data.dart';
 
 // This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
@@ -18,72 +27,191 @@ class _ProfilePageState extends State<ProfilePage> {
 
   final _formKey = GlobalKey<FormState>();
 
+  late final TextEditingController nameController;
+  late final TextEditingController emailController;
+  late final TextEditingController passwordController;
+  late final TextEditingController confirmPasswordController;
+
+  final ValueNotifier<bool> passwordNotifier = ValueNotifier(true);
+  final ValueNotifier<bool> confirmPasswordNotifier = ValueNotifier(true);
+  final ValueNotifier<bool> fieldValidNotifier = ValueNotifier(false);
+
+  void initializeControllers() {
+    nameController = TextEditingController()..addListener(controllerListener);
+    emailController = TextEditingController()..addListener(controllerListener);
+    passwordController = TextEditingController()
+      ..addListener(controllerListener);
+    confirmPasswordController = TextEditingController()
+      ..addListener(controllerListener);
+  }
+
+  void disposeControllers() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+  }
+
+  void controllerListener() {
+    final name = nameController.text;
+    final email = emailController.text;
+    final password = passwordController.text;
+
+    if (name.isEmpty &&
+        email.isEmpty &&
+        password.isEmpty) return;
+
+    if (AppRegex.emailRegex.hasMatch(email) &&
+        AppRegex.passwordRegex.hasMatch(password)) {
+      fieldValidNotifier.value = true;
+    } else {
+      fieldValidNotifier.value = false;
+    }
+  }
+
+  @override
+  void initState() {
+    initializeControllers();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    disposeControllers();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final user = UserData.myUser;
 
-    return Scaffold(
-      resizeToAvoidBottomInset:false,
-      body: buildUserInfoDisplay(),
-    );
-  
-  }
 
-  // Widget builds the display item with the proper formatting to display the user's info
-  Widget buildUserInfoDisplay() =>
-      Column(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.topCenter,
-              child: Text(
-              'Profile',
-              style: Theme.of(context).textTheme.headlineSmall,
-            )),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 16),
-                child: TextFormField(decoration: InputDecoration(border: UnderlineInputBorder(), labelText: 'Email'))
-            ),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 16),
-                child: TextFormField(
-                  decoration: InputDecoration(border: UnderlineInputBorder(), labelText: 'Name'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    return null;
-                  })
-            ),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 16),
-                child: TextFormField(decoration: InputDecoration(border: UnderlineInputBorder(), labelText: 'Password'), obscureText: true, enableSuggestions: false, autocorrect: false)
-            ),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 16),
-                child: TextFormField(decoration: InputDecoration(border: UnderlineInputBorder(), labelText: 'Server'))
-            ),                                       
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.white,
-                elevation: 3,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32.0)),
-                minimumSize: const Size(200, 50),
+    return Scaffold(
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  AppTextFormField(
+                    labelText: AppStrings.email,
+                    controller: emailController,
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (_) => _formKey.currentState?.validate(),
+                    validator: (value) {
+                      return value!.isEmpty
+                          ? AppStrings.pleaseEnterEmailAddress
+                          : AppConstants.emailRegex.hasMatch(value)
+                              ? null
+                              : AppStrings.invalidEmailAddress;
+                    },
+                  ),                  
+                  AppTextFormField(
+                    autofocus: true,
+                    labelText: AppStrings.name,
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.next,
+                    onChanged: (value) => _formKey.currentState?.validate(),
+                    validator: (value) {
+                      return value!.isEmpty
+                          ? AppStrings.pleaseEnterName
+                          : value.length < 4
+                              ? AppStrings.invalidName
+                              : null;
+                    },
+                    controller: nameController,
+                  ),
+                  ValueListenableBuilder<bool>(
+                    valueListenable: passwordNotifier,
+                    builder: (_, passwordObscure, __) {
+                      return AppTextFormField(
+                        obscureText: passwordObscure,
+                        controller: passwordController,
+                        labelText: AppStrings.password,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.visiblePassword,
+                        onChanged: (_) => _formKey.currentState?.validate(),
+                        validator: (value) {
+                          return value!.isEmpty
+                              ? AppStrings.pleaseEnterPassword
+                              : AppConstants.passwordRegex.hasMatch(value)
+                                  ? null
+                                  : AppStrings.invalidPassword;
+                        },
+                        suffixIcon: Focus(
+                          /// If false,
+                          ///
+                          /// disable focus for all of this node's descendants
+                          descendantsAreFocusable: false,
+
+                          /// If false,
+                          ///
+                          /// make this widget's descendants un-traversable.
+                          // descendantsAreTraversable: false,
+                          child: IconButton(
+                            onPressed: () =>
+                                passwordNotifier.value = !passwordObscure,
+                            style: IconButton.styleFrom(
+                              minimumSize: const Size.square(48),
+                            ),
+                            icon: Icon(
+                              passwordObscure
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: fieldValidNotifier,
+                    builder: (_, isValid, __) {
+                      return FilledButton(
+                        onPressed: isValid
+                            ? () {
+                                SnackbarHelper.showSnackBar(
+                                  AppStrings.registrationComplete,
+                                );
+                                nameController.clear();
+                                emailController.clear();
+                                passwordController.clear();
+                                confirmPasswordController.clear();
+                              }
+                            : null,
+                        child: const Text(AppStrings.register),
+                      );
+                    },
+                  ),
+                ],
               ),
-              onPressed: () {
-                // Validate returns true if the form is valid, or false otherwise.
-                if (_formKey.currentState!.validate()) {
-                  // If the form is valid, display a snackbar. In the real world,
-                  // you'd often call a server or save the information in a database.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data'), duration: Duration(seconds: 1),),
-                  );
-                }
-              },
-              child: const Text('Submit'),
             ),
-          ]
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                AppStrings.iHaveAnAccount,
+                style: AppTheme.bodySmall.copyWith(color: Colors.black),
+              ),
+              TextButton(
+                onPressed: () => NavigationHelper.pushReplacementNamed(
+                  AppRoutes.login,
+                ),
+                child: const Text(AppStrings.login),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
+  }
 
   // Refrshes the Page after updating user info.
   FutureOr onGoBack(dynamic value) {
