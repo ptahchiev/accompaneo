@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../values/app_theme.dart';
 
 
 enum ImageInfo {
@@ -102,33 +103,26 @@ class Section extends StatelessWidget {
           Container(
                 color: Theme.of(context).cardColor,
                 padding: EdgeInsets.all(5),
-                //decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.black38])),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Stack(
-                      alignment: Alignment.centerLeft,
-                      children: [
-                        Text(title, style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black)),
-                        Padding(
-                          padding:EdgeInsets.symmetric(horizontal:10.0),
-                          child:Container(
-                            height:2.0,
-                            width:250.0,
-                            color:Colors.grey
+                child: 
+                  Row(
+                    children: [
+                      //Expanded(child: Divider(color: Colors.grey.shade200)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          title,
+                          style: AppTheme.sectionTitle,
+                        ),
+                      ),
+                      Expanded(child: Divider(color: Colors.grey.shade600)),
+                      Visibility(visible: viewAll,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(icon: Icon(Icons.arrow_circle_right_outlined), onPressed: () {}),
                           )
-                        )
-                      ],
-                    ),
-                    Visibility(visible: viewAll,
-                                child: Align(
-                                alignment: Alignment.centerRight,
-                                child: IconButton(icon: Icon(Icons.arrow_circle_right_outlined), onPressed: () {}),
-                              )
-                    )
-
-                  ],
-                ),
+                      )
+                    ],
+                  ),
           ),
           ConstrainedBox(
             constraints: BoxConstraints(maxHeight: height / 5),

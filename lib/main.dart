@@ -109,7 +109,7 @@ class Accompaneo extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Accompaneo',
-      initialRoute: AppRoutes.login,
+      //initialRoute: AppRoutes.login,
       theme: AppTheme.themeData,
       navigatorKey: NavigationHelper.key,
       scaffoldMessengerKey: SnackbarHelper.key,

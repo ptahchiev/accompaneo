@@ -89,4 +89,11 @@ class AppTheme {
     color: Colors.grey,
     letterSpacing: 0.5,
   );
+
+  static const TextStyle sectionTitle = TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+    fontSize: 24,
+    letterSpacing: 0.5,
+  );
 }
