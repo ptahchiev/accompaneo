@@ -62,7 +62,7 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
         body: ListView(
           children: [
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
               child: Form(
                 key: _formKey,
                 child: Column(

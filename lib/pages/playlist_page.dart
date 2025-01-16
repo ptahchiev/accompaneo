@@ -117,7 +117,15 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                     //CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
                                     title: Text(songs[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
                                     subtitle: Text(songs[index].artist),
-                                    trailing: IconButton(icon: songs[index].favourite ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined), onPressed: () { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(duration: Duration(seconds: 1), content: Text('Song added to favourites')));})
+                                    trailing: Wrap(
+                                      children: [
+                                        IconButton(icon: songs[index].favourite ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined), onPressed: () { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(duration: Duration(seconds: 1), content: Text('Song added to favourites')));}),
+                                        IconButton(onPressed: () => _dialogBuilder(context), icon: Icon(Icons.more_horiz))
+                                      ],
+                                    )
+                                    
+                                    
+                                    
                                     //onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => screens[index]))
                             );
                           },
@@ -128,4 +136,28 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 ]
     ));
   }
+
+  Future<void> _dialogBuilder(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+                children: [
+                  ListTile(
+                    title: Text('Add to playlist'),
+                    leading: Icon(Icons.add, color: Colors.black, size: 28),
+                    onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])))
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Text('View All Songs By Artist'),
+                    leading: Icon(Icons.search, color: Colors.black, size: 28),
+                    onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])))
+                  ),
+                ],
+        );
+      },
+    );
+  }
+
 }
