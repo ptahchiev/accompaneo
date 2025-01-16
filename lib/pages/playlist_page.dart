@@ -1,3 +1,4 @@
+import 'package:accompaneo/pages/player_page.dart';
 import 'package:flutter/material.dart';
 import 'package:accompaneo/song/song.dart';
 import 'package:accompaneo/song/image_data.dart';
@@ -121,7 +122,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                       )) : Icon(Icons.music_note, color: Colors.white, size: 28)),
                           
                           
-                          
+                          onTap: () => {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const PlayerPage(title: 'Player')))
+                          },
                           
                           // // songs[index].image != '' ? Image(
                           // //               fit: BoxFit.cover,
