@@ -14,8 +14,6 @@ class PlayerPage extends StatefulWidget {
   State<PlayerPage> createState() => _PlayerPageState();
 }
 
-Color transparentColor = Colors.transparent.withOpacity(0.1);
-
 enum PracticeType { simple, band, bandVocals, click }
 
 const List<(PracticeType, String)> practiceTypeOptions = <(PracticeType, String)>[
@@ -47,14 +45,15 @@ class _PlayerPageState extends State<PlayerPage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        backgroundColor: Colors.transparent, //yes
-        resizeToAvoidBottomInset:false,
-        body: Stack(
+      child: Stack(
+          alignment: AlignmentDirectional.bottomStart,
           children: <Widget>[
             Scaffold(
-              backgroundColor: Colors.transparent, //yes
+              backgroundColor: Colors.white,
+              body: Text('Player'),
+            ),
+            Scaffold(
+              backgroundColor: Colors.transparent.withOpacity(0.7), //yes
               appBar: AppBar(
                 iconTheme: IconThemeData(
                   color: Colors.white,
@@ -68,7 +67,7 @@ class _PlayerPageState extends State<PlayerPage> {
                   indicatorColor: AppColors.primaryColor,
                   overlayColor: WidgetStateProperty.fromMap(
                     <WidgetStatesConstraint, Color>{
-                      WidgetState.any: transparentColor
+                      WidgetState.any: Colors.transparent
                     }
                   ),
                   labelStyle: TextStyle(
@@ -86,9 +85,6 @@ class _PlayerPageState extends State<PlayerPage> {
                 ),
               ),
             body:
-                // Container(
-                //   decoration: BoxDecoration(
-                //     color: transparentColor)),
                 TabBarView(
                   children: [
                     Column(
@@ -173,7 +169,7 @@ class _PlayerPageState extends State<PlayerPage> {
                   ],
                 )
             )])
-        )
+        
     );
   }
 }
