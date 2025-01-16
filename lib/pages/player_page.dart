@@ -88,9 +88,10 @@ class _PlayerPageState extends State<PlayerPage> {
                 TabBarView(
                   children: [
                     Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Align(
-                          alignment: Alignment.topCenter,
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
                           child: SegmentedButton<PracticeType>(
                           style: ButtonStyle(
                             foregroundColor: WidgetStateProperty<Color>.fromMap(
@@ -135,7 +136,7 @@ class _PlayerPageState extends State<PlayerPage> {
                         ),
                         Align(
                           alignment: Alignment.center,
-                          child: IconButton(onPressed: ()=> {}, icon: Icon(Icons.play_arrow_outlined, color: Colors.white, size: 100))
+                          child: IconButton(onPressed: ()=> {}, icon: Icon(Icons.play_arrow_outlined, color: Colors.white, size: 150))
                         ),
                         Align(
                           alignment: Alignment.bottomCenter,
