@@ -29,8 +29,7 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
 
   void controllerListener() {
     final name = nameController.text;
-
-    if (name.isEmpty) return;
+    fieldValidNotifier.value = name.length >= 4;
   }
 
   @override
