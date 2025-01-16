@@ -92,6 +92,17 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(20),
+            child:Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  AppStrings.updateYourProfile,
+                  style: AppTheme.sectionTitle.copyWith(color: Colors.black),
+                )
+              ],
+          )),          
+          Padding(
+            padding: const EdgeInsets.all(20),
             child: Form(
               key: _formKey,
               child: Column(
@@ -185,28 +196,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                 confirmPasswordController.clear();
                               }
                             : null,
-                        child: const Text(AppStrings.register),
+                        child: const Text(AppStrings.submit),
                       );
                     },
                   ),
                 ],
               ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                AppStrings.iHaveAnAccount,
-                style: AppTheme.bodySmall.copyWith(color: Colors.black),
-              ),
-              TextButton(
-                onPressed: () => NavigationHelper.pushReplacementNamed(
-                  AppRoutes.login,
-                ),
-                child: const Text(AppStrings.login),
-              ),
-            ],
           ),
         ],
       ),

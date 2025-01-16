@@ -40,4 +40,6 @@ class AppStrings {
   static const String playlistName = 'Playlist Name';
   static const String pleaseEnterPlaylistName = 'Please, Enter Playlist Name';
   static const String invalidPlaylistName = 'Invalid Playlist Name';
+
+  static const String updateYourProfile = 'Update your profile';
 }
