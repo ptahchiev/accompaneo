@@ -54,6 +54,7 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
     );
 
     return Scaffold(appBar: AppBar(
+      automaticallyImplyLeading: false,
       backgroundColor: Colors.white,
       title: Icon(Icons.drag_handle),
       centerTitle: true,
@@ -80,7 +81,10 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                   ListTile(
                     title: Text('Create new playlist'),
                     leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.add, color: Colors.white, size: 28)),
-                    onTap: () =>  {}
+                    onTap: () =>  {
+                      
+
+                    }
                   ),
                   Divider(),
                   ListView.builder(

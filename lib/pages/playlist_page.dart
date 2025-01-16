@@ -86,7 +86,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       children: [
         Container(
               color: Colors.transparent,
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.all(10),
               child: 
                 Row(
                   children: [
@@ -149,9 +149,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   );
                 },
           )
-
-
-
       ]
     );
   }  
