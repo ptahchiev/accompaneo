@@ -86,10 +86,9 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
           backgroundColor: Theme.of(context).colorScheme.primary,
           shape: const CircleBorder(),
           onPressed: () {
-            pc.open();
-            __toggleCreatePlaylistOpen();
+            pc.isPanelOpen ? pc.close() : pc.open();
           },
-          child: _isCreatePlaylistOpen ? const Icon(Icons.close, color: Colors.white, size: 28) : const Icon(Icons.add, color: Colors.white, size: 28),
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
       )),
     );
   }

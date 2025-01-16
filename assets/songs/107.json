@@ -1,0 +1,2220 @@
+{
+	"strum": "4-1",
+	"clock": [
+		0,
+		2.56,
+		5.12,
+		7.68,
+		10.23,
+		12.780000000000001,
+		15.330000000000002,
+		17.91,
+		20.45,
+		22.99,
+		25.54,
+		28.099999999999998,
+		30.66,
+		33.21,
+		35.77,
+		38.330000000000005,
+		40.88,
+		43.43,
+		45.980000000000004,
+		48.53,
+		51.09,
+		53.63,
+		56.190000000000005,
+		58.74,
+		61.300000000000004,
+		63.84,
+		66.39,
+		68.95,
+		71.5,
+		74.06,
+		76.63000000000001,
+		79.16,
+		81.72,
+		84.27,
+		86.83,
+		89.39,
+		91.93,
+		94.48,
+		97.04,
+		99.59,
+		102.15,
+		104.71000000000001,
+		107.25,
+		109.8,
+		112.36,
+		114.91,
+		117.47,
+		120.02,
+		122.57000000000001,
+		125.12,
+		127.68,
+		130.23,
+		132.78,
+		135.33999999999997,
+		137.89,
+		140.44,
+		142.98999999999998,
+		145.56,
+		148.1,
+		150.64999999999998,
+		153.20999999999998,
+		155.76,
+		158.32,
+		160.85999999999999,
+		163.42,
+		165.98,
+		168.53,
+		171.07999999999998,
+		173.63,
+		176.19,
+		178.73999999999998,
+		181.29999999999998,
+		183.85,
+		186.41,
+		188.95,
+		191.48999999999998,
+		194.07999999999998,
+		196.61999999999998,
+		199.17,
+		201.73,
+		204.26,
+		206.81,
+		209.36999999999998,
+		211.92999999999998,
+		214.48,
+		217.04,
+		219.72,
+		222.4
+	],
+	"bars": [
+		{
+			"events": []
+		},
+		{
+			"events": [
+				{
+					"type": "countIn",
+					"content": {
+						"type": "default"
+					}
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "meta",
+					"content": {
+						"type": "timeSignature",
+						"meter": "4/4"
+					}
+				},
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "meta",
+					"content": {
+						"type": "part",
+						"partName": "Intro"
+					}
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "It's",
+					"wordId": 0,
+					"start": 0.3437499999999998,
+					"duration": 0.12109375000000094
+				},
+				{
+					"type": "lyric",
+					"text": "late",
+					"wordId": 1,
+					"start": 0.4648437500000007,
+					"duration": 0.12500000000000017
+				},
+				{
+					"type": "lyric",
+					"text": "in",
+					"wordId": 2,
+					"start": 0.5898437500000009,
+					"duration": 0.12500000000000022
+				},
+				{
+					"type": "lyric",
+					"text": "the",
+					"wordId": 3,
+					"start": 0.7148437500000011,
+					"duration": 0.12499999999999878
+				},
+				{
+					"type": "lyric",
+					"text": "e",
+					"wordId": 4,
+					"start": 0.8398437499999999,
+					"duration": 0.25000000000000033
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "vening",
+					"wordId": 4,
+					"start": 0.08984375000000008,
+					"duration": 0.5
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "she's",
+					"wordId": 5,
+					"start": 0.337254901960784,
+					"duration": 0.12549019607843143
+				},
+				{
+					"type": "lyric",
+					"text": "wonde",
+					"wordId": 6,
+					"start": 0.46274509803921543,
+					"duration": 0.12549019607843287
+				},
+				{
+					"type": "lyric",
+					"text": "ring",
+					"wordId": 6,
+					"start": 0.5882352941176483,
+					"duration": 0.12549019607843148
+				},
+				{
+					"type": "lyric",
+					"text": "what",
+					"wordId": 7,
+					"start": 0.7137254901960798,
+					"duration": 0.12549019607843137
+				},
+				{
+					"type": "lyric",
+					"text": "clothes",
+					"wordId": 8,
+					"start": 0.8392156862745112,
+					"duration": 0.37647058823529156
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "to",
+					"wordId": 9,
+					"start": 0.2148437499999987,
+					"duration": 0.1210937500000008
+				},
+				{
+					"type": "lyric",
+					"text": "wear",
+					"wordId": 10,
+					"start": 0.3359374999999995,
+					"duration": 0.24999999999999994
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "She",
+					"wordId": 11,
+					"start": 0.3359374999999995,
+					"duration": 0.125
+				},
+				{
+					"type": "lyric",
+					"text": "puts",
+					"wordId": 12,
+					"start": 0.4609374999999995,
+					"duration": 0.12499999999999994
+				},
+				{
+					"type": "lyric",
+					"text": "on",
+					"wordId": 13,
+					"start": 0.5859374999999994,
+					"duration": 0.12109375000000078
+				},
+				{
+					"type": "lyric",
+					"text": "her",
+					"wordId": 14,
+					"start": 0.7070312500000002,
+					"duration": 0.125
+				},
+				{
+					"type": "lyric",
+					"text": "make",
+					"wordId": 15,
+					"start": 0.8320312500000002,
+					"duration": 0.25
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "up",
+					"wordId": 16,
+					"start": 0.08235294117647102,
+					"duration": 0.5019607843137237
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "and",
+					"wordId": 17,
+					"start": 0.33333333333333426,
+					"duration": 0.12549019607843165
+				},
+				{
+					"type": "lyric",
+					"text": "brush",
+					"wordId": 18,
+					"start": 0.4588235294117659,
+					"duration": 0.12549019607843165
+				},
+				{
+					"type": "lyric",
+					"text": "es",
+					"wordId": 18,
+					"start": 0.5843137254901976,
+					"duration": 0.1254901960784316
+				},
+				{
+					"type": "lyric",
+					"text": "her",
+					"wordId": 19,
+					"start": 0.7098039215686291,
+					"duration": 0.1254901960784316
+				},
+				{
+					"type": "lyric",
+					"text": "long",
+					"wordId": 20,
+					"start": 0.8352941176470607,
+					"duration": 0.2509803921568632
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "blonde",
+					"wordId": 21,
+					"start": 0.08627450980392376,
+					"duration": 0.2509803921568626
+				},
+				{
+					"type": "lyric",
+					"text": "hair",
+					"wordId": 22,
+					"start": 0.33725490196078634,
+					"duration": 0.24705882352940955
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "And",
+					"wordId": 23,
+					"start": 0.4627450980392161,
+					"duration": 0.12549019607843165
+				},
+				{
+					"type": "lyric",
+					"text": "then",
+					"wordId": 24,
+					"start": 0.5882352941176477,
+					"duration": 0.1254901960784316
+				},
+				{
+					"type": "lyric",
+					"text": "she",
+					"wordId": 25,
+					"start": 0.7137254901960793,
+					"duration": 0.1254901960784316
+				},
+				{
+					"type": "lyric",
+					"text": "asks",
+					"wordId": 26,
+					"start": 0.8392156862745109,
+					"duration": 0.24705882352941033
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "me",
+					"wordId": 27,
+					"start": 0.08593749999999949,
+					"duration": 0.25
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "Do",
+					"wordId": 28,
+					"start": 0.21259842519685013,
+					"duration": 0.12204724409448914
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 29,
+					"start": 0.33464566929133926,
+					"duration": 0.1259842519685041
+				},
+				{
+					"type": "lyric",
+					"text": "look",
+					"wordId": 30,
+					"start": 0.46062992125984337,
+					"duration": 0.12598425196850405
+				},
+				{
+					"type": "lyric",
+					"text": "all",
+					"wordId": 31,
+					"start": 0.5866141732283474,
+					"duration": 0.2519685039370082
+				},
+				{
+					"type": "lyric",
+					"text": "right?",
+					"wordId": 32,
+					"start": 0.8385826771653556,
+					"duration": 0.5039370078740136
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "Em",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "And",
+					"wordId": 33,
+					"start": 0.5898437499999987,
+					"duration": 0.125
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 34,
+					"start": 0.7148437499999987,
+					"duration": 0.12109375000000078
+				},
+				{
+					"type": "lyric",
+					"text": "say",
+					"wordId": 35,
+					"start": 0.8359374999999994,
+					"duration": 0.125
+				},
+				{
+					"type": "lyric",
+					"text": "yes",
+					"wordId": 36,
+					"start": 0.9609374999999994,
+					"duration": 0.3750000000000001
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "you",
+					"wordId": 37,
+					"start": 0.5882352941176477,
+					"duration": 0.18823529411764606
+				},
+				{
+					"type": "lyric",
+					"text": "look",
+					"wordId": 38,
+					"start": 0.7764705882352938,
+					"duration": 0.18823529411764883
+				},
+				{
+					"type": "lyric",
+					"text": "won",
+					"wordId": 39,
+					"start": 0.9647058823529426,
+					"duration": 0.1254901960784316
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "der",
+					"wordId": 39,
+					"start": 0.08984375000000147,
+					"duration": 0.24609374999999803
+				},
+				{
+					"type": "lyric",
+					"text": "ful",
+					"wordId": 39,
+					"start": 0.3359374999999995,
+					"duration": 0.37499999999999994
+				},
+				{
+					"type": "lyric",
+					"text": "to",
+					"wordId": 40,
+					"start": 0.7109374999999994,
+					"duration": 0.125
+				},
+				{
+					"type": "lyric",
+					"text": "night",
+					"wordId": 40,
+					"start": 0.8359374999999994,
+					"duration": 0.3750000000000001
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "We",
+					"wordId": 41,
+					"start": 0.3398437500000015,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "go",
+					"wordId": 42,
+					"start": 0.4648437499999987,
+					"duration": 0.12500000000000272
+				},
+				{
+					"type": "lyric",
+					"text": "to",
+					"wordId": 43,
+					"start": 0.5898437500000014,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "a",
+					"wordId": 44,
+					"start": 0.7148437499999987,
+					"duration": 0.12109375000000078
+				},
+				{
+					"type": "lyric",
+					"text": "par",
+					"wordId": 45,
+					"start": 0.8359374999999994,
+					"duration": 0.2500000000000001
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "ty",
+					"wordId": 45,
+					"start": 0.08560311284046623,
+					"duration": 0.62256809338521
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "and",
+					"wordId": 46,
+					"start": 0.3320158102766773,
+					"duration": 0.12648221343873872
+				},
+				{
+					"type": "lyric",
+					"text": "e",
+					"wordId": 47,
+					"start": 0.45849802371541604,
+					"duration": 0.12648221343873312
+				},
+				{
+					"type": "lyric",
+					"text": "very",
+					"wordId": 47,
+					"start": 0.5849802371541492,
+					"duration": 0.12648221343873878
+				},
+				{
+					"type": "lyric",
+					"text": "one",
+					"wordId": 47,
+					"start": 0.7114624505928879,
+					"duration": 0.12648221343873312
+				},
+				{
+					"type": "lyric",
+					"text": "turns",
+					"wordId": 48,
+					"start": 0.837944664031621,
+					"duration": 0.252964426877472
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "to",
+					"wordId": 49,
+					"start": 0.08984375000000147,
+					"duration": 0.25
+				},
+				{
+					"type": "lyric",
+					"text": "see",
+					"wordId": 50,
+					"start": 0.3398437500000015,
+					"duration": 0.3710937500000007
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "This",
+					"wordId": 51,
+					"start": 0.33725490196078445,
+					"duration": 0.12549019607843442
+				},
+				{
+					"type": "lyric",
+					"text": "beaut",
+					"wordId": 52,
+					"start": 0.46274509803921887,
+					"duration": 0.12549019607842887
+				},
+				{
+					"type": "lyric",
+					"text": "i",
+					"wordId": 52,
+					"start": 0.5882352941176477,
+					"duration": 0.12549019607843437
+				},
+				{
+					"type": "lyric",
+					"text": "ful",
+					"wordId": 52,
+					"start": 0.7137254901960821,
+					"duration": 0.12549019607842882
+				},
+				{
+					"type": "lyric",
+					"text": "la",
+					"wordId": 53,
+					"start": 0.8392156862745109,
+					"duration": 0.24705882352941588
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "dy",
+					"wordId": 53,
+					"start": 0.08593750000000502,
+					"duration": 0.5
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "that's",
+					"wordId": 54,
+					"start": 0.3359374999999995,
+					"duration": 0.12109375000000078
+				},
+				{
+					"type": "lyric",
+					"text": "walk",
+					"wordId": 55,
+					"start": 0.4570312500000003,
+					"duration": 0.12500000000000272
+				},
+				{
+					"type": "lyric",
+					"text": "ing",
+					"wordId": 55,
+					"start": 0.582031250000003,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "a",
+					"wordId": 56,
+					"start": 0.7070312500000002,
+					"duration": 0.12500000000000278
+				},
+				{
+					"type": "lyric",
+					"text": "round",
+					"wordId": 56,
+					"start": 0.832031250000003,
+					"duration": 0.24999999999999456
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "with",
+					"wordId": 57,
+					"start": 0.08267716535432805,
+					"duration": 0.25196850393701303
+				},
+				{
+					"type": "lyric",
+					"text": "me",
+					"wordId": 58,
+					"start": 0.3346456692913411,
+					"duration": 0.31496062992125795
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "And",
+					"wordId": 59,
+					"start": 0.4627450980392133,
+					"duration": 0.12549019607843442
+				},
+				{
+					"type": "lyric",
+					"text": "then",
+					"wordId": 60,
+					"start": 0.5882352941176477,
+					"duration": 0.12549019607842882
+				},
+				{
+					"type": "lyric",
+					"text": "she",
+					"wordId": 61,
+					"start": 0.7137254901960766,
+					"duration": 0.12549019607843437
+				},
+				{
+					"type": "lyric",
+					"text": "asks",
+					"wordId": 62,
+					"start": 0.8392156862745109,
+					"duration": 0.2509803921568633
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "me",
+					"wordId": 63,
+					"start": 0.08984375000000147,
+					"duration": 0.3710937499999952
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "Do",
+					"wordId": 64,
+					"start": 0.21176470588235563,
+					"duration": 0.12549019607842882
+				},
+				{
+					"type": "lyric",
+					"text": "you",
+					"wordId": 65,
+					"start": 0.33725490196078445,
+					"duration": 0.12549019607842887
+				},
+				{
+					"type": "lyric",
+					"text": "feel",
+					"wordId": 66,
+					"start": 0.4627450980392133,
+					"duration": 0.12549019607843442
+				},
+				{
+					"type": "lyric",
+					"text": "all",
+					"wordId": 67,
+					"start": 0.5882352941176477,
+					"duration": 0.24705882352941022
+				},
+				{
+					"type": "lyric",
+					"text": "right?",
+					"wordId": 68,
+					"start": 0.835294117647058,
+					"duration": 0.5019607843137265
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "Em",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "And",
+					"wordId": 69,
+					"start": 0.5859374999999994,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 70,
+					"start": 0.7109374999999967,
+					"duration": 0.12500000000000278
+				},
+				{
+					"type": "lyric",
+					"text": "say",
+					"wordId": 71,
+					"start": 0.8359374999999994,
+					"duration": 0.12500000000000278
+				},
+				{
+					"type": "lyric",
+					"text": "yes",
+					"wordId": 72,
+					"start": 0.9609375000000022,
+					"duration": 0.37109374999999534
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 73,
+					"start": 0.5820312499999974,
+					"duration": 0.18750000000000144
+				},
+				{
+					"type": "lyric",
+					"text": "feel",
+					"wordId": 74,
+					"start": 0.7695312499999989,
+					"duration": 0.18749999999999578
+				},
+				{
+					"type": "lyric",
+					"text": "won",
+					"wordId": 75,
+					"start": 0.9570312499999947,
+					"duration": 0.1250000000000029
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "der",
+					"wordId": 75,
+					"start": 0.08267716535432851,
+					"duration": 0.25196850393700887
+				},
+				{
+					"type": "lyric",
+					"text": "ful",
+					"wordId": 75,
+					"start": 0.3346456692913374,
+					"duration": 0.37401574803149834
+				},
+				{
+					"type": "lyric",
+					"text": "to",
+					"wordId": 76,
+					"start": 0.7086614173228357,
+					"duration": 0.12598425196850727
+				},
+				{
+					"type": "lyric",
+					"text": "night",
+					"wordId": 76,
+					"start": 0.834645669291343,
+					"duration": 0.6299212598425193
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 77,
+					"start": 0.4609375000000023,
+					"duration": 0.24999999999999994
+				},
+				{
+					"type": "lyric",
+					"text": "feel",
+					"wordId": 78,
+					"start": 0.7109375000000022,
+					"duration": 0.25
+				},
+				{
+					"type": "lyric",
+					"text": "won",
+					"wordId": 79,
+					"start": 0.9609375000000022,
+					"duration": 0.25
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "der",
+					"wordId": 79,
+					"start": 0.21176470588235563,
+					"duration": 0.12549019607842882
+				},
+				{
+					"type": "lyric",
+					"text": "ful",
+					"wordId": 79,
+					"start": 0.33725490196078445,
+					"duration": 0.18431372549019587
+				},
+				{
+					"type": "lyric",
+					"text": "be",
+					"wordId": 80,
+					"start": 0.8352941176470635,
+					"duration": 0.12549019607842882
+				},
+				{
+					"type": "lyric",
+					"text": "cause",
+					"wordId": 80,
+					"start": 0.9607843137254923,
+					"duration": 0.12549019607842893
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 81,
+					"start": 0.08593749999999949,
+					"duration": 0.25000000000000555
+				},
+				{
+					"type": "lyric",
+					"text": "see",
+					"wordId": 82,
+					"start": 0.33593750000000505,
+					"duration": 0.37109374999999517
+				},
+				{
+					"type": "lyric",
+					"text": "the",
+					"wordId": 83,
+					"start": 0.7109375000000022,
+					"duration": 0.12109375000000078
+				},
+				{
+					"type": "lyric",
+					"text": "love",
+					"wordId": 84,
+					"start": 0.832031250000003,
+					"duration": 0.3749999999999972
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0.5
+				},
+				{
+					"type": "lyric",
+					"text": "light",
+					"wordId": 85,
+					"start": 0.20784313725490264,
+					"duration": 0.12549019607842885
+				},
+				{
+					"type": "lyric",
+					"text": "in",
+					"wordId": 86,
+					"start": 0.3333333333333315,
+					"duration": 0.25098039215686885
+				},
+				{
+					"type": "lyric",
+					"text": "your",
+					"wordId": 87,
+					"start": 0.5843137254902003,
+					"duration": 0.376470588235292
+				},
+				{
+					"type": "lyric",
+					"text": "eyes",
+					"wordId": 88,
+					"start": 0.9607843137254923,
+					"duration": 0.43529411764705905
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "Em",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "And",
+					"wordId": 89,
+					"start": 0.7098039215686307,
+					"duration": 0.12549019607842815
+				},
+				{
+					"type": "lyric",
+					"text": "the",
+					"wordId": 90,
+					"start": 0.8352941176470589,
+					"duration": 0.12549019607842815
+				},
+				{
+					"type": "lyric",
+					"text": "won",
+					"wordId": 91,
+					"start": 0.960784313725487,
+					"duration": 0.1254901960784338
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "der",
+					"wordId": 91,
+					"start": 0.08627450980392122,
+					"duration": 0.25098039215686324
+				},
+				{
+					"type": "lyric",
+					"text": "of",
+					"wordId": 92,
+					"start": 0.5882352941176422,
+					"duration": 0.1215686274509814
+				},
+				{
+					"type": "lyric",
+					"text": "it",
+					"wordId": 93,
+					"start": 0.7098039215686236,
+					"duration": 0.12549019607843437
+				},
+				{
+					"type": "lyric",
+					"text": "all",
+					"wordId": 94,
+					"start": 0.835294117647058,
+					"duration": 0.31372549019607765
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "is",
+					"wordId": 95,
+					"start": 0.5859374999999994,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "that",
+					"wordId": 96,
+					"start": 0.7109374999999967,
+					"duration": 0.12500000000000278
+				},
+				{
+					"type": "lyric",
+					"text": "you",
+					"wordId": 97,
+					"start": 0.8359374999999994,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "just",
+					"wordId": 98,
+					"start": 0.9609374999999967,
+					"duration": 0.24609375000000355
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "don't",
+					"wordId": 99,
+					"start": 0.2078431372549038,
+					"duration": 0.2509803921568591
+				},
+				{
+					"type": "lyric",
+					"text": "re",
+					"wordId": 100,
+					"start": 0.45882352941176285,
+					"duration": 0.2509803921568703
+				},
+				{
+					"type": "lyric",
+					"text": "a",
+					"wordId": 100,
+					"start": 0.7098039215686331,
+					"duration": 0.12549019607842948
+				},
+				{
+					"type": "lyric",
+					"text": "lize",
+					"wordId": 100,
+					"start": 0.8352941176470626,
+					"duration": 0.18823529411764428
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "How",
+					"wordId": 101,
+					"start": 0.21176470588236002,
+					"duration": 0.2470588235294089
+				},
+				{
+					"type": "lyric",
+					"text": "much",
+					"wordId": 102,
+					"start": 0.4588235294117689,
+					"duration": 0.25098039215685625
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 103,
+					"start": 0.7098039215686252,
+					"duration": 0.12549019607843936
+				},
+				{
+					"type": "lyric",
+					"text": "love",
+					"wordId": 104,
+					"start": 0.8352941176470645,
+					"duration": 0.37647058823528434
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "you",
+					"wordId": 105,
+					"start": 0.21093749999999906,
+					"duration": 0.5000000000000056
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "It's",
+					"wordId": 106,
+					"start": 0.33333333333334075,
+					"duration": 0.12549019607842815
+				},
+				{
+					"type": "lyric",
+					"text": "time",
+					"wordId": 107,
+					"start": 0.4588235294117689,
+					"duration": 0.1254901960784281
+				},
+				{
+					"type": "lyric",
+					"text": "to",
+					"wordId": 108,
+					"start": 0.584313725490197,
+					"duration": 0.12549019607843936
+				},
+				{
+					"type": "lyric",
+					"text": "go",
+					"wordId": 109,
+					"start": 0.7098039215686364,
+					"duration": 0.12549019607842815
+				},
+				{
+					"type": "lyric",
+					"text": "home",
+					"wordId": 110,
+					"start": 0.8352941176470645,
+					"duration": 0.2509803921568674
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "now",
+					"wordId": 111,
+					"start": 0.08593750000001057,
+					"duration": 0.49609374999999245
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "and",
+					"wordId": 112,
+					"start": 0.12204724409448947,
+					"duration": 0.05118110236220308
+				},
+				{
+					"type": "lyric",
+					"text": "I've",
+					"wordId": 113,
+					"start": 0.17322834645669255,
+					"duration": 0.16141732283465604
+				},
+				{
+					"type": "lyric",
+					"text": "got",
+					"wordId": 114,
+					"start": 0.3346456692913486,
+					"duration": 0.18897637795275252
+				},
+				{
+					"type": "lyric",
+					"text": "an",
+					"wordId": 115,
+					"start": 0.5236220472441011,
+					"duration": 0.06299212598425075
+				},
+				{
+					"type": "lyric",
+					"text": "ach",
+					"wordId": 116,
+					"start": 0.5866141732283519,
+					"duration": 0.16141732283464483
+				},
+				{
+					"type": "lyric",
+					"text": "ing",
+					"wordId": 116,
+					"start": 0.7480314960629967,
+					"duration": 0.2125984251968479
+				},
+				{
+					"type": "lyric",
+					"text": "head",
+					"wordId": 117,
+					"start": 0.9606299212598446,
+					"duration": 0.25196850393701453
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "So",
+					"wordId": 118,
+					"start": 0.2109375000000078,
+					"duration": 0.1210937500000008
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 119,
+					"start": 0.3320312500000086,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "give",
+					"wordId": 120,
+					"start": 0.45703125000000583,
+					"duration": 0.12499999999999717
+				},
+				{
+					"type": "lyric",
+					"text": "her",
+					"wordId": 121,
+					"start": 0.582031250000003,
+					"duration": 0.12500000000000833
+				},
+				{
+					"type": "lyric",
+					"text": "the",
+					"wordId": 122,
+					"start": 0.7070312500000113,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "car",
+					"wordId": 123,
+					"start": 0.8320312500000085,
+					"duration": 0.24999999999999456
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "keys",
+					"wordId": 124,
+					"start": 0.08235294117647335,
+					"duration": 0.6235294117647043
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "and",
+					"wordId": 125,
+					"start": 0.2078431372549038,
+					"duration": 0.1254901960784295
+				},
+				{
+					"type": "lyric",
+					"text": "she",
+					"wordId": 126,
+					"start": 0.3333333333333333,
+					"duration": 0.12549019607842954
+				},
+				{
+					"type": "lyric",
+					"text": "helps",
+					"wordId": 127,
+					"start": 0.45882352941176285,
+					"duration": 0.1882352941176555
+				},
+				{
+					"type": "lyric",
+					"text": "me",
+					"wordId": 128,
+					"start": 0.6470588235294183,
+					"duration": 0.18823529411764428
+				},
+				{
+					"type": "lyric",
+					"text": "to",
+					"wordId": 129,
+					"start": 0.8352941176470626,
+					"duration": 0.1254901960784407
+				},
+				{
+					"type": "lyric",
+					"text": "bed",
+					"wordId": 130,
+					"start": 0.9607843137255033,
+					"duration": 0.37254901960784126
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "And",
+					"wordId": 131,
+					"start": 0.4609375000000023,
+					"duration": 0.12109375000000072
+				},
+				{
+					"type": "lyric",
+					"text": "then",
+					"wordId": 132,
+					"start": 0.582031250000003,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 133,
+					"start": 0.7070312500000002,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "tell",
+					"wordId": 134,
+					"start": 0.8320312499999974,
+					"duration": 0.25000000000000566
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "her",
+					"wordId": 135,
+					"start": 0.08235294117647426,
+					"duration": 0.3764705882352998
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "as",
+					"wordId": 136,
+					"start": 0.20703125000001135,
+					"duration": 0.12499999999999725
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 137,
+					"start": 0.3320312500000086,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "turn",
+					"wordId": 138,
+					"start": 0.45703125000000583,
+					"duration": 0.12500000000000827
+				},
+				{
+					"type": "lyric",
+					"text": "out",
+					"wordId": 139,
+					"start": 0.5820312500000141,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "the",
+					"wordId": 140,
+					"start": 0.7070312500000113,
+					"duration": 0.12499999999999722
+				},
+				{
+					"type": "lyric",
+					"text": "light",
+					"wordId": 141,
+					"start": 0.8320312500000085,
+					"duration": 0.3750000000000028
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "Em",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "I",
+					"wordId": 142,
+					"start": 0.5803921568627497,
+					"duration": 0.12549019607842804
+				},
+				{
+					"type": "lyric",
+					"text": "say",
+					"wordId": 143,
+					"start": 0.7058823529411777,
+					"duration": 0.12549019607843936
+				},
+				{
+					"type": "lyric",
+					"text": "my",
+					"wordId": 144,
+					"start": 0.8313725490196171,
+					"duration": 0.12549019607842815
+				},
+				{
+					"type": "lyric",
+					"text": "darl",
+					"wordId": 145,
+					"start": 0.9568627450980453,
+					"duration": 0.12549019607842815
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "ing",
+					"wordId": 145,
+					"start": 0.08203125000000304,
+					"duration": 0.24999999999999445
+				},
+				{
+					"type": "lyric",
+					"text": "you",
+					"wordId": 146,
+					"start": 0.5820312499999919,
+					"duration": 0.18359375000001055
+				},
+				{
+					"type": "lyric",
+					"text": "were",
+					"wordId": 147,
+					"start": 0.7656250000000024,
+					"duration": 0.18749999999999578
+				},
+				{
+					"type": "lyric",
+					"text": "won",
+					"wordId": 148,
+					"start": 0.9531249999999982,
+					"duration": 0.12499999999999734
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "der",
+					"wordId": 148,
+					"start": 0.07874015748031073,
+					"duration": 0.2519685039370145
+				},
+				{
+					"type": "lyric",
+					"text": "ful",
+					"wordId": 148,
+					"start": 0.3307086614173252,
+					"duration": 0.377952755905505
+				},
+				{
+					"type": "lyric",
+					"text": "to",
+					"wordId": 149,
+					"start": 0.7086614173228302,
+					"duration": 0.12598425196851282
+				},
+				{
+					"type": "lyric",
+					"text": "night",
+					"wordId": 149,
+					"start": 0.834645669291343,
+					"duration": 0.37401574803149285
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				},
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0.5
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "Em",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "Oh",
+					"wordId": 150,
+					"start": 0.5791505791505784,
+					"duration": 0.18532818532819206
+				},
+				{
+					"type": "lyric",
+					"text": "my",
+					"wordId": 151,
+					"start": 0.7644787644787705,
+					"duration": 0.18532818532818118
+				},
+				{
+					"type": "lyric",
+					"text": "darl",
+					"wordId": 152,
+					"start": 0.9498069498069517,
+					"duration": 0.12355212355212064
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "ing",
+					"wordId": 152,
+					"start": 0.07480314960629855,
+					"duration": 0.25196850393701453
+				},
+				{
+					"type": "lyric",
+					"text": "you",
+					"wordId": 153,
+					"start": 0.5787401574803164,
+					"duration": 0.18897637795276356
+				},
+				{
+					"type": "lyric",
+					"text": "were",
+					"wordId": 154,
+					"start": 0.7677165354330799,
+					"duration": 0.18503937007874038
+				},
+				{
+					"type": "lyric",
+					"text": "won",
+					"wordId": 155,
+					"start": 0.9527559055118203,
+					"duration": 0.1259842519685016
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				},
+				{
+					"type": "lyric",
+					"text": "der",
+					"wordId": 155,
+					"start": 0.07843137254902595,
+					"duration": 0.2509803921568563
+				},
+				{
+					"type": "lyric",
+					"text": "ful",
+					"wordId": 155,
+					"start": 0.32941176470588224,
+					"duration": 0.3764705882352955
+				},
+				{
+					"type": "lyric",
+					"text": "to",
+					"wordId": 156,
+					"start": 0.7058823529411777,
+					"duration": 0.12549019607842815
+				},
+				{
+					"type": "lyric",
+					"text": "night",
+					"wordId": 156,
+					"start": 0.8313725490196059,
+					"duration": 0.6235294117647044
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "C",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "D",
+					"position": 0
+				}
+			]
+		},
+		{
+			"events": [
+				{
+					"type": "chord",
+					"name": "G",
+					"position": 0
+				}
+			]
+		}
+	]
+}
