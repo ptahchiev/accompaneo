@@ -6,10 +6,12 @@ import 'package:accompaneo/widgets/section_widget.dart';
 import 'package:accompaneo/values/app_theme.dart';
 import 'package:accompaneo/values/app_colors.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_guitar_chord/flutter_guitar_chord.dart';
 import 'package:rxdart/rxdart.dart';
 import '../utils/helpers/audio_player_manager.dart';
+import '../utils/helpers/chords_helper.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:flutter_guitar_chord/flutter_guitar_chord.dart';
+
 
 class PlayerPage extends StatefulWidget {
   const PlayerPage({super.key, required this.title});
@@ -42,9 +44,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    // audioPlayerManager = AudioPlayerManager();
-    // audioPlayerManager.init();
-
     super.initState();
     _playerState = _player.playerState;
     ambiguate(WidgetsBinding.instance)!.addObserver(this);
@@ -101,6 +100,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
               position, bufferedPosition, duration ?? Duration.zero));
 
   _playPause() {
+    SystemSound.play(SystemSoundType.click);
     if (_playerState.playing) {
       _player.pause().then((value) => {
         setState(() {
@@ -183,6 +183,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
 
+    FlutterGuitarChord nextChord = ChordsHelper.chordTypeOptions[ChordType.A] ?? ChordsHelper.MISSING;
+
     BorderRadiusGeometry radius = BorderRadius.only(
       topRight: Radius.circular(75.0),
       bottomLeft: Radius.circular(75.0),
@@ -190,183 +192,178 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
     return DefaultTabController(
       length: 2,
-      child: Stack(
-          alignment: AlignmentDirectional.bottomStart,
-          children: <Widget>[
-            Scaffold(
-              backgroundColor: Colors.white,
-              body: GestureDetector(
-                onTap: () =>_playPause(),
-                child: 
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
-                    child: Column(
-                      children: <Widget>[
-                        Expanded(
-                          flex: 70,
-                          child: Container(
-                              decoration: BoxDecoration(borderRadius: radius, color: AppColors.primaryColor),
-                            ),
-                          ),
-                        Expanded(
-                          flex: 30,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 6),
-                            child: Column(
-                              children: [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 20),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: 
-                                      [
-                                        Text('Next', style: AppTheme.titleLarge.copyWith(color: Colors.black)),
-                                        CircleAvatar(backgroundColor: Colors.red,
-                                        
-                                          child: Text('C', style: AppTheme.bodySmall.copyWith(color: Colors.white)))
-                                      ]
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: 
-                                      FlutterGuitarChord(
-                                                                  
-                                        baseFret: 1,
-                                        chordName: 'Cmajor',
-                                        fingers: '0 3 2 0 1 0',
-                                        frets: '-1 3 2 0 1 0',
-                                        totalString: 6,
-                                        
-                                        labelColor: AppColors.primaryColor,
-                                        showLabel: false,
-                                        tabForegroundColor: Colors.white,
-                                        tabBackgroundColor: Colors.red,
-                                        // tabForegroundColor: Colors.white,
-                                        // tabBackgroundColor: Colors.deepOrange,
-                                        // barColor: Colors.black,
-                                        // stringColor: Colors.red,
+      child: OrientationBuilder(
+        builder: (context, orientation) {
+          return Stack(
+              alignment: AlignmentDirectional.bottomStart,
+              children: <Widget>[
+                Scaffold(
+                  backgroundColor: Colors.white,
+                  body: GestureDetector(
+                    onTap: () =>_playPause(),
+                    child: 
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
+                        child: GridView.count(
+                          crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 70,
+                              child: Container(
+                                  decoration: BoxDecoration(borderRadius: radius, color: AppColors.primaryColor),
+                                ),
+                              ),
+                            Expanded(
+                              flex: 30,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
+                                child: Column(
+                                  children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 20),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: 
+                                          [
+                                            Text('Next', style: AppTheme.titleLarge.copyWith(color: Colors.black)),
+                                            CircleAvatar(backgroundColor: nextChord.tabBackgroundColor,
+                                              child: Text(nextChord.chordName, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
+                                          ]
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: nextChord
                                       )
-                                  )
-                              ]
+                                  ]
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-            )
-            ),
-            Visibility(
-              visible: !_playerState.playing,
-              child: Scaffold(
-                backgroundColor: Colors.transparent.withOpacity(0.7), //yes
-                appBar: AppBar(
-                  iconTheme: IconThemeData(
-                    color: Colors.white,
-                  ),
-                  backgroundColor: Colors.transparent, //yes
-                  elevation: 0.0,
-                  title: TabBar(
-                    dividerColor: Colors.transparent,
-                    labelColor: Colors.white,
-                    unselectedLabelColor: Colors.white,
-                    indicatorColor: AppColors.primaryColor,
-                    overlayColor: WidgetStateProperty.fromMap(
-                      <WidgetStatesConstraint, Color>{
-                        WidgetState.any: Colors.transparent
-                      }
-                    ),
-                    labelStyle: TextStyle(
-                      backgroundColor: Colors.transparent,
-                      fontSize: 20
-                    ),
-                    unselectedLabelStyle: TextStyle(
-                      backgroundColor: Colors.transparent,
-                      fontSize: 20,
-                    ),
-                    tabs: [
-                      Tab(text: 'PLAY'),
-                      Tab(text: 'ABOUT'),
-                    ],
-                  ),
-                ),
-              body:
-                  TabBarView(
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 100),
-                            child: 
-                              SegmentedButton<PracticeType>(
-                                  style: ButtonStyle(
-                                    foregroundColor: WidgetStateProperty<Color>.fromMap(
-                                      <WidgetStatesConstraint, Color>{
-                                        WidgetState.focused: Colors.white,
-                                        WidgetState.selected : Colors.white,
-                                        WidgetState.any: AppColors.primaryColor,
-                                      }
-                                    ),
-                                    backgroundColor: WidgetStateProperty<Color>.fromMap(
-                                        <WidgetStatesConstraint, Color>{
-                                          WidgetState.focused: Colors.white,
-                                          WidgetState.selected : AppColors.primaryColor,
-                                          WidgetState.any: Colors.white,
-                                        }
-                                    )
-                                  ),
-                                  // ToggleButtons above allows multiple or no selection.
-                                  // Set `multiSelectionEnabled` and `emptySelectionAllowed` to true
-                                  // to match the behavior of ToggleButtons.
-                                  multiSelectionEnabled: false,
-                                  emptySelectionAllowed: false,
-                                  
-                                  // Hide the selected icon to match the behavior of ToggleButtons.
-                                  showSelectedIcon: false,
-                                  // SegmentedButton uses a Set<T> to track its selection state.
-                                  selected: _segmentedButtonSelection,
-                                  // This callback updates the set of selected segment values.
-                                  onSelectionChanged: (Set<PracticeType> newSelection) {
-                                    setState(() {
-                                      _segmentedButtonSelection = newSelection;
-                                    });
-                                  },
-                                  // SegmentedButton uses a List<ButtonSegment<T>> to build its children
-                                  // instead of a List<Widget> like ToggleButtons.
-                                  segments: practiceTypeOptions
-                                      .map<ButtonSegment<PracticeType>>(((PracticeType, String) practiceType) {
-                                    return ButtonSegment<PracticeType>(
-                                        value: practiceType.$1, label: Text(practiceType.$2));
-                                  }).toList(),
-                              )
-                          ),
-                          Align(
-                            alignment: Alignment.center,
-                            child: IconButton(onPressed: () =>_playPause(), icon: Icon(Icons.play_arrow_outlined, color: Colors.white, size: 150))
-                          ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Column(
-                                children: [
-                                  IconButton(onPressed: ()=> {}, icon: Icon(Icons.favorite_outline, color: Colors.white, size: 30)),
-                                  Text('You Look Wonderful Tonight', style: AppTheme.titleLarge.copyWith(color: Colors.white)),
-                                  Text('Eric Clapton', style: AppTheme.sectionTitle.copyWith(color: Colors.white)),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 25, vertical: MediaQuery.of(context).size.height / 25),
-                                    child: _progressBar()
-                                  )
-                                ]
-                            )
-                          )
-                        ],
-              
                       ),
-                      Icon(Icons.directions_transit)
-                    ],
                   )
-              ),
-            )])
+                ),
+                Visibility(
+                  visible: !_playerState.playing,
+                  child: Scaffold(
+                    backgroundColor: Colors.transparent.withOpacity(0.7), //yes
+                    appBar: AppBar(
+                      iconTheme: IconThemeData(
+                        color: Colors.white,
+                      ),
+                      backgroundColor: Colors.transparent, //yes
+                      elevation: 0.0,
+                      title: TabBar(
+                        dividerColor: Colors.transparent,
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.white,
+                        indicatorColor: AppColors.primaryColor,
+                        overlayColor: WidgetStateProperty.fromMap(
+                          <WidgetStatesConstraint, Color>{
+                            WidgetState.any: Colors.transparent
+                          }
+                        ),
+                        labelStyle: TextStyle(
+                          backgroundColor: Colors.transparent,
+                          fontSize: 20
+                        ),
+                        unselectedLabelStyle: TextStyle(
+                          backgroundColor: Colors.transparent,
+                          fontSize: 20,
+                        ),
+                        tabs: [
+                          Tab(text: 'PLAY'),
+                          Tab(text: 'ABOUT'),
+                        ],
+                      ),
+                    ),
+                  body:
+                      TabBarView(
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 100),
+                                child: 
+                                  SegmentedButton<PracticeType>(
+                                      style: ButtonStyle(
+                                        foregroundColor: WidgetStateProperty<Color>.fromMap(
+                                          <WidgetStatesConstraint, Color>{
+                                            WidgetState.focused: Colors.white,
+                                            WidgetState.selected : Colors.white,
+                                            WidgetState.any: AppColors.primaryColor,
+                                          }
+                                        ),
+                                        backgroundColor: WidgetStateProperty<Color>.fromMap(
+                                            <WidgetStatesConstraint, Color>{
+                                              WidgetState.focused: Colors.white,
+                                              WidgetState.selected : AppColors.primaryColor,
+                                              WidgetState.any: Colors.white,
+                                            }
+                                        )
+                                      ),
+                                      // ToggleButtons above allows multiple or no selection.
+                                      // Set `multiSelectionEnabled` and `emptySelectionAllowed` to true
+                                      // to match the behavior of ToggleButtons.
+                                      multiSelectionEnabled: false,
+                                      emptySelectionAllowed: false,
+                                      
+                                      // Hide the selected icon to match the behavior of ToggleButtons.
+                                      showSelectedIcon: false,
+                                      // SegmentedButton uses a Set<T> to track its selection state.
+                                      selected: _segmentedButtonSelection,
+                                      // This callback updates the set of selected segment values.
+                                      onSelectionChanged: (Set<PracticeType> newSelection) {
+                                        setState(() {
+                                          _segmentedButtonSelection = newSelection;
+                                        });
+                                      },
+                                      // SegmentedButton uses a List<ButtonSegment<T>> to build its children
+                                      // instead of a List<Widget> like ToggleButtons.
+                                      segments: practiceTypeOptions
+                                          .map<ButtonSegment<PracticeType>>(((PracticeType, String) practiceType) {
+                                        return ButtonSegment<PracticeType>(
+                                            value: practiceType.$1, label: Text(practiceType.$2));
+                                      }).toList(),
+                                  )
+                              ),
+                              Align(
+                                alignment: Alignment.center,
+                                child: IconButton(onPressed: () =>_playPause(), icon: Icon(Icons.play_arrow_outlined, color: Colors.white, size: 150))
+                              ),
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 20),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            IconButton(onPressed: ()=> {}, icon: Icon(Icons.favorite_outline, color: Colors.white, size: 30)),
+                                            Text('You Look Wonderful Tonight', textAlign: TextAlign.center, style: AppTheme.titleLarge.copyWith(color: Colors.white)),
+                                            Text('Eric Clapton', textAlign: TextAlign.center, style: AppTheme.sectionTitle.copyWith(color: Colors.white))
+                                          ]),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 25, vertical: MediaQuery.of(context).size.height / 40),
+                                        child: _progressBar()
+                                      )
+                                    ]
+                                )
+                              )
+                            ],
+                  
+                          ),
+                          Icon(Icons.directions_transit)
+                        ],
+                      )
+                  ),
+                )]);
+        }
+      )
         
     );
   }
