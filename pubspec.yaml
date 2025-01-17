@@ -44,6 +44,13 @@ dependencies:
   spider: ^4.2.2
   audio_video_progress_bar: ^2.0.3
   audioplayers: ^6.1.0
+  just_audio: ^0.9.43
+  just_audio_mpv: ^0.1.7
+  just_audio_windows: ^0.2.2
+  audio_session: ^0.1.23
+  rxdart: ^0.28.0
+  flutter_guitar_chord: ^0.0.2
+  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
