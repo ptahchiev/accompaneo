@@ -96,6 +96,9 @@ class _AccompaneoState extends State<AccompaneoApp> {
                     selected: _selectedIndex == 0,
                     onTap: () {
                       Navigator.pop(context);
+                      //logout
+                      //navigate to login screen
+                      NavigationHelper.pushReplacementNamed(AppRoutes.login);                      
                     },
                   ),
                 ],
@@ -140,7 +143,7 @@ class Accompaneo extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Accompaneo',
-      //initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.login,
       theme: AppTheme.themeData,
       navigatorKey: NavigationHelper.key,
       scaffoldMessengerKey: SnackbarHelper.key,

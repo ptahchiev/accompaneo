@@ -35,11 +35,13 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
   @override
   void initState() {
     initializeControllers();
+    super.initState();
   }
 
   @override
   void dispose() {
     disposeControllers();
+    super.dispose();
   }
 
     @override

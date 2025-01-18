@@ -150,11 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                       return FilledButton(
                         onPressed: isValid
                             ? () {
-                                SnackbarHelper.showSnackBar(
-                                  AppStrings.loggedIn,
-                                );
-                                emailController.clear();
-                                passwordController.clear();
+                                NavigationHelper.pushReplacementNamed(AppRoutes.home);
                               }
                             : null,
                         child: const Text(AppStrings.login),
@@ -182,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {NavigationHelper.pushReplacementNamed(AppRoutes.home);},
                           icon: SvgPicture.asset(Vectors.google, width: 14),
                           label: const Text(
                             AppStrings.google,
@@ -193,7 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(width: 20),
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {NavigationHelper.pushReplacementNamed(AppRoutes.home);},
                           icon: SvgPicture.asset(Vectors.facebook, width: 14),
                           label: const Text(
                             AppStrings.facebook,

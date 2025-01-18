@@ -1,3 +1,4 @@
+import 'package:accompaneo/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 import 'pages/login_page.dart';
@@ -29,7 +30,10 @@ class Routes {
         return getRoute(widget: const RegisterPage());
 
       case AppRoutes.forgotPassword:
-        return getRoute(widget: const ForgotPasswordPage());        
+        return getRoute(widget: const ForgotPasswordPage());  
+
+      case AppRoutes.home:
+        return getRoute(widget: const HomePage(title: ''));              
 
       /// An invalid route. User shouldn't see this,
       /// it's for debugging purpose only.
