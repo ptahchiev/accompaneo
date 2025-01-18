@@ -64,8 +64,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
                   },
                 )],
             ),
-            
-            body: IndexedStack(index: _selectedIndex,children: _pages),
+            body: IndexedStack(index: _selectedIndex, children: _pages),
             drawer: Drawer(
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -148,7 +147,6 @@ class Accompaneo extends StatelessWidget {
       navigatorKey: NavigationHelper.key,
       scaffoldMessengerKey: SnackbarHelper.key,
       onGenerateRoute: Routes.generateRoute,
-      home: AccompaneoApp()
     );
   }
 }

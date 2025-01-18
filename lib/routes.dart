@@ -1,4 +1,4 @@
-import 'package:accompaneo/pages/home_page.dart';
+import 'package:accompaneo/main.dart';
 import 'package:flutter/material.dart';
 
 import 'pages/login_page.dart';
@@ -22,7 +22,7 @@ class Routes {
         return SlideRightRoute(widget: const ForgotPasswordPage());  
 
       case AppRoutes.home:
-        return SlideRightRoute(widget: const HomePage(title: ''));              
+        return SlideRightRoute(widget: const AccompaneoApp());
 
       /// An invalid route. User shouldn't see this,
       /// it's for debugging purpose only.
