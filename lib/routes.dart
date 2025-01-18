@@ -11,34 +11,45 @@ class Routes {
   const Routes._();
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    Route<dynamic> getRoute({
-      required Widget widget,
-      bool fullscreenDialog = false,
-    }) {
-      return MaterialPageRoute<void>(
-        builder: (context) => widget,
-        settings: settings,
-        fullscreenDialog: fullscreenDialog,
-      );
-    }
-
     switch (settings.name) {
       case AppRoutes.login:
-        return getRoute(widget: const LoginPage());
+        return SlideRightRoute(widget: const LoginPage());
 
       case AppRoutes.register:
-        return getRoute(widget: const RegisterPage());
+        return SlideRightRoute(widget: const RegisterPage());
 
       case AppRoutes.forgotPassword:
-        return getRoute(widget: const ForgotPasswordPage());  
+        return SlideRightRoute(widget: const ForgotPasswordPage());  
 
       case AppRoutes.home:
-        return getRoute(widget: const HomePage(title: ''));              
+        return SlideRightRoute(widget: const HomePage(title: ''));              
 
       /// An invalid route. User shouldn't see this,
       /// it's for debugging purpose only.
       default:
-        return getRoute(widget: const InvalidRoute());
+        return SlideRightRoute(widget: const InvalidRoute());
     }
   }
+}
+
+class SlideRightRoute extends PageRouteBuilder {
+  final Widget widget;
+  SlideRightRoute({required  this.widget})
+      : super(
+          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+            return widget;
+          },
+          transitionsBuilder: (BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+              Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            );
+          },
+        );
 }
