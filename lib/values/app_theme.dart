@@ -90,6 +90,14 @@ class AppTheme {
     letterSpacing: 0.5,
   );
 
+  static const TextStyle titleMedium = TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+    fontSize: 29,
+    letterSpacing: 0.5,
+  );
+
+
   static const TextStyle bodySmall = TextStyle(
     color: Colors.grey,
     letterSpacing: 0.5,

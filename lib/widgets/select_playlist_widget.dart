@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import '../utils/helpers/snackbar_helper.dart';
-import '../widgets/app_text_form_field.dart';
 import '../values/app_strings.dart';
 import '../values/app_theme.dart';
-import './new_playlist_widget.dart';
 
 final List<String> entries = <String>['guitar', 'piano', 'wedding'];
 
@@ -18,32 +15,7 @@ class SelectPlaylistWidget extends StatefulWidget {
 class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
 
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController nameController;
   final ValueNotifier<bool> fieldValidNotifier = ValueNotifier(false);
-
-  void initializeControllers() {
-    nameController = TextEditingController()..addListener(controllerListener);
-  }
-
-  void disposeControllers() {
-    nameController.dispose();
-  }
-
-  void controllerListener() {
-    final name = nameController.text;
-
-    if (name.isEmpty) return;
-  }
-
-  @override
-  void initState() {
-    initializeControllers();
-  }
-
-  @override
-  void dispose() {
-    disposeControllers();
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -100,7 +100,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
               position, bufferedPosition, duration ?? Duration.zero));
 
   _playPause() {
-    SystemSound.play(SystemSoundType.click);
+    // SystemSound.play(SystemSoundType.click);
     if (_playerState.playing) {
       _player.pause().then((value) => {
         setState(() {
@@ -204,17 +204,17 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                     child: 
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
-                        child: GridView.count(
-                          crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
+                        child: Column(
+                          //crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
                           children: <Widget>[
                             Expanded(
-                              flex: 70,
+                              flex: 65,
                               child: Container(
                                   decoration: BoxDecoration(borderRadius: radius, color: AppColors.primaryColor),
                                 ),
                               ),
                             Expanded(
-                              flex: 30,
+                              flex: 35,
                               child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
                                 child: Column(
@@ -225,13 +225,14 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: 
                                           [
-                                            Text('Next', style: AppTheme.titleLarge.copyWith(color: Colors.black)),
+                                            Text('Next', style: AppTheme.titleMedium.copyWith(color: Colors.black)),
                                             CircleAvatar(backgroundColor: nextChord.tabBackgroundColor,
                                               child: Text(nextChord.chordName, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
                                           ]
                                         ),
                                       ),
                                       Expanded(
+
                                         child: nextChord
                                       )
                                   ]

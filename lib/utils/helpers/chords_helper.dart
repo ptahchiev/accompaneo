@@ -65,7 +65,6 @@ class ChordsHelper {
     
     labelColor: AppColors.primaryColor,
     showLabel: false,
-    fingerSize: 35,
     tabForegroundColor: Colors.white,
     tabBackgroundColor: Colors.blueGrey,
   );
