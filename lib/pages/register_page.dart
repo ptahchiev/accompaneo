@@ -79,6 +79,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
+        padding: EdgeInsets.zero,
         children: [
           const GradientBackground(
             children: [

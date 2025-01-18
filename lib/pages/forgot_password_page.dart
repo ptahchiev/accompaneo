@@ -62,6 +62,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
+        padding: EdgeInsets.zero,
         children: [
           const GradientBackground(
             children: [
