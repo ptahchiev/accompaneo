@@ -1,4 +1,4 @@
-import 'package:accompaneo/song/image_data.dart';
+import 'package:accompaneo/models/song/image_data.dart';
 import 'package:flutter/material.dart';
 import '../values/app_theme.dart';
 import '../pages/playlist_page.dart';

@@ -100,7 +100,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
               position, bufferedPosition, duration ?? Duration.zero));
 
   _playPause() {
-    // SystemSound.play(SystemSoundType.click);
     if (_playerState.playing) {
       _player.pause().then((value) => {
         setState(() {

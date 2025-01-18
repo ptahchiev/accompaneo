@@ -8,6 +8,7 @@ import 'pages/playlist_page.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'values/app_routes.dart';
 import 'values/app_theme.dart';
+import 'values/app_colors.dart';
 import 'utils/helpers/navigation_helper.dart';
 import 'utils/helpers/snackbar_helper.dart';
 import 'routes.dart';
@@ -43,45 +44,88 @@ class _AccompaneoState extends State<AccompaneoApp> {
   @override
   Widget build(BuildContext context) {
     return 
-        Scaffold(
-          appBar: AppBar(
-            title: const Text('Accompaneo'),
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            actions: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.search),
-                tooltip: 'Search',
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])));
-                },
-              )],
-          ),
-          
-          body: IndexedStack(index: _selectedIndex,children: _pages),
-          bottomNavigationBar: 
-            NavigationBar(
-              elevation: 0,
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: _onItemTapped,
-              destinations: <NavigationDestination>[
-                NavigationDestination(
-                  icon: Container(padding: EdgeInsets.symmetric(vertical: 10),child: Icon(Icons.home)),
-                  label: 'Home',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.person),
-                  label: 'Profile',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.settings_rounded),
-                  label: 'Settings',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.headphones),
-                  label: 'Playlists',
-                )
-              ],
-            ));
+        GestureDetector(
+          onTap: () {
+            final FocusScopeNode currentScope = FocusScope.of(context);
+            if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
+              currentScope.unfocus();
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Accompaneo'),
+              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              actions: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  tooltip: 'Search',
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])));
+                  },
+                )],
+            ),
+            
+            body: IndexedStack(index: _selectedIndex,children: _pages),
+            drawer: Drawer(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                
+                children: [
+                  const DrawerHeader(
+                    
+                    decoration: BoxDecoration(
+                      color: AppColors.darkerBlue,
+                    ),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: 
+                            Text('Accompaneo', style: AppTheme.titleLarge),
+                          ),
+                          
+                          Text('ver. 1.0',style: AppTheme.bodySmall),
+                          Text('by Petar Tahchiev', style: AppTheme.bodySmall),
+                        ]
+                      ),
+                    )
+                  ),
+                  ListTile(
+                    title: const Text('Logout'),
+                    selected: _selectedIndex == 0,
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: 
+              NavigationBar(
+                elevation: 0,
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: _onItemTapped,
+                destinations: <NavigationDestination>[
+                  NavigationDestination(
+                    icon: Container(padding: EdgeInsets.symmetric(vertical: 10),child: Icon(Icons.home)),
+                    label: 'Home',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.person),
+                    label: 'Profile',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.settings_rounded),
+                    label: 'Settings',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.headphones),
+                    label: 'Playlists',
+                  )
+                ],
+              )),
+        );
   }
 
   void _onItemTapped(int index) {

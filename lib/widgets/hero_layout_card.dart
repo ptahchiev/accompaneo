@@ -3,7 +3,7 @@ import '../utils/helpers/snackbar_helper.dart';
 import '../widgets/app_text_form_field.dart';
 import '../values/app_strings.dart';
 import '../values/app_theme.dart';
-import 'package:accompaneo/song/image_data.dart';
+import 'package:accompaneo/models/song/image_data.dart';
 
 
 class HeroLayoutCard extends StatelessWidget {

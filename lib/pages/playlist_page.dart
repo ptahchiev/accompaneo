@@ -1,7 +1,7 @@
 import 'package:accompaneo/pages/player_page.dart';
 import 'package:flutter/material.dart';
-import 'package:accompaneo/song/song.dart';
-import 'package:accompaneo/song/image_data.dart';
+import 'package:accompaneo/models/song/song.dart';
+import 'package:accompaneo/models/song/image_data.dart';
 import 'package:accompaneo/widgets/hero_layout_card.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../values/app_theme.dart';
