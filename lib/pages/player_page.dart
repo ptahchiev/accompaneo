@@ -1,16 +1,18 @@
+import 'dart:async';
+
 import 'package:accompaneo/pages/position_data.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:accompaneo/widgets/section_widget.dart';
 import 'package:accompaneo/values/app_theme.dart';
 import 'package:accompaneo/values/app_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_guitar_chord/flutter_guitar_chord.dart';
 import 'package:rxdart/rxdart.dart';
-import '../utils/helpers/audio_player_manager.dart';
 import '../utils/helpers/chords_helper.dart';
 import 'package:just_audio/just_audio.dart';
+import 'dart:math';
+import 'package:reliable_interval_timer/reliable_interval_timer.dart';
 
 
 class PlayerPage extends StatefulWidget {
@@ -26,6 +28,8 @@ T? ambiguate<T>(T? value) => value;
 
 enum PracticeType { simple, band, bandVocals, click }
 
+double _tempo = 93.88489208633094;
+
 const List<(PracticeType, String)> practiceTypeOptions = <(PracticeType, String)>[
   (PracticeType.simple, 'Practice'),
   (PracticeType.band, 'Band'),
@@ -39,13 +43,11 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   //late AudioPlayerManager audioPlayerManager;
   final _player = AudioPlayer();
-
-  late PlayerState _playerState;
+  final _metronomePlayer = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
-    _playerState = _player.playerState;
     ambiguate(WidgetsBinding.instance)!.addObserver(this);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     _init();
@@ -61,6 +63,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         onError: (Object e, StackTrace stackTrace) {
       print('A stream error occurred: $e');
     });
+
+
     // Try to load audio from a source and catch any errors.
     try {
       // AAC example: https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac
@@ -69,6 +73,12 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     } on PlayerException catch (e) {
       print("Error loading audio source: $e");
     }
+    // try {
+    //   // AAC example: https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac
+    //   await _metronomePlayer.setAudioSource(AudioSource.asset("assets/effects/metronome.mp3"));
+    // } on PlayerException catch (e) {
+    //   print("Error loading audio source: $e");
+    // }
   }
 
   @override
@@ -87,7 +97,41 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       // resume from.
       _player.stop();
     }
-  }  
+  }
+
+  // void onTimerTick(int elapsedMilliseconds) {
+  //   _metronomePlayer.play();
+  // }
+
+  // playMetronome() {
+  //   double bps = _tempo/60;
+  //   int tickInterval = 1000~/bps;
+  //   var counter = 4;
+
+
+  //   // var timer = ReliableIntervalTimer(
+  //   //   interval: Duration(milliseconds: tickInterval),
+  //   //   callback: (ms) => {
+  //   //       counter --,
+  //   //       _metronomePlayer.play()
+  //   //   },
+  //   // );
+
+  //   // timer.start().then((_) {
+  //   //   print('Timer started');
+  //   //   timer.stop();
+  //   // });
+
+  //   Timer.periodic(Duration(milliseconds: 1000), (timer) {
+  //     counter--;
+  //     if (counter == 0) {
+  //       timer.cancel();
+  //     }
+  //     //SystemSound.play(SystemSoundType.alert);
+  //     //_metronomePlayer.play();
+  //   });
+  // }
+
 
   /// Collects the data useful for displaying in a seek bar, using a handy
   /// feature of rx_dart to combine the 3 streams of interest into one.
@@ -97,23 +141,152 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
           _player.bufferedPositionStream,
           _player.durationStream,
           (position, bufferedPosition, duration) => PositionData(
-              position, bufferedPosition, duration ?? Duration.zero));
+              position, bufferedPosition, duration ?? Duration.zero, _player.playing));
 
-  _playPause() {
-    if (_playerState.playing) {
-      _player.pause().then((value) => {
-        setState(() {
-          _playerState = _player.playerState;
-        })
-      });
-    } else {
-      _player.play().then((value)=> {
-        setState(() {
-          _playerState = _player.playerState;
-        })
-      });
-    }
+  StreamBuilder<PositionData> _overlayPanel() {
+    return StreamBuilder<PositionData>(
+      stream: _positionDataStream,
+      builder: (context, snapshot) {
+        final playerState = snapshot.data;
+        final playing = playerState?.playing;
+        final durationState = snapshot.data;
+        final progress = durationState?.position ?? Duration.zero;
+        final buffered = durationState?.bufferedPosition ?? Duration.zero;
+        final total = durationState?.duration ?? Duration.zero;        
+        return playing != true ? Scaffold(
+          backgroundColor: Colors.transparent.withOpacity(0.7), //yes
+          appBar: AppBar(
+            iconTheme: IconThemeData(
+              color: Colors.white,
+            ),
+            backgroundColor: Colors.transparent, //yes
+            elevation: 0.0,
+            title: TabBar(
+              dividerColor: Colors.transparent,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white,
+              indicatorColor: AppColors.primaryColor,
+              overlayColor: WidgetStateProperty.fromMap(
+                <WidgetStatesConstraint, Color>{
+                  WidgetState.any: Colors.transparent
+                }
+              ),
+              labelStyle: TextStyle(
+                backgroundColor: Colors.transparent,
+                fontSize: 20
+              ),
+              unselectedLabelStyle: TextStyle(
+                backgroundColor: Colors.transparent,
+                fontSize: 20,
+              ),
+              tabs: [
+                Tab(text: 'PLAY'),
+                Tab(text: 'ABOUT'),
+              ],
+            ),
+          ),
+        body:
+            TabBarView(
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 100),
+                      child: 
+                        SegmentedButton<PracticeType>(
+                            style: ButtonStyle(
+                              foregroundColor: WidgetStateProperty<Color>.fromMap(
+                                <WidgetStatesConstraint, Color>{
+                                  WidgetState.focused: Colors.white,
+                                  WidgetState.selected : Colors.white,
+                                  WidgetState.any: AppColors.primaryColor,
+                                }
+                              ),
+                              backgroundColor: WidgetStateProperty<Color>.fromMap(
+                                  <WidgetStatesConstraint, Color>{
+                                    WidgetState.focused: Colors.white,
+                                    WidgetState.selected : AppColors.primaryColor,
+                                    WidgetState.any: Colors.white,
+                                  }
+                              )
+                            ),
+                            // ToggleButtons above allows multiple or no selection.
+                            // Set `multiSelectionEnabled` and `emptySelectionAllowed` to true
+                            // to match the behavior of ToggleButtons.
+                            multiSelectionEnabled: false,
+                            emptySelectionAllowed: false,
+                            
+                            // Hide the selected icon to match the behavior of ToggleButtons.
+                            showSelectedIcon: false,
+                            // SegmentedButton uses a Set<T> to track its selection state.
+                            selected: _segmentedButtonSelection,
+                            // This callback updates the set of selected segment values.
+                            onSelectionChanged: (Set<PracticeType> newSelection) {
+                              //SystemSound.play(SystemSoundType.click);
+                              setState(() {
+                                _segmentedButtonSelection = newSelection;
+                              });
+                            },
+                            // SegmentedButton uses a List<ButtonSegment<T>> to build its children
+                            // instead of a List<Widget> like ToggleButtons.
+                            segments: practiceTypeOptions
+                                .map<ButtonSegment<PracticeType>>(((PracticeType, String) practiceType) {
+                              return ButtonSegment<PracticeType>(
+                                  value: practiceType.$1, label: Text(practiceType.$2));
+                            }).toList(),
+                        )
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: _playButton()
+                      //IconButton(onPressed: () =>_playPause(), icon: Icon(Icons.play_arrow_outlined, color: Colors.white, size: 150))
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  IconButton(onPressed: ()=> {}, icon: Icon(Icons.favorite_outline, color: Colors.white, size: 30)),
+                                  Text('You Look Wonderful Tonight', textAlign: TextAlign.center, style: AppTheme.titleLarge.copyWith(color: Colors.white)),
+                                  Text('Eric Clapton', textAlign: TextAlign.center, style: AppTheme.sectionTitle.copyWith(color: Colors.white))
+                                ]),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 8, vertical: MediaQuery.of(context).size.height / 40),
+                              child: 
+                                ProgressBar(
+                                  progress: progress,
+                                  buffered: buffered,
+                                  total: total,
+                                  onSeek: _player.seek,
+                                  onDragUpdate: (details) {
+                                    debugPrint('${details.timeStamp}, ${details.localPosition}');
+                                  },
+                                  thumbColor: AppColors.primaryColor,
+                                  baseBarColor: Colors.white,
+                                  bufferedBarColor: Colors.amber,
+                                  timeLabelTextStyle: TextStyle(color: Colors.white),
+                                )
+                            )
+                          ]
+                      )
+                    )
+                  ],
+                ),
+                Icon(Icons.directions_transit)
+              ],
+            )
+        ) : Container();
+      },
+    );  
   }
+
 
   StreamBuilder<PlayerState> _playButton() {
     return StreamBuilder<PlayerState>(
@@ -126,26 +299,29 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
             processingState == ProcessingState.buffering) {
           return Container(
             margin: const EdgeInsets.all(8.0),
-            width: 32.0,
-            height: 32.0,
-            child: const CircularProgressIndicator(),
+            width: 150,
+            height: 150,
+            child: const CircularProgressIndicator(color: Colors.white),
           );
         } else if (playing != true) {
           return IconButton(
-            icon: const Icon(Icons.play_arrow),
-            iconSize: 32.0,
-            onPressed: _player.play,
+            icon: const Icon(Icons.play_arrow_outlined),
+            iconSize: 150,
+            color: Colors.white,
+            onPressed: () => _player.play(),
           );
         } else if (processingState != ProcessingState.completed) {
           return IconButton(
-            icon: const Icon(Icons.pause),
-            iconSize: 32.0,
+            icon: const Icon(Icons.pause_outlined),
+            iconSize: 150,
+            color: Colors.white,
             onPressed: _player.pause,
           );
         } else {
           return IconButton(
-            icon: const Icon(Icons.replay),
-            iconSize: 32.0,
+            icon: const Icon(Icons.replay_outlined),
+            iconSize: 150,
+            color: Colors.white,
             onPressed: () =>
                 _player.seek(Duration.zero),
           );
@@ -153,31 +329,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       },
     );  
   }
-
-  StreamBuilder<PositionData> _progressBar() {
-    return StreamBuilder<PositionData>(
-      stream: _positionDataStream,
-      builder: (context, snapshot) {
-        final durationState = snapshot.data;
-        final progress = durationState?.position ?? Duration.zero;
-        final buffered = durationState?.bufferedPosition ?? Duration.zero;
-        final total = durationState?.duration ?? Duration.zero;
-        return ProgressBar(
-          progress: progress,
-          buffered: buffered,
-          total: total,
-          onSeek: _player.seek,
-          onDragUpdate: (details) {
-            debugPrint('${details.timeStamp}, ${details.localPosition}');
-          },
-          thumbColor: AppColors.primaryColor,
-          baseBarColor: Colors.white,
-          timeLabelTextStyle: TextStyle(color: Colors.white),
-        );
-      },
-    );
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +350,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                 Scaffold(
                   backgroundColor: Colors.white,
                   body: GestureDetector(
-                    onTap: () =>_playPause(),
+                    onTap: () => _player.pause(),
                     child: 
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
@@ -231,7 +382,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                         ),
                                       ),
                                       Expanded(
-
                                         child: nextChord
                                       )
                                   ]
@@ -243,125 +393,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                       ),
                   )
                 ),
-                Visibility(
-                  visible: !_playerState.playing,
-                  child: Scaffold(
-                    backgroundColor: Colors.transparent.withOpacity(0.7), //yes
-                    appBar: AppBar(
-                      iconTheme: IconThemeData(
-                        color: Colors.white,
-                      ),
-                      backgroundColor: Colors.transparent, //yes
-                      elevation: 0.0,
-                      title: TabBar(
-                        dividerColor: Colors.transparent,
-                        labelColor: Colors.white,
-                        unselectedLabelColor: Colors.white,
-                        indicatorColor: AppColors.primaryColor,
-                        overlayColor: WidgetStateProperty.fromMap(
-                          <WidgetStatesConstraint, Color>{
-                            WidgetState.any: Colors.transparent
-                          }
-                        ),
-                        labelStyle: TextStyle(
-                          backgroundColor: Colors.transparent,
-                          fontSize: 20
-                        ),
-                        unselectedLabelStyle: TextStyle(
-                          backgroundColor: Colors.transparent,
-                          fontSize: 20,
-                        ),
-                        tabs: [
-                          Tab(text: 'PLAY'),
-                          Tab(text: 'ABOUT'),
-                        ],
-                      ),
-                    ),
-                  body:
-                      TabBarView(
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 100),
-                                child: 
-                                  SegmentedButton<PracticeType>(
-                                      style: ButtonStyle(
-                                        foregroundColor: WidgetStateProperty<Color>.fromMap(
-                                          <WidgetStatesConstraint, Color>{
-                                            WidgetState.focused: Colors.white,
-                                            WidgetState.selected : Colors.white,
-                                            WidgetState.any: AppColors.primaryColor,
-                                          }
-                                        ),
-                                        backgroundColor: WidgetStateProperty<Color>.fromMap(
-                                            <WidgetStatesConstraint, Color>{
-                                              WidgetState.focused: Colors.white,
-                                              WidgetState.selected : AppColors.primaryColor,
-                                              WidgetState.any: Colors.white,
-                                            }
-                                        )
-                                      ),
-                                      // ToggleButtons above allows multiple or no selection.
-                                      // Set `multiSelectionEnabled` and `emptySelectionAllowed` to true
-                                      // to match the behavior of ToggleButtons.
-                                      multiSelectionEnabled: false,
-                                      emptySelectionAllowed: false,
-                                      
-                                      // Hide the selected icon to match the behavior of ToggleButtons.
-                                      showSelectedIcon: false,
-                                      // SegmentedButton uses a Set<T> to track its selection state.
-                                      selected: _segmentedButtonSelection,
-                                      // This callback updates the set of selected segment values.
-                                      onSelectionChanged: (Set<PracticeType> newSelection) {
-                                        setState(() {
-                                          _segmentedButtonSelection = newSelection;
-                                        });
-                                      },
-                                      // SegmentedButton uses a List<ButtonSegment<T>> to build its children
-                                      // instead of a List<Widget> like ToggleButtons.
-                                      segments: practiceTypeOptions
-                                          .map<ButtonSegment<PracticeType>>(((PracticeType, String) practiceType) {
-                                        return ButtonSegment<PracticeType>(
-                                            value: practiceType.$1, label: Text(practiceType.$2));
-                                      }).toList(),
-                                  )
-                              ),
-                              Align(
-                                alignment: Alignment.center,
-                                child: IconButton(onPressed: () =>_playPause(), icon: Icon(Icons.play_arrow_outlined, color: Colors.white, size: 150))
-                              ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 20),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            IconButton(onPressed: ()=> {}, icon: Icon(Icons.favorite_outline, color: Colors.white, size: 30)),
-                                            Text('You Look Wonderful Tonight', textAlign: TextAlign.center, style: AppTheme.titleLarge.copyWith(color: Colors.white)),
-                                            Text('Eric Clapton', textAlign: TextAlign.center, style: AppTheme.sectionTitle.copyWith(color: Colors.white))
-                                          ]),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 25, vertical: MediaQuery.of(context).size.height / 40),
-                                        child: _progressBar()
-                                      )
-                                    ]
-                                )
-                              )
-                            ],
-                  
-                          ),
-                          Icon(Icons.directions_transit)
-                        ],
-                      )
-                  ),
-                )]);
+                _overlayPanel()
+                ]);
         }
       )
         

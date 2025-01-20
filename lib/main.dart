@@ -71,7 +71,6 @@ class _AccompaneoState extends State<AccompaneoApp> {
                 
                 children: [
                   const DrawerHeader(
-                    
                     decoration: BoxDecoration(
                       color: AppColors.darkerBlue,
                     ),

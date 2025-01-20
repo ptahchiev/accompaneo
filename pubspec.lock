@@ -677,6 +677,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.5"
+  reliable_interval_timer:
+    dependency: "direct main"
+    description:
+      name: reliable_interval_timer
+      sha256: "250fb73e7b8a2a8d09a47d77915a6040226a85715fa85f2009720c4437692e5b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   rxdart:
     dependency: "direct main"
     description:
@@ -754,6 +762,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0+1"
+  sound_generator:
+    dependency: "direct main"
+    description:
+      name: sound_generator
+      sha256: "38c5bdec9dac4f3cd75cb14af3935623b6d82b6e804052b7f78e19b6d77bc1ad"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.12"
   source_span:
     dependency: transitive
     description:

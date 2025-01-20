@@ -50,7 +50,9 @@ dependencies:
   audio_session: ^0.1.23
   rxdart: ^0.28.0
   flutter_guitar_chord: ^0.0.2
-  
+  reliable_interval_timer: ^1.0.2
+  sound_generator: ^0.0.12
+ 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
