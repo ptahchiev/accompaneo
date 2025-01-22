@@ -1,3 +1,5 @@
+import 'package:accompaneo/models/user/registration.dart';
+import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../utils/helpers/snackbar_helper.dart';
 
@@ -219,18 +221,28 @@ class _RegisterPageState extends State<RegisterPage> {
                     valueListenable: fieldValidNotifier,
                     builder: (_, isValid, __) {
                       return FilledButton(
-                        onPressed: isValid
+                        onPressed: 
+                          isValid
                             ? () {
-                                SnackbarHelper.showSnackBar(
-                                  AppStrings.registrationComplete,
-                                );
-                                nameController.clear();
-                                emailController.clear();
-                                passwordController.clear();
-                                confirmPasswordController.clear();
+                              
+                                // nameController.clear();
+                                // emailController.clear();
+                                // passwordController.clear();
+                                // confirmPasswordController.clear();
+                                final result = ApiService.register(Registration(name: nameController.text, username: emailController.text, password: passwordController.text, repeatPassword: confirmPasswordController.text));
+                                result.then((response) => {
+                                  if (response.statusCode == 200) {
+                                    NavigationHelper.pushReplacementNamed(
+                                      AppRoutes.login,
+                                    ),
+                                    SnackbarHelper.showSnackBar('Registered')
+                                  } else {
+                                    SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}')
+                                  }
+                                });
                               }
                             : null,
-                        child: const Text(AppStrings.register),
+                        child: const Text(AppStrings.register)
                       );
                     },
                   ),
