@@ -1,4 +1,10 @@
+import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/pages/player_page.dart';
+import 'package:accompaneo/services/api_service.dart';
+import 'package:accompaneo/utils/helpers/navigation_helper.dart';
+import 'package:accompaneo/values/app_routes.dart';
+import 'package:accompaneo/widgets/placeholders.dart';
+import 'package:accompaneo/widgets/skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/models/song/image_data.dart';
@@ -6,41 +12,35 @@ import 'package:accompaneo/widgets/hero_layout_card.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../values/app_theme.dart';
 import 'package:accompaneo/widgets/select_playlist_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PlaylistPage extends StatefulWidget {
 
-  final List<Song> songs;
+  final String playlistUrl;
 
-  const PlaylistPage({super.key, required this.songs});
+  const PlaylistPage({super.key, required this.playlistUrl});
 
   @override
-  State<PlaylistPage> createState() => _PlaylistPageState();
+  State<PlaylistPage> createState() => _PlaylistPageState(playlistUrl: playlistUrl);
 }
 
 class _PlaylistPageState extends State<PlaylistPage> {
 
   PanelController pc = PanelController();
 
-  final List<Song> songs = [
-                              Song(image: 'content_based_color_scheme_1.png', name: 'Helpless', artist: 'Neil Young', bpm: 120, favourite: true),
-                              Song(image: '', name: 'Hurt', artist: 'Johny Cash', bpm: 120, favourite: false), 
-                              Song(image: '', name: 'Drivers License', artist: 'Olivia Rodrigo', bpm: 120, favourite: true), 
-                              Song(image: '', name: 'Greatest Love Story', artist: 'LANCO', bpm: 120, favourite: true), 
-                              Song(image: '', name: 'Perfect', artist: 'Ed Sheeran', bpm: 120, favourite: true), 
-                              Song(image: '', name: 'Snowman', artist: 'SIA', bpm: 120, favourite: false), 
-                              Song(image: '', name: 'High Hopes', artist: 'Kodaline', bpm: 120, favourite: false), 
-                              Song(image: '', name: 'Be Alright', artist: 'Dean Lewis', bpm: 120, favourite: false), 
-                              Song(image: '', name: 'Let It Be', artist: 'Beatles', bpm: 120, favourite: true), 
-                              Song(image: '', name: 'Older', artist: 'Sasha Sloan', bpm: 120, favourite: false), 
-                              Song(image: '', name: 'Lewis Capaldi', artist: 'Before You Go', bpm: 120, favourite: true), 
-                              Song(image: '', name: 'Lady Gaga', artist: 'Million Reasons', bpm: 120, favourite: false), 
-                              Song(image: '', name: 'Bruises', artist: 'Lewis Capaldi', bpm: 120, favourite: true), 
-                              Song(image: '', name: 'Foolish Games', artist: 'Jewel', bpm: 120, favourite: false), 
-                              Song(image: '', name: 'With Or Without You', artist: 'U2', bpm: 120, favourite: false), 
-                              Song(image: '', name: 'Heart Of Gold', artist: 'Neil Young', bpm: 120, favourite: true), 
-                              Song(image: '', name: 'Iris', artist: 'The Goo Goo DOlls', bpm: 120, favourite: false), 
-                              Song(image: '', name: 'Wonderwall', artist: 'Oasis', bpm: 120, favourite: true), 
-                            ];
+  final String playlistUrl;
+
+  late Future<Playlist> futurePlaylist;
+
+  _PlaylistPageState({required this.playlistUrl});
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    futurePlaylist = ApiService.getPlaylistByUrl(playlistUrl);
+  }
 
 
   @override
@@ -71,7 +71,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         ),
       ),
       body: SlidingUpPanel(backdropEnabled: true, 
-                           body: createPopUpContent(entries), 
+                           body: createPopUpContent(), 
                            controller: pc, 
                            panel: SelectPlaylistWidget(),
                            borderRadius: radius,
@@ -82,81 +82,154 @@ class _PlaylistPageState extends State<PlaylistPage> {
             );
   }
 
-  Widget createPopUpContent(List<String> entries) {
-    return ListView(
-      children: [
-        Container(
-              color: Colors.transparent,
-              padding: EdgeInsets.all(10),
-              child: 
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        'Your Favourites',
-                        style: AppTheme.sectionTitle,
-                      ),
-                    ),
-                    Expanded(child: Divider(color: Colors.grey.shade500)),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${songs.length} songs')),
-                    )
-                  ],
-                ),
-        ),                  
-        ListView.builder(
-                itemCount: songs.length,
-                shrinkWrap: true,
-                physics: ClampingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    //leading: HeroLayoutCard(imageInfo: ImageData(title: '', subtitle: '', url: songs[index].image)),
-                          leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: songs[index].image != '' ? ClipRRect(
-                            borderRadius: BorderRadius.circular(50.0),
-                            child: Image(
-                                        fit: BoxFit.cover,
-                                        image: NetworkImage(
-                                            'https://flutter.github.io/assets-for-api-docs/assets/material/${songs[index].image}'),
-                                      )) : Icon(Icons.music_note, color: Colors.white, size: 28)),
-                          
-                          
-                          onTap: () => {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const PlayerPage(title: 'Player')))
-                          },
-                          
-                          // // songs[index].image != '' ? Image(
-                          // //               fit: BoxFit.cover,
-                          // //               image: NetworkImage(
-                          // //                   'https://flutter.github.io/assets-for-api-docs/assets/material/${songs[index].image}'),
-                          // //             ) : 
-                          // //             FittedBox(child: Icon(Icons.music_note, color: Colors.white, size: 35), fit: BoxFit.fill),
-                                  
-                          
-                          
-                          
-                          //CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
-                          title: Text(songs[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
-                          subtitle: Text(songs[index].artist),
-                          trailing: Wrap(
+  Widget createPopUpContent() {
+    return FutureBuilder<Playlist>(
+      future: futurePlaylist, 
+      builder: ((context, snapshot) {
+        if (snapshot.hasData) {
+          return ListView(
+                children: [
+                  Container(
+                        color: Colors.transparent,
+                        padding: EdgeInsets.all(10),
+                        child: 
+                          Row(
                             children: [
-                              IconButton(icon: songs[index].favourite ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined), onPressed: () { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(duration: Duration(seconds: 1), content: Text('Song added to favourites')));}),
-                              IconButton(onPressed: () => _dialogBuilder(context), icon: Icon(Icons.more_horiz))
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Text(
+                                  snapshot.data!.name,
+                                  style: AppTheme.sectionTitle,
+                                ),
+                              ),
+                              Expanded(child: Divider(color: Colors.grey.shade500)),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${snapshot.data!.songs.totalElements} songs')),
+                              )
                             ],
-                          )
-                          
-                          
-                          
-                          //onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => screens[index]))
-                  );
-                },
-          )
-      ]
-    );
+                          ),
+                  ),                  
+                  ListView.builder(
+                          itemCount: snapshot.data?.songs.size,
+                          shrinkWrap: true,
+                          physics: ClampingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              //leading: HeroLayoutCard(imageInfo: ImageData(title: '', subtitle: '', url: songs[index].image)),
+                                    leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: snapshot.data?.songs.content[index].image != '' ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(50.0),
+                                      child: Image(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(
+                                                      'https://flutter.github.io/assets-for-api-docs/assets/material/${snapshot.data!.songs.content[index].image}'),
+                                                )) : Icon(Icons.music_note, color: Colors.white, size: 28)),
+                                    
+                                    
+                                    onTap: () => {
+                                      Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerPage(song: snapshot.data!.songs.content[index])))
+                                    },
+                                    
+                                    // // songs[index].image != '' ? Image(
+                                    // //               fit: BoxFit.cover,
+                                    // //               image: NetworkImage(
+                                    // //                   'https://flutter.github.io/assets-for-api-docs/assets/material/${songs[index].image}'),
+                                    // //             ) : 
+                                    // //             FittedBox(child: Icon(Icons.music_note, color: Colors.white, size: 35), fit: BoxFit.fill),
+                                            
+                                    
+                                    
+                                    
+                                    //CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
+                                    title: Text(snapshot.data!.songs.content[index].title, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
+                                    subtitle: Text(snapshot.data!.songs.content[index].artist.name),
+                                    trailing: Wrap(
+                                      children: [
+                                        IconButton(icon: snapshot.data!.songs.content[index].favourite ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined), onPressed: () { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(duration: Duration(seconds: 1), content: Text('Song added to favourites')));}),
+                                        IconButton(onPressed: () => _dialogBuilder(context, snapshot.data!.songs.content[index].artist.code), icon: Icon(Icons.more_horiz))
+                                      ],
+                                    )
+                                    
+                                    
+                                    
+                                    //onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => screens[index]))
+                            );
+                          },
+                    )
+                ]
+              );
+        } else if(snapshot.hasError) {
+          return Text('ERROR ${snapshot.error}');
+        }
+        return 
+            Shimmer.fromColors(
+                      baseColor: Colors.grey.shade300,
+                      highlightColor: Colors.grey.shade100,
+                      loop: 0,
+                      enabled: true,
+                      child: const SingleChildScrollView(
+                        physics: NeverScrollableScrollPhysics(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            // Row(
+                            //   children: [
+                            //     Padding(
+                            //       padding: EdgeInsets.symmetric(horizontal: 10),
+                            //       child: 
+                            //     ),
+                            //     // Expanded(child: Divider(color: Colors.grey.shade500)),
+                            //     // Align(
+                            //     //   alignment: Alignment.centerRight,
+                            //     //   child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${snapshot.data!.songs.length} songs')),
+                            //     // )
+                            //   ],
+                            // ),
+                            TitlePlaceholder(width: double.infinity),                          
+                            SizedBox(height: 16.0),
+                            ContentPlaceholder(
+                              lineType: ContentLineType.twoLines,
+                            ),
+                            SizedBox(height: 16.0),
+                            ContentPlaceholder(
+                              lineType: ContentLineType.twoLines,
+                            ),
+                            SizedBox(height: 16.0),
+                            ContentPlaceholder(
+                              lineType: ContentLineType.twoLines,
+                            ),
+                            SizedBox(height: 16.0),
+                            ContentPlaceholder(
+                              lineType: ContentLineType.twoLines,
+                            ),
+                            SizedBox(height: 16.0),
+                            ContentPlaceholder(
+                              lineType: ContentLineType.twoLines,
+                            ),
+                            SizedBox(height: 16.0),
+                            ContentPlaceholder(
+                              lineType: ContentLineType.twoLines,
+                            ),
+                            SizedBox(height: 16.0),
+                            ContentPlaceholder(
+                              lineType: ContentLineType.twoLines,
+                            ),                                                                                                                                                                        
+                            SizedBox(height: 16.0),
+                            ContentPlaceholder(
+                              lineType: ContentLineType.twoLines,
+                            ),
+                            SizedBox(height: 16.0),
+                            ContentPlaceholder(
+                              lineType: ContentLineType.twoLines,
+                            ),
+                          ],
+                        ),
+                      ));
+    }));
   }  
 
-  Future<void> _dialogBuilder(BuildContext context) {
+  Future<void> _dialogBuilder(BuildContext context, String artistCode) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -174,7 +247,10 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   ListTile(
                     title: Text('View All Songs By Artist'),
                     leading: Icon(Icons.search, color: Colors.black, size: 28),
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])))
+                    onTap: () => {
+                      Navigator.pop(context, true),
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(playlistUrl:'/artist/$artistCode')))
+                    }
                   ),
                 ],
         );

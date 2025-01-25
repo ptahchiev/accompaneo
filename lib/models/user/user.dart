@@ -30,11 +30,11 @@ class User {
       );
 
   static User fromJson(Map<String, dynamic> json) => User(
-        image: json['imagePath'],
-        name: json['name'],
-        email: json['email'],
-        aboutMeDescription: json['about'],
-        phone: json['phone'],
+        image: json['imagePath'] ?? '',
+        name: json['name'] ?? '',
+        email: json['email'] ?? '',
+        aboutMeDescription: json['about'] ?? '',
+        phone: json['phone'] ?? '',
       );
 
   Map<String, dynamic> toJson() => {

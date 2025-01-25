@@ -19,9 +19,9 @@ class _SettingsPageState extends State<SettingsPage> {
       body:  Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            const Section(title: 'Jump back in', viewAll: false),
-            const Section(title: 'Most Popular', viewAll: false),
-            const Section(title: 'Your favourites', viewAll: false),
+            const Section(title: 'Jump back in', sectionData: [],playlistUrl: null,),
+            const Section(title: 'Most Popular', sectionData: [],playlistUrl: null,),
+            const Section(title: 'Your favourites', sectionData: [],playlistUrl: null,),
           ],
         )
     );

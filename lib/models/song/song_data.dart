@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:accompaneo/models/artist.dart';
+
 import 'song.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,8 +12,8 @@ class SongData {
   static Song mySong = Song(
     image:
         "https://upload.wikimedia.org/wikipedia/en/0/0b/Darth_Vader_in_The_Empire_Strikes_Back.jpg",
-    name: 'Test Test',
-    artist: 'test.test@gmail.com',
+    title: 'Test Test',
+    artist: Artist(code: 'code', name: 'test.test@gmail.com'),
     bpm: 120,
     favourite: true
   );

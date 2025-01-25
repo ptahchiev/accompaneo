@@ -224,14 +224,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         onPressed: 
                           isValid
                             ? () {
-                              
-                                // nameController.clear();
-                                // emailController.clear();
-                                // passwordController.clear();
-                                // confirmPasswordController.clear();
                                 final result = ApiService.register(Registration(name: nameController.text, username: emailController.text, password: passwordController.text, repeatPassword: confirmPasswordController.text));
                                 result.then((response) => {
                                   if (response.statusCode == 200) {
+                                    nameController.clear(),
+                                    emailController.clear(),
+                                    passwordController.clear(),
+                                    confirmPasswordController.clear(),
                                     NavigationHelper.pushReplacementNamed(
                                       AppRoutes.login,
                                     ),

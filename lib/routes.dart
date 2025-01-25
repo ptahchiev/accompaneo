@@ -1,9 +1,10 @@
 import 'package:accompaneo/main.dart';
+import 'package:accompaneo/pages/playlist_page.dart';
 import 'package:flutter/material.dart';
 
 import 'pages/login_page.dart';
 import 'pages/register_page.dart';
-import 'pages/forgot_password_page.dart';
+import 'pages/recover_password_page.dart';
 import 'widgets/invalid_route.dart';
 import 'values/app_routes.dart';
 
@@ -19,10 +20,14 @@ class Routes {
         return SlideRightRoute(widget: const RegisterPage());
 
       case AppRoutes.forgotPassword:
-        return SlideRightRoute(widget: const ForgotPasswordPage());  
+        return SlideRightRoute(widget: const ForgotPasswordPage());
+
+      case AppRoutes.playlistSearch:
+        return SlideRightRoute(widget: const PlaylistPage(playlistUrl: '/search'));
 
       case AppRoutes.home:
         return SlideRightRoute(widget: const AccompaneoApp());
+    
 
       /// An invalid route. User shouldn't see this,
       /// it's for debugging purpose only.

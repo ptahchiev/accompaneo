@@ -1,3 +1,4 @@
+import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../utils/helpers/snackbar_helper.dart';
 
@@ -98,10 +99,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       return FilledButton(
                         onPressed: isValid
                             ? () {
-                                SnackbarHelper.showSnackBar(
-                                  AppStrings.registrationComplete,
-                                );
-                                emailController.clear();
+                                final result = ApiService.recoverPassword(emailController.text);
+                                result.then((response) => {
+                                  if (response.statusCode == 200) {
+                                    emailController.clear(),
+                                    NavigationHelper.pushReplacementNamed(
+                                      AppRoutes.login,
+                                    ),
+                                    SnackbarHelper.showSnackBar('We sent you email with instructions')
+                                  } else {
+                                    SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}')
+                                  }
+                                });
                               }
                             : null,
                         child: const Text(AppStrings.submit),

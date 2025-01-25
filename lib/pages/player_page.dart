@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/position_data.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
@@ -16,19 +17,20 @@ import 'package:reliable_interval_timer/reliable_interval_timer.dart';
 
 
 class PlayerPage extends StatefulWidget {
-  const PlayerPage({super.key, required this.title});
 
-  final String title;
+  final Song song;
+
+  const PlayerPage({super.key, required this.song});
 
   @override
-  State<PlayerPage> createState() => _PlayerPageState();
+  State<PlayerPage> createState() => _PlayerPageState(song: this.song);
 }
 
 T? ambiguate<T>(T? value) => value;
 
 enum PracticeType { simple, band, bandVocals, click }
 
-double _tempo = 93.88489208633094;
+// double _tempo = 93.88489208633094;
 
 const List<(PracticeType, String)> practiceTypeOptions = <(PracticeType, String)>[
   (PracticeType.simple, 'Practice'),
@@ -38,6 +40,10 @@ const List<(PracticeType, String)> practiceTypeOptions = <(PracticeType, String)
 ];
 
 class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
+
+  final Song song;
+
+  _PlayerPageState({required this.song});
   
   Set<PracticeType> _segmentedButtonSelection = <PracticeType>{PracticeType.simple};
 
@@ -253,8 +259,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   IconButton(onPressed: ()=> {}, icon: Icon(Icons.favorite_outline, color: Colors.white, size: 30)),
-                                  Text('You Look Wonderful Tonight', textAlign: TextAlign.center, style: AppTheme.titleLarge.copyWith(color: Colors.white)),
-                                  Text('Eric Clapton', textAlign: TextAlign.center, style: AppTheme.sectionTitle.copyWith(color: Colors.white))
+                                  Text(song.title, textAlign: TextAlign.center, style: AppTheme.titleLarge.copyWith(color: Colors.white)),
+                                  Text(song.artist.name, textAlign: TextAlign.center, style: AppTheme.sectionTitle.copyWith(color: Colors.white))
                                 ]),
                             ),
                             Padding(

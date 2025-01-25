@@ -1,3 +1,4 @@
+import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../utils/helpers/snackbar_helper.dart';
 import '../widgets/app_text_form_field.dart';
@@ -97,10 +98,17 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                         return FilledButton(
                           onPressed: isValid
                               ? () {
-                                  SnackbarHelper.showSnackBar(
-                                    AppStrings.registrationComplete,
-                                  );
-                                  nameController.clear();
+                                  final result = ApiService.createPlaylist(nameController.text);
+                                  result.then((response) => {
+                                    if (response.statusCode == 200) {
+                                      SnackbarHelper.showSnackBar(
+                                        AppStrings.registrationComplete,
+                                      ),
+                                      nameController.clear(),
+                                    } else {
+                                      SnackbarHelper.showSnackBar('Failed to create a playlist: ${response.statusCode}')
+                                    }
+                                  });                                  
                                 }
                               : null,
                           child: const Text(AppStrings.submit),

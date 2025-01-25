@@ -1,4 +1,6 @@
+import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/song/image_data.dart';
+import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/widgets/hero_layout_card.dart';
 import 'package:flutter/material.dart';
 import 'playlist_page.dart';
@@ -15,9 +17,10 @@ class PlaylistsPage extends StatefulWidget {
 }
 
 class CardList extends StatelessWidget {
-  final List<String> listData;
+  
+  final Future<List<Playlist>> futurePlaylists;
 
-  const CardList({super.key, required this.listData});
+  const CardList({super.key, required this.futurePlaylists});
 
   @override
   Widget build(BuildContext context) {
@@ -29,22 +32,37 @@ class CardList extends StatelessWidget {
             title: Text('Your favourites'),
             leading: CircleAvatar(radius: 28, backgroundColor: Colors.red, child: Icon(Icons.favorite, color: Colors.white, size: 28)),
             subtitle: Text('6 songs'),
-            onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])))
+            onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(playlistUrl: '/favourites',)))
           ),
           Divider(),
-          ListView.builder(
-            itemCount: listData.length,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              return ListTile(
-                      leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
-                      title: Text(listData[index]),
-                      subtitle: Text('6 songs'),
-                      onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])))
-              );
-            },
-          ),
+          FutureBuilder<List<Playlist>>(
+            future: futurePlaylists, 
+            builder: ((context, snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                            leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
+                            title: Text(snapshot.data![index].name),
+                            subtitle: Text('${snapshot.data![index].songs.totalElements} songs'),
+                            onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(playlistUrl:'/${snapshot.data![index].code}')))
+                    );
+                  },
+                );
+              } else if (snapshot.hasError) {
+                return Text('ERROR ${snapshot.error}');
+              }
+
+              return const CircularProgressIndicator();
+            })),
+          
+          
+          
+          
+
         ],
       ),
     );
@@ -52,7 +70,9 @@ class CardList extends StatelessWidget {
 }
 
 class _PlaylistsPageState extends State<PlaylistsPage> {
-  
+
+  late Future<List<Playlist>> futurePlaylists;
+
   PanelController pc = PanelController();
 
   bool _isCreatePlaylistOpen = false;
@@ -61,6 +81,12 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
     setState(() {
       _isCreatePlaylistOpen = !_isCreatePlaylistOpen;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    futurePlaylists = ApiService.getPlaylistsForCurrentUser();
   }
 
   @override
@@ -75,7 +101,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
 
     return Scaffold(
       body: SlidingUpPanel(backdropEnabled: true, 
-                           body: createPlaylist(entries), 
+                           body: createPlaylist(), 
                            controller: pc, 
                            panel: NewPlaylistWidget(),
                            borderRadius: radius,
@@ -93,7 +119,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
     );
   }
 
-  Widget createPlaylist(List<String> entries) {
-    return CardList(listData: entries);
+  Widget createPlaylist() {
+    return CardList(futurePlaylists: futurePlaylists);
   }
 }

@@ -60,7 +60,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
                   icon: const Icon(Icons.search),
                   tooltip: 'Search',
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(songs:[])));
+                    NavigationHelper.pushNamed(AppRoutes.playlistSearch);
                   },
                 )],
             ),
