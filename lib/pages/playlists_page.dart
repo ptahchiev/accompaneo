@@ -1,7 +1,5 @@
 import 'package:accompaneo/models/playlist.dart';
-import 'package:accompaneo/models/song/image_data.dart';
 import 'package:accompaneo/services/api_service.dart';
-import 'package:accompaneo/widgets/hero_layout_card.dart';
 import 'package:flutter/material.dart';
 import 'playlist_page.dart';
 import 'package:accompaneo/widgets/new_playlist_widget.dart';
@@ -58,11 +56,6 @@ class CardList extends StatelessWidget {
 
               return const CircularProgressIndicator();
             })),
-          
-          
-          
-          
-
         ],
       ),
     );

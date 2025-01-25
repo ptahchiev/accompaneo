@@ -1,110 +1,69 @@
 import 'package:flutter/material.dart';
-
-class BannerPlaceholder extends StatelessWidget {
-  const BannerPlaceholder({Key? key}) : super(key: key);
+class PlaylistElementPlaceholder extends StatelessWidget {
+  const PlaylistElementPlaceholder({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 200.0,
-      margin: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.0),
-        color: Colors.white,
-      ),
+
+    return ListTile(
+        leading: Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            color: Colors.white,
+          ),
+        ),
+        title: Container(
+          width: 200,
+          height: 10.0,
+          color: Colors.white,
+          margin: const EdgeInsets.only(bottom: 8.0),
+        ),
+        subtitle: Container(
+          width: 10.0,
+          height: 10.0,
+          color: Colors.white,
+        ),
+        trailing: Wrap(
+          children: [
+            Icon(Icons.favorite_outline_outlined),
+            Icon(Icons.more_horiz)
+          ],
+        ),
     );
   }
 }
 
-class TitlePlaceholder extends StatelessWidget {
-  final double width;
-
-  const TitlePlaceholder({
-    Key? key,
-    required this.width,
-  }) : super(key: key);
+class PLaylistHeaderPlaceholder extends StatelessWidget {
+  const PLaylistHeaderPlaceholder({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: width,
-            height: 12.0,
-            color: Colors.white,
-          ),
-          const SizedBox(height: 8.0),
-          Container(
-            width: width,
-            height: 12.0,
-            color: Colors.white,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-enum ContentLineType {
-  twoLines,
-  threeLines,
-}
-
-class ContentPlaceholder extends StatelessWidget {
-  final ContentLineType lineType;
-
-  const ContentPlaceholder({
-    Key? key,
-    required this.lineType,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              color: Colors.white,
-            ),
+            padding: EdgeInsets.all(10),
+            width: 200,
+            height: 25.0,
+            color: Colors.white,
+            //margin: const EdgeInsets.only(bottom: 8.0),
           ),
-          const SizedBox(width: 12.0),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 200,
-                  height: 10.0,
-                  color: Colors.white,
-                  margin: const EdgeInsets.only(bottom: 8.0),
-                ),
-                if (lineType == ContentLineType.threeLines)
-                  Container(
-                    width: double.infinity,
-                    height: 10.0,
-                    color: Colors.white,
-                    margin: const EdgeInsets.only(bottom: 8.0),
-                  ),
-                Container(
-                  width: 100.0,
-                  height: 10.0,
-                  color: Colors.white,
-                )
-              ],
-            ),
+          Expanded(child: Divider(color: Colors.grey.shade500)),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child:
+                      Container(
+            padding: EdgeInsets.all(10),
+            width: 50,
+            height: 10.0,
+            color: Colors.white,
+            //margin: const EdgeInsets.only(bottom: 8.0),
+          ),   ),
           )
         ],
       ),

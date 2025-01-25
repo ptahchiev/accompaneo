@@ -1,14 +1,8 @@
 import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/pages/player_page.dart';
 import 'package:accompaneo/services/api_service.dart';
-import 'package:accompaneo/utils/helpers/navigation_helper.dart';
-import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/widgets/placeholders.dart';
-import 'package:accompaneo/widgets/skeleton.dart';
 import 'package:flutter/material.dart';
-import 'package:accompaneo/models/song/song.dart';
-import 'package:accompaneo/models/song/image_data.dart';
-import 'package:accompaneo/widgets/hero_layout_card.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../values/app_theme.dart';
 import 'package:accompaneo/widgets/select_playlist_widget.dart';
@@ -167,64 +161,21 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       highlightColor: Colors.grey.shade100,
                       loop: 0,
                       enabled: true,
-                      child: const SingleChildScrollView(
+                      child: SingleChildScrollView(
                         physics: NeverScrollableScrollPhysics(),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            // Row(
-                            //   children: [
-                            //     Padding(
-                            //       padding: EdgeInsets.symmetric(horizontal: 10),
-                            //       child: 
-                            //     ),
-                            //     // Expanded(child: Divider(color: Colors.grey.shade500)),
-                            //     // Align(
-                            //     //   alignment: Alignment.centerRight,
-                            //     //   child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${snapshot.data!.songs.length} songs')),
-                            //     // )
-                            //   ],
-                            // ),
-                            TitlePlaceholder(width: double.infinity),                          
-                            SizedBox(height: 16.0),
-                            ContentPlaceholder(
-                              lineType: ContentLineType.twoLines,
-                            ),
-                            SizedBox(height: 16.0),
-                            ContentPlaceholder(
-                              lineType: ContentLineType.twoLines,
-                            ),
-                            SizedBox(height: 16.0),
-                            ContentPlaceholder(
-                              lineType: ContentLineType.twoLines,
-                            ),
-                            SizedBox(height: 16.0),
-                            ContentPlaceholder(
-                              lineType: ContentLineType.twoLines,
-                            ),
-                            SizedBox(height: 16.0),
-                            ContentPlaceholder(
-                              lineType: ContentLineType.twoLines,
-                            ),
-                            SizedBox(height: 16.0),
-                            ContentPlaceholder(
-                              lineType: ContentLineType.twoLines,
-                            ),
-                            SizedBox(height: 16.0),
-                            ContentPlaceholder(
-                              lineType: ContentLineType.twoLines,
-                            ),                                                                                                                                                                        
-                            SizedBox(height: 16.0),
-                            ContentPlaceholder(
-                              lineType: ContentLineType.twoLines,
-                            ),
-                            SizedBox(height: 16.0),
-                            ContentPlaceholder(
-                              lineType: ContentLineType.twoLines,
-                            ),
-                          ],
-                        ),
+                        child:
+                          Column(
+                            children: [
+                              PLaylistHeaderPlaceholder(),
+                              ListView.builder(
+                                itemCount: 50,
+                                shrinkWrap: true,
+                                physics: ClampingScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return PlaylistElementPlaceholder();
+                                }),
+                            ]
+                          )
                       ));
     }));
   }  

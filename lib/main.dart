@@ -4,7 +4,6 @@ import 'pages/home_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/playlists_page.dart';
-import 'pages/playlist_page.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'values/app_routes.dart';
 import 'values/app_theme.dart';
