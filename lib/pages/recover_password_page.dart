@@ -108,7 +108,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     ),
                                     SnackbarHelper.showSnackBar('We sent you email with instructions')
                                   } else {
-                                    SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}')
+                                    SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true)
                                   }
                                 });
                               }

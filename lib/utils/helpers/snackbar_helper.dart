@@ -13,6 +13,7 @@ class SnackbarHelper {
         ..showSnackBar(
           SnackBar(
             content: Text(message ?? ''),
+            backgroundColor: isError ? Colors.red : Colors.green,
           ),
         );
 }

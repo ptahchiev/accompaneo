@@ -106,7 +106,7 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                                       ),
                                       nameController.clear(),
                                     } else {
-                                      SnackbarHelper.showSnackBar('Failed to create a playlist: ${response.statusCode}')
+                                      SnackbarHelper.showSnackBar('Failed to create a playlist: ${response.statusCode}', isError: true)
                                     }
                                   });                                  
                                 }

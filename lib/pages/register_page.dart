@@ -236,7 +236,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                     ),
                                     SnackbarHelper.showSnackBar('Registered')
                                   } else {
-                                    SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}')
+                                    if (response.data != null && response.data['message'] != null) {
+                                      SnackbarHelper.showSnackBar(response.data['message'], isError: true)
+                                    } else {
+                                      SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true)
+                                    }
                                   }
                                 });
                               }

@@ -1,3 +1,4 @@
+import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../utils/helpers/snackbar_helper.dart';
@@ -150,7 +151,20 @@ class _LoginPageState extends State<LoginPage> {
                       return FilledButton(
                         onPressed: isValid
                             ? () {
-                                NavigationHelper.pushReplacementNamed(AppRoutes.home);
+                                final result = ApiService.login(emailController.text, passwordController.text);
+                                result.then((response) => {
+                                  if (response.statusCode == 200) {
+                                    emailController.clear(),
+                                    passwordController.clear(),
+                                    NavigationHelper.pushReplacementNamed(AppRoutes.home)
+                                  } else {
+                                    if (response.data != null && response.data['message'] != null) {
+                                      SnackbarHelper.showSnackBar(response.data['message'], isError: true)
+                                    } else {
+                                      SnackbarHelper.showSnackBar('Failed to login: ${response.statusCode}', isError: true)
+                                    }
+                                  }
+                                });
                               }
                             : null,
                         child: const Text(AppStrings.login),

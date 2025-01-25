@@ -3,14 +3,37 @@ import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/user/registration.dart';
 import 'package:accompaneo/values/app_constants.dart';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
 
   static const String baseUrl = AppConstants.urlEndpoint;
 
+
+  static Future<Response> login(String username, String password) async {
+    try {
+      final dio = Dio();
+      final response = await dio.get('$baseUrl/auth', options: Options(headers: {'X-Nemesis-Username' : username, 'X-Nemesis-Password' : password}));
+      if (response.statusCode == 200) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', response.data.token);
+
+        return await dio.post('$baseUrl/user/login/success');
+      } else {
+        throw Exception('Failed to fetch playlists: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+        return Future.value(e.response);
+    }
+  }
+
   static Future<Response> register(Registration registration) async {
-    final dio = Dio();
-    return await dio.post('$baseUrl/account/register', data: registration.toJson());
+    try {
+      final dio = Dio();
+      return await dio.post('$baseUrl/account/register', data: registration.toJson());
+    } on DioException catch (e) {
+        return Future.value(e.response);
+    }
   }
 
   static Future<Response> recoverPassword(String loginEmail) async {
@@ -21,7 +44,9 @@ class ApiService {
 
   static Future<HomepageSections> getHomepageSections() async {
     final dio = Dio();
-    final response = await dio.get('$baseUrl/homepage');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final response = await dio.get('$baseUrl/homepage', options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
 
     if (response.statusCode == 200) {
       return HomepageSections.fromJson(response.data);
@@ -34,7 +59,8 @@ class ApiService {
 
   static Future<List<Playlist>> getPlaylistsForCurrentUser() async {
     final dio = Dio();
-    final response = await dio.get('$baseUrl/playlist');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await dio.get('$baseUrl/playlist', options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
 
     if (response.statusCode == 200) {
       return List.from(response.data).map((e) => Playlist.fromJson(e)).toList();
@@ -46,13 +72,15 @@ class ApiService {
 
   static Future<Response> createPlaylist(String playlistName) async {
     final dio = Dio();
-    return await dio.post('$baseUrl/playlist', data: {'name' : playlistName});
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return await dio.post('$baseUrl/playlist', data: {'name' : playlistName}, options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
   }
 
 
   static Future<Playlist> getPlaylistByUrl(String playlistUrl) async {
     final dio = Dio();
-    final response = await dio.get('$baseUrl/playlist$playlistUrl', queryParameters: {'size' : 500});
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final response = await dio.get('$baseUrl/playlist$playlistUrl', queryParameters: {'size' : 50}, options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
 
     if (response.statusCode == 200) {
       return Playlist.fromJson(response.data);
