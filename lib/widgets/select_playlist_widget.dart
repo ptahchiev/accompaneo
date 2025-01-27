@@ -1,21 +1,37 @@
+import 'package:accompaneo/models/simple_playlist.dart';
+import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../values/app_strings.dart';
 import '../values/app_theme.dart';
 
-final List<String> entries = <String>['guitar', 'piano', 'wedding'];
-
 class SelectPlaylistWidget extends StatefulWidget {
 
-  const SelectPlaylistWidget({super.key});
+  final String songCode;
+
+  const SelectPlaylistWidget({super.key, required this.songCode});
 
   @override
-  _SelectPlaylistWidgetState createState() => _SelectPlaylistWidgetState();
+  _SelectPlaylistWidgetState createState() => _SelectPlaylistWidgetState(songCode: songCode);
 }
 
 class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
 
   final _formKey = GlobalKey<FormState>();
+  
+  final String songCode;
+
+  late Future<List<SimplePlaylist>> futurePlaylists;
+
   final ValueNotifier<bool> fieldValidNotifier = ValueNotifier(false);
+
+  _SelectPlaylistWidgetState({required this.songCode});
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    futurePlaylists = ApiService.getPlaylistsForCurrentUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,21 +75,35 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                     }
                   ),
                   Divider(),
-                  ListView.builder(
-                    itemCount: entries.length,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                              leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
-                              title: Text(entries[index]),
-                              subtitle: Text('6 songs'),
-                              onTap: () =>  {}
-                      );
-                    },
-                  ),
+
+                  FutureBuilder<List<SimplePlaylist>>(
+                    future: futurePlaylists, 
+                    builder: ((context, snapshot) {
+                      if (snapshot.hasData) {
 
 
+                        return ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                                    leading: CircleAvatar(radius: 28, backgroundColor: snapshot.data![index].favourites ? Colors.red : Theme.of(context).colorScheme.primary, child: snapshot.data![index].favourites ? Icon(Icons.favorite, color: Colors.white, size: 28) : Icon(Icons.music_note, color: Colors.white, size: 28)),
+                                    title: Text(snapshot.data![index].name),
+                                    subtitle: Text('${snapshot.data![index].totalSongs} songs'),
+                                    onTap: () =>  {
+                                        ApiService.addSongToPlaylist('', snapshot.data![index].code)
+
+                                    }
+                            );
+                          },
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('ERROR ${snapshot.error}');
+                      }
+
+                      return const CircularProgressIndicator();
+                    }))
                 ],
               ),
             ),

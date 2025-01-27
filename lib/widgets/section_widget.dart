@@ -41,7 +41,7 @@ class Section extends StatelessWidget {
                             child: Align(
                               alignment: Alignment.centerRight,
                               child: IconButton(icon: Icon(Icons.arrow_circle_right_outlined), onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(playlistUrl:playlistUrl!)));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(playlistUrl:playlistUrl!, playlistCode: '')));
                               }),
                             )
                         )

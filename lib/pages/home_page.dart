@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:accompaneo/widgets/section_widget.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
-
-  final String title;
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();

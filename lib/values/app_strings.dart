@@ -42,6 +42,8 @@ class AppStrings {
   static const String invalidPlaylistName = 'Invalid Playlist Name';
 
   static const String selectPlaylist = 'Select Playlist';
+  static const String playlistCreated = 'Playlist created successfully';
+  static const String playlistDeleted = 'Playlist deleted successfully';
 
   static const String updateYourProfile = 'Update your profile';
 }

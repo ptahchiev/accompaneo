@@ -1,6 +1,6 @@
 import 'package:accompaneo/models/page.dart';
 
-class Playlist {
+class SimplePlaylist {
 
   String code;
 
@@ -8,38 +8,40 @@ class Playlist {
 
   bool favourites;
 
-  Page firstPageSongs;
+  int totalSongs;
 
   // Constructor
-  Playlist({
+  SimplePlaylist({
     required this.code,
     required this.name,
     required this.favourites,
-    required this.firstPageSongs
+    required this.totalSongs
   });
 
-  Playlist copy({
+  SimplePlaylist copy({
     String? code,
     String? name,
-    Page? songs
+    bool? favourites,
+    int? totalSongs
   }) =>
-      Playlist(
+      SimplePlaylist(
         code: code ?? this.code,
         name: name ?? this.name,
         favourites: favourites ?? this.favourites,
-        firstPageSongs: firstPageSongs ?? this.firstPageSongs
+        totalSongs: totalSongs ?? this.totalSongs
       );
 
-  static Playlist fromJson(Map<String, dynamic> json) => Playlist(
+  static SimplePlaylist fromJson(Map<String, dynamic> json) => SimplePlaylist(
         code: json['code'] ?? '',
         name: json['name'] ?? '',
-        favourites:  json['favourites'] ?? false,
-        firstPageSongs: json['firstPageSongs'] != null ? Page.fromJson(json['firstPageSongs']) : Page(number: 0, size: 0, totalElements: 0, totalPages: 0, content: [])
+        favourites: json['favourites'] ?? false,
+        totalSongs: json['totalSongs'] ?? 0
       );
 
   Map<String, dynamic> toJson() => {
         'code': code,
         'name': name,
-        'songs': firstPageSongs
+        'favourites' : favourites,
+        'songs': totalSongs
       };
 }

@@ -1,6 +1,11 @@
 import 'package:accompaneo/models/playlist.dart';
+import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/player_page.dart';
 import 'package:accompaneo/services/api_service.dart';
+import 'package:accompaneo/utils/helpers/navigation_helper.dart';
+import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
+import 'package:accompaneo/values/app_routes.dart';
+import 'package:accompaneo/values/app_strings.dart';
 import 'package:accompaneo/widgets/placeholders.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -12,28 +17,26 @@ class PlaylistPage extends StatefulWidget {
 
   final String playlistUrl;
 
-  const PlaylistPage({super.key, required this.playlistUrl});
+  final String playlistCode;
+
+  // Function onPlaylistDelete = () {};
+
+  const PlaylistPage({super.key, required this.playlistUrl, required this.playlistCode});
 
   @override
-  State<PlaylistPage> createState() => _PlaylistPageState(playlistUrl: playlistUrl);
+  State<PlaylistPage> createState() => _PlaylistPageState();
 }
 
 class _PlaylistPageState extends State<PlaylistPage> {
 
   PanelController pc = PanelController();
 
-  final String playlistUrl;
-
   late Future<Playlist> futurePlaylist;
-
-  _PlaylistPageState({required this.playlistUrl});
-
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    futurePlaylist = ApiService.getPlaylistByUrl(playlistUrl);
+    futurePlaylist = ApiService.getPlaylistByUrl(this.widget.playlistUrl);
   }
 
 
@@ -63,17 +66,23 @@ class _PlaylistPageState extends State<PlaylistPage> {
             // Perform search functionality here
           },
         ),
+        actions: [
+          Visibility(
+            visible: widget.playlistCode.isNotEmpty,
+            child: IconButton(onPressed: () { _playlistDialogBuilder(context, widget.playlistCode);}, icon: Icon(Icons.more_vert))
+          )
+          
+        ],
       ),
       body: SlidingUpPanel(backdropEnabled: true, 
                            body: createPopUpContent(), 
                            controller: pc, 
-                           panel: SelectPlaylistWidget(),
+                           panel: SelectPlaylistWidget(songCode: ''),
                            borderRadius: radius,
                            maxHeight: MediaQuery.of(context).size.height - 300,
                            minHeight: 0
       ),
-      
-            );
+    );
   }
 
   Widget createPopUpContent() {
@@ -99,29 +108,28 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               Expanded(child: Divider(color: Colors.grey.shade500)),
                               Align(
                                 alignment: Alignment.centerRight,
-                                child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${snapshot.data!.songs.totalElements} songs')),
+                                child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${snapshot.data!.firstPageSongs.totalElements} songs')),
                               )
                             ],
                           ),
                   ),                  
                   ListView.builder(
-                          itemCount: snapshot.data?.songs.size,
+                          itemCount: snapshot.data?.firstPageSongs.content.length,
                           shrinkWrap: true,
                           physics: ClampingScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListTile(
                               //leading: HeroLayoutCard(imageInfo: ImageData(title: '', subtitle: '', url: songs[index].image)),
-                                    leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: snapshot.data?.songs.content[index].image != '' ? ClipRRect(
+                                    leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: snapshot.data?.firstPageSongs.content[index].image != '' ? ClipRRect(
                                       borderRadius: BorderRadius.circular(50.0),
                                       child: Image(
                                                   fit: BoxFit.cover,
-                                                  image: NetworkImage(
-                                                      'https://flutter.github.io/assets-for-api-docs/assets/material/${snapshot.data!.songs.content[index].image}'),
+                                                  image: NetworkImage(snapshot.data!.firstPageSongs.content[index].image),
                                                 )) : Icon(Icons.music_note, color: Colors.white, size: 28)),
                                     
                                     
                                     onTap: () => {
-                                      Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerPage(song: snapshot.data!.songs.content[index])))
+                                      Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerPage(song: snapshot.data!.firstPageSongs.content[index])))
                                     },
                                     
                                     // // songs[index].image != '' ? Image(
@@ -135,12 +143,29 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                     
                                     
                                     //CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
-                                    title: Text(snapshot.data!.songs.content[index].title, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
-                                    subtitle: Text(snapshot.data!.songs.content[index].artist.name),
+                                    title: Text(snapshot.data!.firstPageSongs.content[index].title, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
+                                    subtitle: Text(snapshot.data!.firstPageSongs.content[index].artist.name),
                                     trailing: Wrap(
                                       children: [
-                                        IconButton(icon: snapshot.data!.songs.content[index].favourite ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined), onPressed: () { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(duration: Duration(seconds: 1), content: Text('Song added to favourites')));}),
-                                        IconButton(onPressed: () => _dialogBuilder(context, snapshot.data!.songs.content[index].artist.code), icon: Icon(Icons.more_horiz))
+                                        IconButton(
+                                          icon: snapshot.data!.firstPageSongs.content[index].favoured ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined),
+                                          onPressed: () {
+                                            if(snapshot.data!.firstPageSongs.content[index].favoured) {
+                                              ApiService.removeSongFromFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code);
+                                              SnackbarHelper.showSnackBar('Song removed favourites');
+
+                                              snapshot.data!.firstPageSongs.content[index].favoured = false;
+
+                                            } else {
+                                              ApiService.addSongToFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code);
+                                              SnackbarHelper.showSnackBar('Song added to favourites');
+                                              snapshot.data!.firstPageSongs.content[index].favoured = false;
+                                            }
+                                          }),
+                                        IconButton(
+                                          icon: Icon(Icons.more_horiz),
+                                          onPressed: () => _songDialogBuilder(context, snapshot.data!.firstPageSongs.content[index])
+                                        )
                                       ],
                                     )
                                     
@@ -180,7 +205,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     }));
   }  
 
-  Future<void> _dialogBuilder(BuildContext context, String artistCode) {
+  Future<void> _songDialogBuilder(BuildContext context, Song song) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -200,7 +225,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     leading: Icon(Icons.search, color: Colors.black, size: 28),
                     onTap: () => {
                       Navigator.pop(context, true),
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(playlistUrl:'/artist/$artistCode')))
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(playlistUrl:'/artist/${song.artist.code}', playlistCode: '')))
                     }
                   ),
                 ],
@@ -208,5 +233,37 @@ class _PlaylistPageState extends State<PlaylistPage> {
       },
     );
   }
+
+  Future<void> _playlistDialogBuilder(BuildContext context, String playlistCode) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+                children: [
+                  ListTile(
+                    title: Text('Delete playlist'),
+                    leading: Icon(Icons.add, color: Colors.black, size: 28),
+                    onTap: () {
+                      final result = ApiService.deletePlaylist(playlistCode);
+                      result.then((response) {
+                        if (response.statusCode == 200) {
+                          Navigator.pop(context, true);
+                          NavigationHelper.pushNamed(AppRoutes.playlists);
+                          
+                          //widget.onPlaylistDelete();
+                          SnackbarHelper.showSnackBar(
+                            AppStrings.playlistDeleted,
+                          );                        
+                        } else {
+                          SnackbarHelper.showSnackBar('Failed to create a playlist: ${response.statusCode}', isError: true);
+                        }
+                      });
+                    }
+                  )
+                ]
+        );
+      },
+    );
+  }  
 
 }

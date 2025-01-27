@@ -30,14 +30,26 @@ void main() {
 
 class _AccompaneoState extends State<AccompaneoApp> {
 
+  int selectedIndex;
+
   int _selectedIndex = 0;
 
+  _AccompaneoState({required this.selectedIndex});
+
   static const List<Widget> _pages = <Widget>[
-    HomePage(title: 'Home'),
-    ProfilePage(title: 'Profile'),
-    SettingsPage(title: 'Settings'),
-    PlaylistsPage(title: 'Playlists')
+    HomePage(),
+    ProfilePage(),
+    SettingsPage(),
+    PlaylistsPage()
   ];
+
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = selectedIndex;
+  }
+
 
   // This widget is the root of your application.
   @override
@@ -152,8 +164,10 @@ class Accompaneo extends StatelessWidget {
 
 class AccompaneoApp extends StatefulWidget {
 
-  @override
-  State<AccompaneoApp> createState() => _AccompaneoState();
+  final int selectedIndex;
 
-  const AccompaneoApp({super.key});
+  @override
+  State<AccompaneoApp> createState() => _AccompaneoState(selectedIndex: selectedIndex);
+
+  const AccompaneoApp({super.key, required this.selectedIndex});
 }

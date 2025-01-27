@@ -15,9 +15,7 @@ import '../models/user/user_data.dart';
 // This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
 class ProfilePage extends StatefulWidget {
 
-  final String title;
-
-  const ProfilePage({super.key, required this.title});
+  const ProfilePage({super.key});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();

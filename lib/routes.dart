@@ -23,11 +23,16 @@ class Routes {
         return SlideRightRoute(widget: const ForgotPasswordPage());
 
       case AppRoutes.playlistSearch:
-        return SlideRightRoute(widget: const PlaylistPage(playlistUrl: '/search'));
+        return SlideRightRoute(widget: const PlaylistPage(playlistUrl: '/search', playlistCode: ''));
 
       case AppRoutes.home:
-        return SlideRightRoute(widget: const AccompaneoApp());
-    
+        return SlideRightRoute(widget: const AccompaneoApp(selectedIndex: 0));
+
+      case AppRoutes.profile:
+        return SlideRightRoute(widget: const AccompaneoApp(selectedIndex: 1));
+
+      case AppRoutes.playlists:
+        return SlideRightRoute(widget: const AccompaneoApp(selectedIndex: 3));    
 
       /// An invalid route. User shouldn't see this,
       /// it's for debugging purpose only.

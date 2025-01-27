@@ -1,5 +1,6 @@
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../utils/helpers/snackbar_helper.dart';
 import '../widgets/app_text_form_field.dart';
 import '../values/app_strings.dart';
@@ -8,7 +9,11 @@ import '../values/app_theme.dart';
 
 class NewPlaylistWidget extends StatefulWidget {
 
-  const NewPlaylistWidget({super.key});
+  final PanelController panelController;
+
+  final Function onPlaylistCreate;
+
+  const NewPlaylistWidget({super.key, required this.panelController, required this.onPlaylistCreate});
 
   @override
   _NewPlaylistWidgetState createState() => _NewPlaylistWidgetState();
@@ -99,14 +104,17 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                           onPressed: isValid
                               ? () {
                                   final result = ApiService.createPlaylist(nameController.text);
-                                  result.then((response) => {
+                                  result.then((response) {
                                     if (response.statusCode == 200) {
                                       SnackbarHelper.showSnackBar(
-                                        AppStrings.registrationComplete,
-                                      ),
-                                      nameController.clear(),
+                                        AppStrings.playlistCreated,
+                                      );
+                                      
+                                      nameController.clear();
+                                      widget.panelController.close();
+                                      widget.onPlaylistCreate();
                                     } else {
-                                      SnackbarHelper.showSnackBar('Failed to create a playlist: ${response.statusCode}', isError: true)
+                                      SnackbarHelper.showSnackBar('Failed to create a playlist: ${response.statusCode}', isError: true);
                                     }
                                   });                                  
                                 }

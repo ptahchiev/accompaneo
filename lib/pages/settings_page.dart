@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:accompaneo/widgets/section_widget.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key, required this.title});
+  const SettingsPage({super.key});
 
-  final String title;
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
