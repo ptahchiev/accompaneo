@@ -6,25 +6,21 @@ import '../values/app_theme.dart';
 
 class SelectPlaylistWidget extends StatefulWidget {
 
-  final String songCode;
+  final Function addSongToPlaylist;
 
-  const SelectPlaylistWidget({super.key, required this.songCode});
+  const SelectPlaylistWidget({super.key, required this.addSongToPlaylist});
 
   @override
-  _SelectPlaylistWidgetState createState() => _SelectPlaylistWidgetState(songCode: songCode);
+  _SelectPlaylistWidgetState createState() => _SelectPlaylistWidgetState();
 }
 
 class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
 
   final _formKey = GlobalKey<FormState>();
   
-  final String songCode;
-
   late Future<List<SimplePlaylist>> futurePlaylists;
 
   final ValueNotifier<bool> fieldValidNotifier = ValueNotifier(false);
-
-  _SelectPlaylistWidgetState({required this.songCode});
 
   @override
   void initState() {
@@ -93,7 +89,6 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                                     subtitle: Text('${snapshot.data![index].totalSongs} songs'),
                                     onTap: () =>  {
                                         ApiService.addSongToPlaylist('', snapshot.data![index].code)
-
                                     }
                             );
                           },

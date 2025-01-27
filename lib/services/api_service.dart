@@ -54,9 +54,7 @@ class ApiService {
     } else {
       throw Exception('Failed to fetch playlists: ${response.statusCode}');
     }
-
   }
-
 
   static Future<List<SimplePlaylist>> getPlaylistsForCurrentUser() async {
     final dio = Dio();
@@ -68,7 +66,6 @@ class ApiService {
     } else {
       throw Exception('Failed to fetch playlists: ${response.statusCode}');
     }
-
   }
 
   static Future<Response> createPlaylist(String playlistName) async {

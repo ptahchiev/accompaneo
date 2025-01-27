@@ -77,7 +77,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       body: SlidingUpPanel(backdropEnabled: true, 
                            body: createPopUpContent(), 
                            controller: pc, 
-                           panel: SelectPlaylistWidget(songCode: ''),
+                           panel: SelectPlaylistWidget(addSongToPlaylist: () {}),
                            borderRadius: radius,
                            maxHeight: MediaQuery.of(context).size.height - 300,
                            minHeight: 0
@@ -155,11 +155,16 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                               SnackbarHelper.showSnackBar('Song removed favourites');
 
                                               snapshot.data!.firstPageSongs.content[index].favoured = false;
-
+                                              setState(() {
+                                                futurePlaylist = Future.value(snapshot.data);
+                                              });
                                             } else {
                                               ApiService.addSongToFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code);
                                               SnackbarHelper.showSnackBar('Song added to favourites');
-                                              snapshot.data!.firstPageSongs.content[index].favoured = false;
+                                              snapshot.data!.firstPageSongs.content[index].favoured = true;
+                                              setState(() {
+                                                futurePlaylist = Future.value(snapshot.data);
+                                              });                                              
                                             }
                                           }),
                                         IconButton(

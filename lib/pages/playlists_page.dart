@@ -72,14 +72,6 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
 
   PanelController pc = PanelController();
 
-  bool _isCreatePlaylistOpen = false;
-
-  void __toggleCreatePlaylistOpen() {
-    setState(() {
-      _isCreatePlaylistOpen = !_isCreatePlaylistOpen;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
