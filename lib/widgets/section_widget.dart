@@ -1,14 +1,11 @@
 import 'package:accompaneo/models/artist.dart';
-import 'package:accompaneo/models/banner.dart';
 import 'package:accompaneo/models/browseable.dart';
-import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:flutter/material.dart';
 import '../values/app_theme.dart';
-import '../pages/playlist_page.dart';
 import 'package:accompaneo/widgets/hero_layout_card.dart';
 
 class Section extends StatelessWidget {
