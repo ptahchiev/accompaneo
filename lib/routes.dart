@@ -36,6 +36,12 @@ class Routes {
         return SlideRightRoute(widget:  PlayerPage(song: args['song']!));
       }
 
+      case AppRoutes.playlist: {
+        final args = settings.arguments as Map<String, String>;
+
+        return SlideRightRoute(widget:  PlaylistPage(playlistUrl: args['playlistUrl']!, playlistCode: args['playlistCode']!));
+      }      
+
       case AppRoutes.home:
         return SlideRightRoute(widget: const AccompaneoApp(selectedIndex: 0));
 

@@ -1,5 +1,7 @@
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/services/api_service.dart';
+import 'package:accompaneo/utils/helpers/navigation_helper.dart';
+import 'package:accompaneo/values/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'playlist_page.dart';
 import 'package:accompaneo/widgets/new_playlist_widget.dart';
@@ -40,7 +42,7 @@ class CardList extends StatelessWidget {
                             title: Text(snapshot.data![index].name),
                             leading: CircleAvatar(radius: 28, backgroundColor: Colors.red, child: Icon(Icons.favorite, color: Colors.white, size: 28)),
                             subtitle: Text('${snapshot.data![index].totalSongs} songs'),
-                            onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(playlistUrl: '/${snapshot.data![index].code}', playlistCode: '')))
+                            onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${snapshot.data![index].code}', 'playlistCode': snapshot.data![index].code})
                           ),
                           Divider(),
                         ],
@@ -50,7 +52,7 @@ class CardList extends StatelessWidget {
                             leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
                             title: Text(snapshot.data![index].name),
                             subtitle: Text('${snapshot.data![index].totalSongs} songs'),
-                            onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(playlistUrl:'/${snapshot.data![index].code}', playlistCode: snapshot.data![index].code)))
+                            onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${snapshot.data![index].code}', 'playlistCode': snapshot.data![index].code})
                     );
                   },
                 );

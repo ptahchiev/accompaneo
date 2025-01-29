@@ -148,7 +148,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                     
                                     onTap: () {
                                       NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.firstPageSongs.content[index]});
-                                      //Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerPage(song: snapshot.data!.firstPageSongs.content[index])))
                                     },
                                     
                                     // // songs[index].image != '' ? Image(
@@ -192,10 +191,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                         )
                                       ],
                                     )
-                                    
-                                    
-                                    
-                                    //onTap: () =>  Navigator.push(context, MaterialPageRoute(builder: (context) => screens[index]))
                             );
                           },
                     )
@@ -249,7 +244,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     leading: Icon(Icons.search, color: Colors.black, size: 28),
                     onTap: () => {
                       Navigator.pop(context, true),
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => PlaylistPage(playlistUrl:'/artist/${song.artist.code}', playlistCode: '')))
+                      NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl':'/artist/${song.artist.code}', 'playlistCode' : ''})
                     }
                   ),
                 ],

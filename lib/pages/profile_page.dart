@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import '../utils/helpers/snackbar_helper.dart';
 
 import '../widgets/app_text_form_field.dart';
-import '../utils/helpers/navigation_helper.dart';
 import '../values/app_constants.dart';
 import '../values/app_regex.dart';
-import '../values/app_routes.dart';
 import '../values/app_strings.dart';
 import '../values/app_theme.dart';
 import '../models/user/user_data.dart';
@@ -210,11 +208,5 @@ class _ProfilePageState extends State<ProfilePage> {
   // Refrshes the Page after updating user info.
   FutureOr onGoBack(dynamic value) {
     setState(() {});
-  }
-
-  // Handles navigation and prompts refresh.
-  void navigateSecondPage(Widget editForm) {
-    Route route = MaterialPageRoute(builder: (context) => editForm);
-    Navigator.push(context, route).then(onGoBack);
   }
 }
