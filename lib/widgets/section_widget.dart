@@ -1,4 +1,9 @@
+import 'package:accompaneo/models/artist.dart';
 import 'package:accompaneo/models/banner.dart';
+import 'package:accompaneo/models/browseable.dart';
+import 'package:accompaneo/models/playlist.dart';
+import 'package:accompaneo/models/simple_playlist.dart';
+import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +17,7 @@ class Section extends StatelessWidget {
 
   final String? playlistUrl;
 
-  final List<BannerData>? sectionData;
+  final List<Browseable>? sectionData;
 
   const Section({super.key, required this.title, required this.playlistUrl, required this.sectionData});
 
@@ -61,7 +66,23 @@ class Section extends StatelessWidget {
                 itemSnapping: false,
                 reverse: false,
                 flexWeights: const <int>[1, 1, 1],
-                children: sectionData!.map((BannerData image) {
+                onTap: (index) {
+                  if (sectionData![index] is Song) {
+                    NavigationHelper.pushNamed(AppRoutes.player, arguments : {'song' : sectionData![index] as Song});
+                    return;
+                  }
+
+                  if (sectionData![index] is Artist) {
+                    NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'playlistUrl' : '/artist/${(sectionData![index] as Artist).code}', 'playlistCode' : ''});
+                    return;
+                  }
+
+                  if (sectionData![index] is SimplePlaylist) {
+                    NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'playlistUrl' : '/category/${sectionData![index].code}', 'playlistCode' : ''});
+                    return;
+                  }
+                },
+                children: sectionData!.map((Browseable image) {
                   return HeroLayoutCard(imageInfo: image);
                 }).toList(),
               ),

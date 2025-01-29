@@ -42,7 +42,7 @@ class CardList extends StatelessWidget {
                             title: Text(snapshot.data![index].name),
                             leading: CircleAvatar(radius: 28, backgroundColor: Colors.red, child: Icon(Icons.favorite, color: Colors.white, size: 28)),
                             subtitle: Text('${snapshot.data![index].totalSongs} songs'),
-                            onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${snapshot.data![index].code}', 'playlistCode': snapshot.data![index].code})
+                              onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${snapshot.data![index].code}', 'playlistCode': ''})
                           ),
                           Divider(),
                         ],

@@ -1,30 +1,14 @@
+import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/image.dart';
 
-class Artist {
-
-  String code;
-
-  String name;
-
-  Image picture;
+class Artist extends Browseable{
 
   // Constructor
   Artist({
-    required this.code,
-    required this.name,
-    required this.picture
+    required super.code,
+    required super.name,
+    required super.picture
   });
-
-  Artist copy({
-    String? code,
-    String? name,
-    Image? picture
-  }) =>
-      Artist(
-        code: code ?? this.code,
-        name: name ?? this.name,
-        picture: picture ?? this.picture
-      );
 
   static Artist fromJson(Map<String, dynamic> json) => Artist(
         code: json['code'],

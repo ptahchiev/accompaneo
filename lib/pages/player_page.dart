@@ -259,7 +259,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   IconButton(onPressed: ()=> {}, icon: Icon(Icons.favorite_outline, color: Colors.white, size: 30)),
-                                  Text(song.title, textAlign: TextAlign.center, style: AppTheme.titleLarge.copyWith(color: Colors.white)),
+                                  Text(song.name, textAlign: TextAlign.center, style: AppTheme.titleLarge.copyWith(color: Colors.white)),
                                   Text(song.artist.name, textAlign: TextAlign.center, style: AppTheme.sectionTitle.copyWith(color: Colors.white))
                                 ]),
                             ),

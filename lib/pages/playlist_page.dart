@@ -1,6 +1,5 @@
 import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
-import 'package:accompaneo/pages/player_page.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
@@ -138,11 +137,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           itemBuilder: (context, index) {
                             return ListTile(
                               //leading: HeroLayoutCard(imageInfo: ImageData(title: '', subtitle: '', url: songs[index].image)),
-                                    leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: snapshot.data?.firstPageSongs.content[index].picture.url != '' ? ClipRRect(
+                                    leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: snapshot.data?.firstPageSongs.content[index].picture!.url != '' ? ClipRRect(
                                       borderRadius: BorderRadius.circular(50.0),
                                       child: Image(
                                                   fit: BoxFit.cover,
-                                                  image: NetworkImage(snapshot.data!.firstPageSongs.content[index].picture.url),
+                                                  image: NetworkImage(snapshot.data!.firstPageSongs.content[index].picture!.url),
                                                 )) : Icon(Icons.music_note, color: Colors.white, size: 28)),
                                     
                                     
@@ -161,7 +160,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                     
                                     
                                     //CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
-                                    title: Text(snapshot.data!.firstPageSongs.content[index].title, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
+                                    title: Text(snapshot.data!.firstPageSongs.content[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
                                     subtitle: Text(snapshot.data!.firstPageSongs.content[index].artist.name),
                                     trailing: Wrap(
                                       children: [

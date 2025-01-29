@@ -1,47 +1,37 @@
-import 'package:accompaneo/models/page.dart';
+import 'package:accompaneo/models/browseable.dart';
+import 'package:accompaneo/models/image.dart';
 
-class SimplePlaylist {
-
-  String code;
-
-  String name;
+class SimplePlaylist extends Browseable{
 
   bool favourites;
 
   int totalSongs;
 
+  String? url;
+
   // Constructor
   SimplePlaylist({
-    required this.code,
-    required this.name,
+    required super.code,
+    required super.name,
+    required super.picture,
     required this.favourites,
-    required this.totalSongs
+    required this.totalSongs,
+    this.url
   });
-
-  SimplePlaylist copy({
-    String? code,
-    String? name,
-    bool? favourites,
-    int? totalSongs
-  }) =>
-      SimplePlaylist(
-        code: code ?? this.code,
-        name: name ?? this.name,
-        favourites: favourites ?? this.favourites,
-        totalSongs: totalSongs ?? this.totalSongs
-      );
 
   static SimplePlaylist fromJson(Map<String, dynamic> json) => SimplePlaylist(
         code: json['code'] ?? '',
         name: json['name'] ?? '',
+        picture: json['picture'] != null ? Image.fromJson(json['picture']) : Image(code: '', url: ''),
         favourites: json['favourites'] ?? false,
-        totalSongs: json['totalSongs'] ?? 0
+        totalSongs: json['totalSongs'] ?? 0,
       );
 
   Map<String, dynamic> toJson() => {
         'code': code,
         'name': name,
+        'picture': picture != null ? picture!.toJson() : '',
         'favourites' : favourites,
-        'songs': totalSongs
+        'totalSongs': totalSongs
       };
 }
