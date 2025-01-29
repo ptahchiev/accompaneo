@@ -81,10 +81,10 @@ class ApiService {
   }  
 
 
-  static Future<Playlist> getPlaylistByUrl(String playlistUrl) async {
+  static Future<Playlist> getPlaylistByUrl(String playlistUrl, {int page = 0}) async {
     final dio = Dio();
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final response = await dio.get('$baseUrl/playlist$playlistUrl', queryParameters: {'size' : 50}, options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
+    final response = await dio.get('$baseUrl/playlist$playlistUrl', queryParameters: {'size' : 500, 'page': page}, options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
 
     if (response.statusCode == 200) {
       return Playlist.fromJson(response.data);

@@ -8,4 +8,5 @@ class AppRoutes {
   static const String profile = 'profile';
   static const String playlists = 'playlists';
   static const String playlistSearch = 'search';
+  static const String player = 'player';
 }

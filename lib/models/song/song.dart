@@ -1,8 +1,9 @@
 import 'package:accompaneo/models/artist.dart';
+import 'package:accompaneo/models/image.dart';
 
 class Song {
   String code;
-  String image;
+  Image picture;
   String title;
   Artist artist;
   double bpm;
@@ -11,7 +12,7 @@ class Song {
   // Constructor
   Song({
     required this.code,
-    required this.image,
+    required this.picture,
     required this.title,
     required this.artist,
     required this.bpm,
@@ -20,7 +21,7 @@ class Song {
 
   Song copy({
     String? code,
-    String? imagePath,
+    Image? picture,
     String? title,
     Artist? artist,
     double? bpm,
@@ -28,7 +29,7 @@ class Song {
   }) =>
       Song(
         code: code ?? this.code,
-        image: imagePath ?? this.image,
+        picture: picture ?? this.picture,
         title: title ?? this.title,
         artist: artist ?? this.artist,
         bpm: bpm ?? this.bpm,
@@ -37,16 +38,16 @@ class Song {
 
   static Song fromJson(Map<String, dynamic> json) => Song(
         code: json['code'] ?? '',
-        image: json['imagePath'] ?? '',
+        picture: json['picture'] != null ? Image.fromJson(json['picture']) : Image(code: '', url: ''),
         title: json['title'] ?? '',
-        artist: Artist.fromJson(json['artist']),
+        artist: json['artist'] != null ? Artist.fromJson(json['artist']) : Artist(code: '', name: '', picture: Image(code: '', url: '')),
         bpm: json['bpm'] ?? 0.0,
         favoured: json['favoured'] ?? false
       );
 
   Map<String, dynamic> toJson() => {
         'code' : code,
-        'imagePath': image,
+        'picture': picture,
         'title': title,
         'artist': artist,
         'bpm': bpm,

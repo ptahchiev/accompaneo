@@ -29,14 +29,31 @@ class PlaylistPage extends StatefulWidget {
 
 class _PlaylistPageState extends State<PlaylistPage> {
 
+  int _currentPage = 1;
   PanelController pc = PanelController();
-
+  final _scrollController = ScrollController();
   late Future<Playlist> futurePlaylist;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_loadMore);
     futurePlaylist = ApiService.getPlaylistByUrl(this.widget.playlistUrl);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _loadMore() {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      _currentPage++;
+      // setState(() {
+      //   futurePlaylist.addAll(List<String>.from(json.decode(response.body)));
+      // });
+    }
   }
 
 
@@ -116,20 +133,22 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   ListView.builder(
                           itemCount: snapshot.data?.firstPageSongs.content.length,
                           shrinkWrap: true,
+                          controller: _scrollController,
                           physics: ClampingScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListTile(
                               //leading: HeroLayoutCard(imageInfo: ImageData(title: '', subtitle: '', url: songs[index].image)),
-                                    leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: snapshot.data?.firstPageSongs.content[index].image != '' ? ClipRRect(
+                                    leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: snapshot.data?.firstPageSongs.content[index].picture.url != '' ? ClipRRect(
                                       borderRadius: BorderRadius.circular(50.0),
                                       child: Image(
                                                   fit: BoxFit.cover,
-                                                  image: NetworkImage(snapshot.data!.firstPageSongs.content[index].image),
+                                                  image: NetworkImage(snapshot.data!.firstPageSongs.content[index].picture.url),
                                                 )) : Icon(Icons.music_note, color: Colors.white, size: 28)),
                                     
                                     
-                                    onTap: () => {
-                                      Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerPage(song: snapshot.data!.firstPageSongs.content[index])))
+                                    onTap: () {
+                                      NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.firstPageSongs.content[index]});
+                                      //Navigator.push(context, MaterialPageRoute(builder: (_) => PlayerPage(song: snapshot.data!.firstPageSongs.content[index])))
                                     },
                                     
                                     // // songs[index].image != '' ? Image(

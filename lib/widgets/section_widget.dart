@@ -1,4 +1,4 @@
-import 'package:accompaneo/models/song/image_data.dart';
+import 'package:accompaneo/models/banner.dart';
 import 'package:flutter/material.dart';
 import '../values/app_theme.dart';
 import '../pages/playlist_page.dart';
@@ -10,7 +10,7 @@ class Section extends StatelessWidget {
 
   final String? playlistUrl;
 
-  final List<ImageData>? sectionData;
+  final List<BannerData>? sectionData;
 
   const Section({super.key, required this.title, required this.playlistUrl, required this.sectionData});
 
@@ -59,7 +59,7 @@ class Section extends StatelessWidget {
                 itemSnapping: false,
                 reverse: false,
                 flexWeights: const <int>[1, 1, 1],
-                children: sectionData!.map((ImageData image) {
+                children: sectionData!.map((BannerData image) {
                   return HeroLayoutCard(imageInfo: image);
                 }).toList(),
               ),

@@ -1,11 +1,7 @@
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:flutter/material.dart';
-import '../utils/helpers/snackbar_helper.dart';
-import '../widgets/app_text_form_field.dart';
-import '../values/app_strings.dart';
-import '../values/app_theme.dart';
-import 'package:accompaneo/models/song/image_data.dart';
+import 'package:accompaneo/models/banner.dart';
 
 
 class HeroLayoutCard extends StatelessWidget {
@@ -14,7 +10,7 @@ class HeroLayoutCard extends StatelessWidget {
     required this.imageInfo,
   });
 
-  final ImageData imageInfo;
+  final BannerData imageInfo;
 
   @override
   Widget build(BuildContext context) {

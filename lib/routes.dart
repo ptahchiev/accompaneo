@@ -1,4 +1,7 @@
 import 'package:accompaneo/main.dart';
+import 'package:accompaneo/models/artist.dart';
+import 'package:accompaneo/models/song/song.dart';
+import 'package:accompaneo/pages/player_page.dart';
 import 'package:accompaneo/pages/playlist_page.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +15,8 @@ class Routes {
   const Routes._();
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
+
+
     switch (settings.name) {
       case AppRoutes.login:
         return SlideRightRoute(widget: const LoginPage());
@@ -24,6 +29,12 @@ class Routes {
 
       case AppRoutes.playlistSearch:
         return SlideRightRoute(widget: const PlaylistPage(playlistUrl: '/search', playlistCode: ''));
+
+      case AppRoutes.player: {
+        final args = settings.arguments as Map<String, Song>;
+
+        return SlideRightRoute(widget:  PlayerPage(song: args['song']!));
+      }
 
       case AppRoutes.home:
         return SlideRightRoute(widget: const AccompaneoApp(selectedIndex: 0));
