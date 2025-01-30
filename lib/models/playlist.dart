@@ -20,7 +20,7 @@ class Playlist extends Browseable{
   static Playlist fromJson(Map<String, dynamic> json) => Playlist(
         code: json['code'] ?? '',
         name: json['name'] ?? '',
-        picture: json['picture'] != null ? Image.fromJson(json['picture']) : Image(code: '', url: ''),
+        picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: ''),
         favourites:  json['favourites'] ?? false,
         firstPageSongs: json['firstPageSongs'] != null ? Page.fromJson(json['firstPageSongs']) : Page(number: 0, size: 0, totalElements: 0, totalPages: 0, content: [])
       );

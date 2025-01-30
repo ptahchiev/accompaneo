@@ -1,23 +1,23 @@
-class Image {
+class ImageData {
   final String code;
   final String url;
 
   // Constructor
-  Image({
+  ImageData({
     required this.code,
     required this.url
   });
 
-  Image copy({
+  ImageData copy({
     String? code,
     String? url
   }) =>
-      Image(
+      ImageData(
         code: code ?? this.code,
         url: url ?? this.url
       );
 
-  static Image fromJson(Map<String, dynamic> json) => Image(
+  static ImageData fromJson(Map<String, dynamic> json) => ImageData(
         code: json['code'] ?? '',
         url: json['url'] ?? ''
       );

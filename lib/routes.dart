@@ -1,5 +1,4 @@
 import 'package:accompaneo/main.dart';
-import 'package:accompaneo/models/artist.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/player_page.dart';
 import 'package:accompaneo/pages/playlist_page.dart';

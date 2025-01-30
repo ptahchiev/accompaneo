@@ -13,7 +13,7 @@ class Artist extends Browseable{
   static Artist fromJson(Map<String, dynamic> json) => Artist(
         code: json['code'],
         name: json['name'],
-        picture: json['picture'] != null ? Image.fromJson(json['picture']) : Image(code: '', url: '')
+        picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: '')
       );
 
   Map<String, dynamic> toJson() => {

@@ -1,9 +1,13 @@
+import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
+import 'package:accompaneo/widgets/browsable_image.dart';
+import 'package:accompaneo/widgets/hero_layout_card.dart';
 import 'package:flutter/material.dart';
 import 'playlist_page.dart';
+import 'package:accompaneo/models/image.dart';
 import 'package:accompaneo/widgets/new_playlist_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -40,7 +44,8 @@ class CardList extends StatelessWidget {
                         children: [
                           ListTile(
                             title: Text(snapshot.data![index].name),
-                            leading: CircleAvatar(radius: 28, backgroundColor: Colors.red, child: Icon(Icons.favorite, color: Colors.white, size: 28)),
+                            visualDensity: VisualDensity(vertical: 0),
+                            leading: BrowsableImage(backgroundColor: Colors.red, icon: Icons.favorite),
                             subtitle: Text('${snapshot.data![index].totalSongs} songs'),
                               onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${snapshot.data![index].code}', 'playlistCode': ''})
                           ),
@@ -49,7 +54,8 @@ class CardList extends StatelessWidget {
                       );
                     }
                     return ListTile(
-                            leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
+                            leading: BrowsableImage(),
+                            visualDensity: VisualDensity(vertical: 0),
                             title: Text(snapshot.data![index].name),
                             subtitle: Text('${snapshot.data![index].totalSongs} songs'),
                             onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${snapshot.data![index].code}', 'playlistCode': snapshot.data![index].code})

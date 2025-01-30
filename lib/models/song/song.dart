@@ -17,16 +17,16 @@ class Song extends Browseable{
 
   static Song fromJson(Map<String, dynamic> json) => Song(
         code: json['code'] ?? '',
-        name: json['title'] ?? '',
-        picture: json['picture'] != null ? Image.fromJson(json['picture']) : Image(code: '', url: ''),
-        artist: json['artist'] != null ? Artist.fromJson(json['artist']) : Artist(code: '', name: '', picture: Image(code: '', url: '')),
+        name: json['name'] ?? '',
+        picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: ''),
+        artist: json['artist'] != null ? Artist.fromJson(json['artist']) : Artist(code: '', name: '', picture: ImageData(code: '', url: '')),
         bpm: json['bpm'] ?? 0.0,
         favoured: json['favoured'] ?? false
       );
 
   Map<String, dynamic> toJson() => {
         'code' : code,
-        'title': name,
+        'name': name,
         'picture': picture != null ? picture!.toJson() : '',
         'artist': artist,
         'bpm': bpm,

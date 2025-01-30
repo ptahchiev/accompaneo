@@ -3,7 +3,7 @@ import 'package:accompaneo/models/image.dart';
 class Browseable {
   final String code;
   final String name;
-  final Image? picture;
+  final ImageData? picture;
 
   // Constructor
   Browseable({
@@ -15,7 +15,7 @@ class Browseable {
   Browseable copy({
     String? code,
     String? name,
-    Image? picture
+    ImageData? picture
   }) =>
       Browseable(
         code: code ?? this.code,

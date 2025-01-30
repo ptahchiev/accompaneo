@@ -6,11 +6,12 @@ class PlaylistElementPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return ListTile(
-        leading: Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
+        visualDensity: VisualDensity(vertical: 0),
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(10.0),
+          child: Container(
+            height: 80.0,
+            width: 60.0,
             color: Colors.white,
           ),
         ),

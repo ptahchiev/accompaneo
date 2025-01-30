@@ -31,7 +31,7 @@ class HeroLayoutCard extends StatelessWidget {
                             imageInfo.picture != null && imageInfo.picture!.url.isNotEmpty ?
                               Image(
                                   fit: BoxFit.cover,
-                                  image: NetworkImage('${imageInfo.picture!.url}'),
+                                  image: NetworkImage(imageInfo.picture!.url),
                               )
                               :
                               FittedBox(fit: BoxFit.cover, child: Container(color:Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white)))

@@ -5,6 +5,7 @@ import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/values/app_strings.dart';
+import 'package:accompaneo/widgets/browsable_image.dart';
 import 'package:accompaneo/widgets/placeholders.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -136,30 +137,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           physics: ClampingScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListTile(
-                              //leading: HeroLayoutCard(imageInfo: ImageData(title: '', subtitle: '', url: songs[index].image)),
-                                    leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: snapshot.data?.firstPageSongs.content[index].picture!.url != '' ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(50.0),
-                                      child: Image(
-                                                  fit: BoxFit.cover,
-                                                  image: NetworkImage(snapshot.data!.firstPageSongs.content[index].picture!.url),
-                                                )) : Icon(Icons.music_note, color: Colors.white, size: 28)),
-                                    
-                                    
+                                    leading: BrowsableImage(imageUrl: snapshot.data!.firstPageSongs.content[index].picture!.url),
+                                    visualDensity: VisualDensity(vertical: 0),
                                     onTap: () {
                                       NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.firstPageSongs.content[index]});
                                     },
-                                    
-                                    // // songs[index].image != '' ? Image(
-                                    // //               fit: BoxFit.cover,
-                                    // //               image: NetworkImage(
-                                    // //                   'https://flutter.github.io/assets-for-api-docs/assets/material/${songs[index].image}'),
-                                    // //             ) : 
-                                    // //             FittedBox(child: Icon(Icons.music_note, color: Colors.white, size: 35), fit: BoxFit.fill),
-                                            
-                                    
-                                    
-                                    
-                                    //CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white, size: 28)),
                                     title: Text(snapshot.data!.firstPageSongs.content[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
                                     subtitle: Text(snapshot.data!.firstPageSongs.content[index].artist.name),
                                     trailing: Wrap(
