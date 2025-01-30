@@ -15,16 +15,23 @@ class PlaylistElementPlaceholder extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        title: Container(
-          width: 200,
-          height: 10.0,
-          color: Colors.white,
-          margin: const EdgeInsets.only(bottom: 8.0),
+        title: FractionallySizedBox(
+          widthFactor: 0.5,
+          alignment: Alignment.centerLeft,
+          child: Container(
+            width: 200,
+            height: 15.0,
+            color: Colors.white,
+          ),
         ),
-        subtitle: Container(
-          width: 10.0,
-          height: 10.0,
-          color: Colors.white,
+        subtitle: FractionallySizedBox(
+          widthFactor: 0.3,
+          alignment: Alignment.centerLeft,
+          child: Container(
+            width: 10.0,
+            height: 15.0,
+            color: Colors.white
+          ),
         ),
         trailing: Wrap(
           children: [

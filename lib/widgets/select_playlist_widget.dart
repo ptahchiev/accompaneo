@@ -1,5 +1,6 @@
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/services/api_service.dart';
+import 'package:accompaneo/widgets/browsable_image.dart';
 import 'package:flutter/material.dart';
 import '../values/app_strings.dart';
 import '../values/app_theme.dart';
@@ -63,8 +64,9 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                     ))
                   ),
                   ListTile(
+                    visualDensity: VisualDensity(vertical: 0),
                     title: Text('Create new playlist'),
-                    leading: CircleAvatar(radius: 28, backgroundColor: Theme.of(context).colorScheme.primary, child: Icon(Icons.add, color: Colors.white, size: 28)),
+                    leading: BrowsableImage(icon: Icons.add),
                     onTap: () =>  {
                       
 
@@ -76,15 +78,14 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                     future: futurePlaylists, 
                     builder: ((context, snapshot) {
                       if (snapshot.hasData) {
-
-
                         return ListView.builder(
                           itemCount: snapshot.data!.length,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListTile(
-                                    leading: CircleAvatar(radius: 28, backgroundColor: snapshot.data![index].favourites ? Colors.red : Theme.of(context).colorScheme.primary, child: snapshot.data![index].favourites ? Icon(Icons.favorite, color: Colors.white, size: 28) : Icon(Icons.music_note, color: Colors.white, size: 28)),
+                                    visualDensity: VisualDensity(vertical: 0),
+                                    leading: BrowsableImage(icon: snapshot.data![index].favourites ? Icons.favorite : Icons.music_note, backgroundColor: snapshot.data![index].favourites ? Colors.red : Theme.of(context).colorScheme.primary), //CircleAvatar(radius: 28, backgroundColor: snapshot.data![index].favourites ? Colors.red : Theme.of(context).colorScheme.primary, child: snapshot.data![index].favourites ? Icon(Icons.favorite, color: Colors.white, size: 28) : Icon(Icons.music_note, color: Colors.white, size: 28)),
                                     title: Text(snapshot.data![index].name),
                                     subtitle: Text('${snapshot.data![index].totalSongs} songs'),
                                     onTap: () =>  {

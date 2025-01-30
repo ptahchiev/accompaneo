@@ -1,13 +1,9 @@
-import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
-import 'package:accompaneo/widgets/hero_layout_card.dart';
 import 'package:flutter/material.dart';
-import 'playlist_page.dart';
-import 'package:accompaneo/models/image.dart';
 import 'package:accompaneo/widgets/new_playlist_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 

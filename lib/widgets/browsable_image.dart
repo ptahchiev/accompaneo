@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class BrowsableImage extends StatelessWidget {
   final Color? backgroundColor;
-  final IconData icon; 
+  final IconData? icon; 
   final String imageUrl;
 
   // Constructor

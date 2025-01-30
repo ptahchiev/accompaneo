@@ -152,7 +152,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                             if(snapshot.data!.firstPageSongs.content[index].favoured) {
                                               ApiService.removeSongFromFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code);
                                               SnackbarHelper.showSnackBar('Song removed favourites');
-
                                               snapshot.data!.firstPageSongs.content[index].favoured = false;
                                               setState(() {
                                                 futurePlaylist = Future.value(snapshot.data);
@@ -198,7 +197,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                 physics: ClampingScrollPhysics(),
                                 itemBuilder: (context, index) {
                                   return PlaylistElementPlaceholder();
-                                }),
+                                }
+                              ),
                             ]
                           )
                       ));

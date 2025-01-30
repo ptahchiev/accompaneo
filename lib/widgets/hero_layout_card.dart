@@ -10,7 +10,6 @@ class HeroLayoutCard extends StatelessWidget {
 
   final Browseable imageInfo;
 
-
   bool isSubtitlePresent() {
     return (imageInfo is Song) && (imageInfo as Song).artist.name.isNotEmpty;
   }
