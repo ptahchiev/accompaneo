@@ -1,5 +1,9 @@
 import 'package:accompaneo/models/simple_playlist.dart';
+import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
+import 'package:accompaneo/utils/helpers/navigation_helper.dart';
+import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
+import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
 import 'package:flutter/material.dart';
 import '../values/app_strings.dart';
@@ -9,7 +13,9 @@ class SelectPlaylistWidget extends StatefulWidget {
 
   final Function addSongToPlaylist;
 
-  const SelectPlaylistWidget({super.key, required this.addSongToPlaylist});
+  final Song song;
+
+  const SelectPlaylistWidget({super.key, required this.addSongToPlaylist, required this.song});
 
   @override
   _SelectPlaylistWidgetState createState() => _SelectPlaylistWidgetState();
@@ -88,8 +94,20 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                                     leading: BrowsableImage(icon: snapshot.data![index].favourites ? Icons.favorite : Icons.music_note, backgroundColor: snapshot.data![index].favourites ? Colors.red : Theme.of(context).colorScheme.primary), //CircleAvatar(radius: 28, backgroundColor: snapshot.data![index].favourites ? Colors.red : Theme.of(context).colorScheme.primary, child: snapshot.data![index].favourites ? Icon(Icons.favorite, color: Colors.white, size: 28) : Icon(Icons.music_note, color: Colors.white, size: 28)),
                                     title: Text(snapshot.data![index].name),
                                     subtitle: Text('${snapshot.data![index].totalSongs} songs'),
-                                    onTap: () =>  {
-                                        ApiService.addSongToPlaylist('', snapshot.data![index].code)
+                                    onTap: ()  {
+                                        final result = ApiService.addSongToPlaylist(widget.song.code, snapshot.data![index].code);
+                                        result.then((response) => {
+                                          if (response.statusCode == 200) {
+                                            widget.addSongToPlaylist(),
+                                            SnackbarHelper.showSnackBar('Song was added to playlist')
+                                          } else {
+                                            if (response.data != null && response.data['message'] != null) {
+                                              SnackbarHelper.showSnackBar(response.data['message'], isError: true)
+                                            } else {
+                                              SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true)
+                                            }
+                                          }
+                                        });                                        
                                     }
                             );
                           },

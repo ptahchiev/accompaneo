@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
@@ -29,7 +31,11 @@ class PlaylistPage extends StatefulWidget {
 
 class _PlaylistPageState extends State<PlaylistPage> {
 
+  StreamController<Song?> songController = StreamController<Song?>.broadcast();
+
   int _currentPage = 1;
+  Song? _selectedSong = null;
+
   PanelController pc = PanelController();
   final _scrollController = ScrollController();
   late Future<Playlist> futurePlaylist;
@@ -109,10 +115,18 @@ class _PlaylistPageState extends State<PlaylistPage> {
       body: SlidingUpPanel(backdropEnabled: true, 
                            body: createPopUpContent(), 
                            controller: pc, 
-                           panel: SelectPlaylistWidget(addSongToPlaylist: () {}),
+                           //panel: SelectPlaylistWidget(addSongToPlaylist: () {}),
                            borderRadius: radius,
                            maxHeight: MediaQuery.of(context).size.height - 300,
-                           minHeight: 0
+                           minHeight: 0,
+                           panel: StreamBuilder(
+                            stream: songController.stream,
+                            builder: (context, snapshot) {
+                              if (snapshot.data == null) return const SizedBox.shrink();
+                              return SelectPlaylistWidget(addSongToPlaylist: () {pc.close();}, song: snapshot.data!);
+                            },
+                           )
+                          
       ),
     );
   }
@@ -230,18 +244,19 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   ListTile(
                     title: Text('Add to playlist'),
                     leading: Icon(Icons.add, color: Colors.black, size: 28),
-                    onTap: () =>  {
-                      Navigator.pop(context, true),
-                      pc.open()
+                    onTap: () {
+                      Navigator.pop(context, true);
+                      pc.open();
+                      songController.sink.add(song);
                     }
                   ),
                   Divider(),
                   ListTile(
                     title: Text('View All Songs By Artist'),
                     leading: Icon(Icons.search, color: Colors.black, size: 28),
-                    onTap: () => {
-                      Navigator.pop(context, true),
-                      NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl':'/artist/${song.artist.code}', 'playlistCode' : ''})
+                    onTap: () {
+                      Navigator.pop(context, true);
+                      NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl':'/artist/${song.artist.code}', 'playlistCode' : ''});
                     }
                   ),
                 ],
