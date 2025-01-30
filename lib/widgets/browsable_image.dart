@@ -17,13 +17,15 @@ class BrowsableImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10.0),
-      child: Container(
-        height: 80.0,
-        width: 60.0,
-        color: backgroundColor ?? Theme.of(context).colorScheme.primary,
-        child: imageUrl.isEmpty ? Icon(icon, color: Colors.white, size: 30.0) : Image(height: 80, fit: BoxFit.cover, image: NetworkImage(imageUrl))
+    return Expanded(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10.0),
+        child: Container(
+          height: 80.0,
+          width: 80.0,
+          color: backgroundColor ?? Theme.of(context).colorScheme.primary,
+          child: imageUrl.isEmpty ? Icon(icon, color: Colors.white, size: 30.0) : Image(height: 80, fit: BoxFit.cover, image: NetworkImage(imageUrl))
+        ),
       ),
     );
   }

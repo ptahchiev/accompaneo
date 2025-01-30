@@ -5,6 +5,7 @@ import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
+import 'package:accompaneo/values/app_colors.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/values/app_strings.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
@@ -34,7 +35,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
   StreamController<Song?> songController = StreamController<Song?>.broadcast();
 
   int _currentPage = 1;
-  Song? _selectedSong = null;
 
   PanelController pc = PanelController();
   final _scrollController = ScrollController();
@@ -68,12 +68,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
     }
   }
 
-  void _handleSearch(String input){
+  void _handleSearch(String input) {
     // _results.clear();
     // for (var str in myCoolStrings){
-    //   if(str.toLowerCase().contains(input.toLowerCase())){
+    //   if(str.toLowerCase().contains(input.toLowerCase())) {
     //     setState(() {
-    //       _results.add(str);
+    //       futurePlaylist.asStream().add(str);
     //     });
     //   }
     // }
@@ -169,11 +169,21 @@ class _PlaylistPageState extends State<PlaylistPage> {
                             return ListTile(
                                     leading: BrowsableImage(imageUrl: snapshot.data!.firstPageSongs.content[index].picture!.url),
                                     visualDensity: VisualDensity(vertical: 0),
+                                    isThreeLine: true,
                                     onTap: () {
                                       NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.firstPageSongs.content[index]});
                                     },
                                     title: Text(snapshot.data!.firstPageSongs.content[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
-                                    subtitle: Text(snapshot.data!.firstPageSongs.content[index].artist.name),
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(snapshot.data!.firstPageSongs.content[index].artist.name),
+                                        Wrap(
+                                          spacing: 10,
+                                          children: snapshot.data!.firstPageSongs.content[index].chords!.map<Widget>((ch) => Container(padding: EdgeInsets.all(5), decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(5)), child: Text(ch.name))).toList(),
+                                        )
+                                      ]
+                                    ),
                                     trailing: Wrap(
                                       children: [
                                         IconButton(

@@ -1,11 +1,13 @@
 import 'package:accompaneo/models/artist.dart';
 import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/image.dart';
+import 'package:accompaneo/models/song/chord.dart';
 
 class Song extends Browseable{
   Artist artist;
   double bpm;
   bool favoured;
+  List<MusicChord>? chords;
   String? structureUrl;
   Map<String, dynamic>? audioStreamUrls;
 
@@ -15,6 +17,7 @@ class Song extends Browseable{
     required this.artist,
     required this.bpm,
     required this.favoured,
+    this.chords,
     this.structureUrl,
     this.audioStreamUrls
   });
@@ -24,6 +27,7 @@ class Song extends Browseable{
         name: json['name'] ?? '',
         picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: ''),
         artist: json['artist'] != null ? Artist.fromJson(json['artist']) : Artist(code: '', name: '', picture: ImageData(code: '', url: '')),
+        chords: (json['chords'] as List).map((e) => MusicChord.fromJson(e)).toList(),
         bpm: json['bpm'] ?? 0.0,
         favoured: json['favoured'] ?? false,
         structureUrl: json['structureUrl'],
