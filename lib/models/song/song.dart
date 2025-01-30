@@ -6,13 +6,17 @@ class Song extends Browseable{
   Artist artist;
   double bpm;
   bool favoured;
+  String? structureUrl;
+  List<String>? audioStreamUrls;
 
   // Constructor
   Song({
     required super.code, required super.name, required super.picture,
     required this.artist,
     required this.bpm,
-    required this.favoured
+    required this.favoured,
+    this.structureUrl,
+    this.audioStreamUrls
   });
 
   static Song fromJson(Map<String, dynamic> json) => Song(
@@ -21,7 +25,9 @@ class Song extends Browseable{
         picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: ''),
         artist: json['artist'] != null ? Artist.fromJson(json['artist']) : Artist(code: '', name: '', picture: ImageData(code: '', url: '')),
         bpm: json['bpm'] ?? 0.0,
-        favoured: json['favoured'] ?? false
+        favoured: json['favoured'] ?? false,
+        structureUrl: json['structureUrl'],
+        audioStreamUrls: json['audioStreamUrls'] != null ? (json['audioStreamUrls'] as List).map((e) => e as String).toList() : []
       );
 
   Map<String, dynamic> toJson() => {

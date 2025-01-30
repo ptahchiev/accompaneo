@@ -37,7 +37,13 @@ class _PlaylistPageState extends State<PlaylistPage> {
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_loadMore);
+    _scrollController.addListener(() {
+
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        //_loadMoreItems();
+        print('load more');
+      }
+    });
     futurePlaylist = ApiService.getPlaylistByUrl(this.widget.playlistUrl);
   }
 
@@ -54,6 +60,17 @@ class _PlaylistPageState extends State<PlaylistPage> {
       //   futurePlaylist.addAll(List<String>.from(json.decode(response.body)));
       // });
     }
+  }
+
+  void _handleSearch(String input){
+    // _results.clear();
+    // for (var str in myCoolStrings){
+    //   if(str.toLowerCase().contains(input.toLowerCase())){
+    //     setState(() {
+    //       _results.add(str);
+    //     });
+    //   }
+    // }
   }
 
 
@@ -79,9 +96,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
             prefixIcon: Icon(Icons.search),
             border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
           ),
-          onChanged: (value) {
-            // Perform search functionality here
-          },
+          onChanged: _handleSearch,
         ),
         actions: [
           Visibility(
@@ -108,6 +123,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
           return ListView(
+                controller: _scrollController,
                 children: [
                   Container(
                         color: Colors.transparent,
@@ -133,8 +149,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   ListView.builder(
                           itemCount: snapshot.data?.firstPageSongs.content.length,
                           shrinkWrap: true,
-                          controller: _scrollController,
-                          physics: ClampingScrollPhysics(),
+                          // controller: _scrollController,
+                          //physics: ClampingScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListTile(
                                     leading: BrowsableImage(imageUrl: snapshot.data!.firstPageSongs.content[index].picture!.url),

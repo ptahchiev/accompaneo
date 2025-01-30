@@ -12,7 +12,6 @@ import 'utils/helpers/navigation_helper.dart';
 import 'utils/helpers/snackbar_helper.dart';
 import 'routes.dart';
 
-
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 

@@ -8,7 +8,7 @@ import '../values/app_constants.dart';
 import '../values/app_regex.dart';
 import '../values/app_strings.dart';
 import '../values/app_theme.dart';
-import '../models/user/user_data.dart';
+
 
 // This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
 class ProfilePage extends StatefulWidget {
@@ -80,9 +80,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = UserData.myUser;
-
-
     return Scaffold(
       body: ListView(
         children: [
