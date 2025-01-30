@@ -43,22 +43,21 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   final Song song;
 
+  Set<PracticeType> _segmentedButtonSelection = {};
+
+
   _PlayerPageState({required this.song});
   
-  Set<PracticeType> _segmentedButtonSelection = <PracticeType>{PracticeType.click};
-
   //late AudioPlayerManager audioPlayerManager;
   final _player = AudioPlayer();
   final _metronomePlayer = AudioPlayer();
 
-  String _audioUrl = '';
+  //String _audioUrl = '';
 
   @override
   void initState() {
     super.initState();
-
-    _audioUrl = song.audioStreamUrls!.values.toList()[0];
-
+    _segmentedButtonSelection = {PracticeType.values.firstWhere((e) => e.toString() == 'PracticeType.${song.audioStreamUrls!.keys.toList()[0]}')};
     ambiguate(WidgetsBinding.instance)!.addObserver(this);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     _init();
@@ -72,7 +71,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     }
   }
 
-
   Future<void> _init() async {
     // Inform the operating system of our app's audio attributes etc.
     // We pick a reasonable default for an app that plays speech.
@@ -84,24 +82,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       print('A stream error occurred: $e');
     });
 
-
-    // // Try to load audio from a source and catch any errors.
-    // try {
-    //   // AAC example: https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac
-    //   await _player.setAudioSource(AudioSource.uri(Uri.parse(_audioUrl)));
-    // } on PlayerException catch (e) {
-    //   print("Error loading audio source: $e");
-    // }
-
-    setAudioSource(_audioUrl);
-
-
-    // try {
-    //   // AAC example: https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac
-    //   await _metronomePlayer.setAudioSource(AudioSource.asset("assets/effects/metronome.mp3"));
-    // } on PlayerException catch (e) {
-    //   print("Error loading audio source: $e");
-    // }
+    setAudioSource(song.audioStreamUrls!.values.toList()[0]);
   }
 
   @override
@@ -250,7 +231,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                               setAudioSource(song.audioStreamUrls![newSelection.first.name]).then((v) {
                                 setState(() {
                                   _segmentedButtonSelection = newSelection;
-                                  _audioUrl = song.audioStreamUrls![newSelection.first.name];
+                                  //_audioUrl = song.audioStreamUrls![newSelection.first.name];
                                 });
                               });
 
