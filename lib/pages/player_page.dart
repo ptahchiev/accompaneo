@@ -28,16 +28,16 @@ class PlayerPage extends StatefulWidget {
 
 T? ambiguate<T>(T? value) => value;
 
-enum PracticeType { simple, band, bandVocals, click }
+enum PracticeType { BandNoVocals, BandFull, PracticeFull, click }
 
 // double _tempo = 93.88489208633094;
 
-const List<(PracticeType, String)> practiceTypeOptions = <(PracticeType, String)>[
-  (PracticeType.simple, 'Practice'),
-  (PracticeType.band, 'Band'),
-  (PracticeType.bandVocals, '+Vocals'),
-  (PracticeType.click, 'Click')
-];
+const Map<PracticeType, String> practiceTypeOptions = {
+  PracticeType.PracticeFull: 'Practice',
+  PracticeType.BandNoVocals: 'Band',
+  PracticeType.BandFull: '+Vocals',
+  PracticeType.click: 'Click'
+};
 
 class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
@@ -45,19 +45,33 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   _PlayerPageState({required this.song});
   
-  Set<PracticeType> _segmentedButtonSelection = <PracticeType>{PracticeType.simple};
+  Set<PracticeType> _segmentedButtonSelection = <PracticeType>{PracticeType.click};
 
   //late AudioPlayerManager audioPlayerManager;
   final _player = AudioPlayer();
   final _metronomePlayer = AudioPlayer();
 
+  String _audioUrl = '';
+
   @override
   void initState() {
     super.initState();
+
+    _audioUrl = song.audioStreamUrls!.values.toList()[0];
+
     ambiguate(WidgetsBinding.instance)!.addObserver(this);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     _init();
   }
+
+  Future<void> setAudioSource(String audioSource) async {
+    try {
+      await _player.setAudioSource(AudioSource.uri(Uri.parse(audioSource)), initialPosition: _player.duration);
+    } on PlayerException catch (e) {
+      print("Error loading audio source: $e");
+    }
+  }
+
 
   Future<void> _init() async {
     // Inform the operating system of our app's audio attributes etc.
@@ -71,13 +85,17 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     });
 
 
-    // Try to load audio from a source and catch any errors.
-    try {
-      // AAC example: https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac
-      await _player.setAudioSource(AudioSource.uri(Uri.parse(song.audioStreamUrls![0])));
-    } on PlayerException catch (e) {
-      print("Error loading audio source: $e");
-    }
+    // // Try to load audio from a source and catch any errors.
+    // try {
+    //   // AAC example: https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac
+    //   await _player.setAudioSource(AudioSource.uri(Uri.parse(_audioUrl)));
+    // } on PlayerException catch (e) {
+    //   print("Error loading audio source: $e");
+    // }
+
+    setAudioSource(_audioUrl);
+
+
     // try {
     //   // AAC example: https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.aac
     //   await _metronomePlayer.setAudioSource(AudioSource.asset("assets/effects/metronome.mp3"));
@@ -229,16 +247,19 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                             // This callback updates the set of selected segment values.
                             onSelectionChanged: (Set<PracticeType> newSelection) {
                               //SystemSound.play(SystemSoundType.click);
-                              setState(() {
-                                _segmentedButtonSelection = newSelection;
+                              setAudioSource(song.audioStreamUrls![newSelection.first.name]).then((v) {
+                                setState(() {
+                                  _segmentedButtonSelection = newSelection;
+                                  _audioUrl = song.audioStreamUrls![newSelection.first.name];
+                                });
                               });
+
                             },
                             // SegmentedButton uses a List<ButtonSegment<T>> to build its children
                             // instead of a List<Widget> like ToggleButtons.
-                            segments: practiceTypeOptions
-                                .map<ButtonSegment<PracticeType>>(((PracticeType, String) practiceType) {
-                              return ButtonSegment<PracticeType>(
-                                  value: practiceType.$1, label: Text(practiceType.$2));
+                            segments: song.audioStreamUrls!.keys.map<ButtonSegment<PracticeType>>((practiceType) {
+                                PracticeType practiceTypeEnum = PracticeType.values.firstWhere((e) => e.toString() == 'PracticeType.$practiceType');
+                                return ButtonSegment<PracticeType>(value: practiceTypeEnum, label: Text(practiceTypeOptions[practiceTypeEnum]!));
                             }).toList(),
                         )
                     ),

@@ -7,7 +7,7 @@ class Song extends Browseable{
   double bpm;
   bool favoured;
   String? structureUrl;
-  List<String>? audioStreamUrls;
+  Map<String, dynamic>? audioStreamUrls;
 
   // Constructor
   Song({
@@ -27,7 +27,7 @@ class Song extends Browseable{
         bpm: json['bpm'] ?? 0.0,
         favoured: json['favoured'] ?? false,
         structureUrl: json['structureUrl'],
-        audioStreamUrls: json['audioStreamUrls'] != null ? (json['audioStreamUrls'] as List).map((e) => e as String).toList() : []
+        audioStreamUrls: json['audioStreamUrls'] ?? {}
       );
 
   Map<String, dynamic> toJson() => {
