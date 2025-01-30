@@ -241,6 +241,30 @@ class _PlaylistPageState extends State<PlaylistPage> {
       builder: (BuildContext context) {
         return SimpleDialog(
                 children: [
+                  Visibility(
+                    visible: widget.playlistCode.isNotEmpty,
+                    child: ListTile(
+                      title: Text('Remove from playlist'),
+                      leading: Icon(Icons.remove, color: Colors.black, size: 28),
+                      onTap: () {
+                        Navigator.pop(context, true);
+                        
+                        final result = ApiService.removeSongFromPlaylist(song.code, widget.playlistCode);
+                        result.then((response) => {
+                          if (response.statusCode == 200) {
+                            SnackbarHelper.showSnackBar('Song removed from playlist')
+                          } else {
+                            if (response.data != null && response.data['message'] != null) {
+                              SnackbarHelper.showSnackBar(response.data['message'], isError: true)
+                            } else {
+                              SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true)
+                            }
+                          }
+                        });                         
+
+                      }
+                    ),
+                  ),                  
                   ListTile(
                     title: Text('Add to playlist'),
                     leading: Icon(Icons.add, color: Colors.black, size: 28),
