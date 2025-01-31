@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:accompaneo/models/playlist.dart';
+import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
@@ -10,6 +11,7 @@ import 'package:accompaneo/values/app_strings.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
 import 'package:accompaneo/widgets/placeholders.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../values/app_theme.dart';
 import 'package:accompaneo/widgets/select_playlist_widget.dart';
@@ -20,8 +22,6 @@ class PlaylistPage extends StatefulWidget {
   final String playlistUrl;
 
   final String playlistCode;
-
-  // Function onPlaylistDelete = () {};
 
   const PlaylistPage({super.key, required this.playlistUrl, required this.playlistCode});
 
@@ -191,19 +191,25 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                           icon: snapshot.data!.firstPageSongs.content[index].favoured ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined),
                                           onPressed: () {
                                             if(snapshot.data!.firstPageSongs.content[index].favoured) {
-                                              ApiService.removeSongFromFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code);
-                                              SnackbarHelper.showSnackBar('Song removed favourites');
-                                              snapshot.data!.firstPageSongs.content[index].favoured = false;
-                                              setState(() {
-                                                futurePlaylist = Future.value(snapshot.data);
+                                              ApiService.removeSongFromFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code).then((v) {
+                                                Provider.of<PlaylistsModel>(context, listen: false).removeSongFromFavourites(snapshot.data!.firstPageSongs.content[index]);
+                                                SnackbarHelper.showSnackBar('Song removed favourites');
+                                                snapshot.data!.firstPageSongs.content[index].favoured = false;
+                                                setState(() {
+                                                  futurePlaylist = Future.value(snapshot.data);
+                                                });
+
                                               });
                                             } else {
-                                              ApiService.addSongToFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code);
-                                              SnackbarHelper.showSnackBar('Song added to favourites');
-                                              snapshot.data!.firstPageSongs.content[index].favoured = true;
-                                              setState(() {
-                                                futurePlaylist = Future.value(snapshot.data);
-                                              });                                              
+                                              ApiService.addSongToFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code).then((v) {
+                                                Provider.of<PlaylistsModel>(context, listen: false).addSongToFavourites(snapshot.data!.firstPageSongs.content[index]);
+                                                SnackbarHelper.showSnackBar('Song added to favourites');
+                                                snapshot.data!.firstPageSongs.content[index].favoured = true;
+                                                setState(() {
+                                                  futurePlaylist = Future.value(snapshot.data);
+                                                });
+                                              });
+                                       
                                             }
                                           }),
                                         IconButton(
@@ -262,14 +268,15 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         Navigator.pop(context, true);
                         
                         final result = ApiService.removeSongFromPlaylist(song.code, widget.playlistCode);
-                        result.then((response) => {
+                        result.then((response) {
                           if (response.statusCode == 200) {
-                            SnackbarHelper.showSnackBar('Song removed from playlist')
+                            Provider.of<PlaylistsModel>(context, listen: false).removeSongFromPlaylist(widget.playlistCode, song);
+                            SnackbarHelper.showSnackBar('Song removed from playlist');
                           } else {
                             if (response.data != null && response.data['message'] != null) {
-                              SnackbarHelper.showSnackBar(response.data['message'], isError: true)
+                              SnackbarHelper.showSnackBar(response.data['message'], isError: true);
                             } else {
-                              SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true)
+                              SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true);
                             }
                           }
                         });                         
@@ -316,6 +323,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         if (response.statusCode == 200) {
                           Navigator.pop(context, true);
                           NavigationHelper.pushNamed(AppRoutes.playlists);
+                          Provider.of<PlaylistsModel>(context, listen: false).removePlaylist(playlistCode);
                           
                           //widget.onPlaylistDelete();
                           SnackbarHelper.showSnackBar(

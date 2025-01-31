@@ -1,5 +1,7 @@
+import 'package:accompaneo/models/playlists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/settings_page.dart';
@@ -20,8 +22,14 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light),
   );
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
-    (_) => runApp(Accompaneo()),
+    (_) => runApp(
+      ChangeNotifierProvider(
+        create: (context) => PlaylistsModel(),
+        child: Accompaneo(),
+      ),
+    )
   );
 
   FlutterNativeSplash.remove();

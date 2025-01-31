@@ -1,5 +1,9 @@
+import 'package:accompaneo/models/playlist.dart';
+import 'package:accompaneo/models/playlists.dart';
+import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../utils/helpers/snackbar_helper.dart';
 import '../widgets/app_text_form_field.dart';
@@ -11,9 +15,7 @@ class NewPlaylistWidget extends StatefulWidget {
 
   final PanelController panelController;
 
-  final Function onPlaylistCreate;
-
-  const NewPlaylistWidget({super.key, required this.panelController, required this.onPlaylistCreate});
+  const NewPlaylistWidget({super.key, required this.panelController});
 
   @override
   _NewPlaylistWidgetState createState() => _NewPlaylistWidgetState();
@@ -106,13 +108,13 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                                   final result = ApiService.createPlaylist(nameController.text);
                                   result.then((response) {
                                     if (response.statusCode == 200) {
+                                      Provider.of<PlaylistsModel>(context, listen: false).add(SimplePlaylist.fromJson(response.data));
                                       SnackbarHelper.showSnackBar(
                                         AppStrings.playlistCreated,
                                       );
                                       
                                       nameController.clear();
                                       widget.panelController.close();
-                                      widget.onPlaylistCreate();
                                     } else {
                                       SnackbarHelper.showSnackBar('Failed to create a playlist: ${response.statusCode}', isError: true);
                                     }

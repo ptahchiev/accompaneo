@@ -1,11 +1,11 @@
+import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
-import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
-import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../values/app_strings.dart';
 import '../values/app_theme.dart';
 
@@ -96,15 +96,16 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                                     subtitle: Text('${snapshot.data![index].totalSongs} songs'),
                                     onTap: ()  {
                                         final result = ApiService.addSongToPlaylist(widget.song.code, snapshot.data![index].code);
-                                        result.then((response) => {
+                                        result.then((response) {
                                           if (response.statusCode == 200) {
-                                            widget.addSongToPlaylist(),
-                                            SnackbarHelper.showSnackBar('Song was added to playlist')
+                                            widget.addSongToPlaylist();
+                                            Provider.of<PlaylistsModel>(context, listen: false).addSongToPlaylist(snapshot.data![index].code, widget.song);
+                                            SnackbarHelper.showSnackBar('Song was added to playlist');
                                           } else {
                                             if (response.data != null && response.data['message'] != null) {
-                                              SnackbarHelper.showSnackBar(response.data['message'], isError: true)
+                                              SnackbarHelper.showSnackBar(response.data['message'], isError: true);
                                             } else {
-                                              SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true)
+                                              SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true);
                                             }
                                           }
                                         });                                        

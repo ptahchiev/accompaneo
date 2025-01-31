@@ -1,10 +1,11 @@
-import 'package:accompaneo/models/simple_playlist.dart';
+import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
 import 'package:flutter/material.dart';
 import 'package:accompaneo/widgets/new_playlist_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class PlaylistsPage extends StatefulWidget {
@@ -16,9 +17,9 @@ class PlaylistsPage extends StatefulWidget {
 
 class CardList extends StatelessWidget {
   
-  final Future<List<SimplePlaylist>> futurePlaylists;
+  // final Future<List<SimplePlaylist>> futurePlaylists;
 
-  const CardList({super.key, required this.futurePlaylists});
+  const CardList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,44 +27,38 @@ class CardList extends StatelessWidget {
       margin: EdgeInsets.all(10.0),
       child: Column(
         children: [
-          FutureBuilder<List<SimplePlaylist>>(
-            future: futurePlaylists, 
-            builder: ((context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return Wrap(
-                        children: [
-                          ListTile(
-                            title: Text(snapshot.data![index].name),
-                            visualDensity: VisualDensity(vertical: 0),
-                            leading: BrowsableImage(backgroundColor: Colors.red, icon: Icons.favorite),
-                            subtitle: Text('${snapshot.data![index].totalSongs} songs'),
-                              onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${snapshot.data![index].code}', 'playlistCode': ''})
-                          ),
-                          Divider(),
-                        ],
+          Consumer<PlaylistsModel>(
+                    builder: (context, playlists, child) {
+                      return ListView.builder(
+                        itemCount: playlists.items.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return Wrap(
+                              children: [
+                                ListTile(
+                                  title: Text(playlists.items[index].name),
+                                  visualDensity: VisualDensity(vertical: 0),
+                                  leading: BrowsableImage(backgroundColor: Colors.red, icon: Icons.favorite),
+                                  subtitle: Text('${playlists.items[index].totalSongs} songs'),
+                                    onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${playlists.items[index].code}', 'playlistCode': ''})
+                                ),
+                                Divider(),
+                              ],
+                            );
+                          }
+                          return ListTile(
+                                  leading: BrowsableImage(),
+                                  visualDensity: VisualDensity(vertical: 0),
+                                  title: Text(playlists.items[index].name),
+                                  subtitle: Text('${playlists.items[index].totalSongs} songs'),
+                                  onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${playlists.items[index].code}', 'playlistCode': playlists.items[index].code})
+                          );
+                        },
                       );
-                    }
-                    return ListTile(
-                            leading: BrowsableImage(),
-                            visualDensity: VisualDensity(vertical: 0),
-                            title: Text(snapshot.data![index].name),
-                            subtitle: Text('${snapshot.data![index].totalSongs} songs'),
-                            onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${snapshot.data![index].code}', 'playlistCode': snapshot.data![index].code})
-                    );
-                  },
-                );
-              } else if (snapshot.hasError) {
-                return Text('ERROR ${snapshot.error}');
-              }
-
-              return const CircularProgressIndicator();
-            })),
+                    }        
+                )
         ],
       ),
     );
@@ -72,14 +67,14 @@ class CardList extends StatelessWidget {
 
 class _PlaylistsPageState extends State<PlaylistsPage> {
 
-  late Future<List<SimplePlaylist>> futurePlaylists;
-
   PanelController pc = PanelController();
 
   @override
   void initState() {
     super.initState();
-    futurePlaylists = ApiService.getPlaylistsForCurrentUser();
+    ApiService.getPlaylistsForCurrentUser().then((v){
+      Provider.of<PlaylistsModel>(context, listen: false).addAll(v);
+    });
   }
 
   @override
@@ -94,11 +89,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
       body: SlidingUpPanel(backdropEnabled: true, 
                            body: createPlaylist(), 
                            controller: pc, 
-                           panel: NewPlaylistWidget(panelController : pc, onPlaylistCreate: () {
-                            setState(() {
-                              futurePlaylists = ApiService.getPlaylistsForCurrentUser();
-                            });
-                           }),
+                           panel: NewPlaylistWidget(panelController : pc),
                            borderRadius: radius,
                            maxHeight: MediaQuery.of(context).size.height - 300,
                            minHeight: 0
@@ -115,6 +106,6 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
   }
 
   Widget createPlaylist() {
-    return CardList(futurePlaylists: futurePlaylists);
+    return CardList();
   }
 }
