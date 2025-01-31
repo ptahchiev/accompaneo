@@ -1,7 +1,9 @@
 import 'package:accompaneo/models/homepage_sections.dart';
 import 'package:accompaneo/services/api_service.dart';
+import 'package:accompaneo/widgets/placeholders.dart';
 import 'package:flutter/material.dart';
 import 'package:accompaneo/widgets/section_widget.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,18 +32,34 @@ class _HomePageState extends State<HomePage> {
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             return ListView(children: [
-                  Section(title: 'Genres', sectionData: snapshot.data?.genres, playlistUrl: null),
-                  Section(title: 'Artists', sectionData: snapshot.data?.artists, playlistUrl: null),
-                  Section(title: 'Latest', sectionData: snapshot.data?.latestAdded, playlistUrl: '/latestAdded'),
-                  Section(title: 'Jump back in', sectionData: snapshot.data?.latestPlayed, playlistUrl: '/latestPlayed'),
-                  Section(title: 'Most Popular', sectionData: snapshot.data?.mostPopular, playlistUrl: '/mostPopular'),
-                  Section(title: 'Your favourites', sectionData: snapshot.data?.favourites, playlistUrl: '/favourites')
-                ]);
+              Section(title: 'Genres', sectionData: snapshot.data?.genres, playlistUrl: null),
+              Section(title: 'Artists', sectionData: snapshot.data?.artists, playlistUrl: null),
+              Section(title: 'Latest', sectionData: snapshot.data?.latestAdded, playlistUrl: '/latestAdded'),
+              Section(title: 'Jump back in', sectionData: snapshot.data?.latestPlayed, playlistUrl: '/latestPlayed'),
+              Section(title: 'Most Popular', sectionData: snapshot.data?.mostPopular, playlistUrl: '/mostPopular'),
+              Section(title: 'Your favourites', sectionData: snapshot.data?.favourites, playlistUrl: '/favourites')
+            ]);
           } else if (snapshot.hasError) {
             return Text('ERROR ${snapshot.error}');
           }
-
-          return const CircularProgressIndicator();
+          return Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            loop: 0,
+            enabled: true,
+            child: SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              child: Column(
+                children: [ 
+                  HomepageSectionsSectionPlaceholder(),
+                  HomepageSectionsSectionPlaceholder(),
+                  HomepageSectionsSectionPlaceholder(),
+                  HomepageSectionsSectionPlaceholder(),
+                  HomepageSectionsSectionPlaceholder(),
+                ]
+              )
+            )
+          );
         }
       )));
   }

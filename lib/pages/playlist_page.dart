@@ -5,7 +5,6 @@ import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
-import 'package:accompaneo/values/app_colors.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/values/app_strings.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
@@ -223,27 +222,28 @@ class _PlaylistPageState extends State<PlaylistPage> {
         }
         return 
             Shimmer.fromColors(
-                      baseColor: Colors.grey.shade300,
-                      highlightColor: Colors.grey.shade100,
-                      loop: 0,
-                      enabled: true,
-                      child: SingleChildScrollView(
-                        physics: NeverScrollableScrollPhysics(),
-                        child:
-                          Column(
-                            children: [
-                              PLaylistHeaderPlaceholder(),
-                              ListView.builder(
-                                itemCount: 50,
-                                shrinkWrap: true,
-                                physics: ClampingScrollPhysics(),
-                                itemBuilder: (context, index) {
-                                  return PlaylistElementPlaceholder();
-                                }
-                              ),
-                            ]
-                          )
-                      ));
+              baseColor: Colors.grey.shade300,
+              highlightColor: Colors.grey.shade100,
+              loop: 0,
+              enabled: true,
+              child: SingleChildScrollView(
+                physics: NeverScrollableScrollPhysics(),
+                child:
+                  Column(
+                    children: [
+                      PLaylistHeaderPlaceholder(),
+                      ListView.builder(
+                        itemCount: 50,
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return PlaylistElementPlaceholder();
+                        }
+                      ),
+                    ]
+                  )
+              )
+            );
     }));
   }  
 

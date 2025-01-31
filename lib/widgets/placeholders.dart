@@ -103,3 +103,52 @@ class PLaylistHeaderPlaceholder extends StatelessWidget {
     );
   }
 }
+
+class HomepageSectionsSectionPlaceholder extends StatelessWidget {
+  const HomepageSectionsSectionPlaceholder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    //final double width = MediaQuery.sizeOf(context).width;
+    final double height = MediaQuery.sizeOf(context).height;
+    return Column(children: [
+        Container(
+              color: Colors.transparent,
+              padding: EdgeInsets.all(5),
+              child: 
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Container(
+                        width: 200,
+                        height: 25.0,
+                        color: Colors.white,
+                        //margin: const EdgeInsets.only(bottom: 8.0),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: Colors.grey.shade600)),
+                  ],
+                ),
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: height / 5),
+          child: CarouselView.weighted(
+            elevation: 2.0,
+            backgroundColor: Colors.transparent,
+            //overlayColor: MaterialColor(Colors.red, Colors.black),
+            scrollDirection: Axis.horizontal,
+            itemSnapping: false,
+            reverse: false,
+            flexWeights: const <int>[1, 1, 1],
+            children: [
+                Container(color: Colors.white),
+                Container(color: Colors.white),
+                Container(color: Colors.white)
+            ]
+          ),
+        ),
+      ])
+    ;
+  }
+}

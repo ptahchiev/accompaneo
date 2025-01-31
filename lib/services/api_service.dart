@@ -123,7 +123,7 @@ class ApiService {
     final dio = Dio();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      final response = await dio.get('$baseUrl/playlist$playlistUrl', queryParameters: {'size' : 200, 'page': page}, options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
+      final response = await dio.get('$baseUrl/playlist$playlistUrl', queryParameters: {'size' : 50, 'page': page}, options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
 
       if (response.statusCode == 200) {
         return Playlist.fromJson(response.data);
