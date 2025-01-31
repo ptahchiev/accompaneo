@@ -50,7 +50,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   
   //late AudioPlayerManager audioPlayerManager;
   final _player = AudioPlayer();
-  final _metronomePlayer = AudioPlayer();
+  final _metronomePlayer = AudioPlayer(handleAudioSessionActivation : false);
 
   //String _audioUrl = '';
 
@@ -65,7 +65,9 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   Future<void> setAudioSource(String audioSource) async {
     try {
-      await _player.setAudioSource(AudioSource.uri(Uri.parse(audioSource)), initialPosition: _player.duration);
+      await _player.setUrl(audioSource, preload: true, initialPosition: _player.duration).then((s) => {
+        //_player.load()
+      });
     } on PlayerException catch (e) {
       print("Error loading audio source: $e");
     }
@@ -76,11 +78,27 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     // We pick a reasonable default for an app that plays speech.
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.speech());
-    // Listen to errors during playback.
-    _player.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace stackTrace) {
-      print('A stream error occurred: $e');
-    });
+    // Listen toerrors during playback.
+    
+    // _player.playbackEventStream.listen((event) {},
+    //     onError: (Object e, StackTrace stackTrace) {
+    //   print('A stream error occurred: $e');
+    // });
+
+
+    // _player.playerStateStream.listen((state) {
+    //   if (state.playing) {
+    //     print('playing');
+    //   }
+    //   switch (state.processingState) {
+    //     case ProcessingState.idle: print('idle');
+    //     case ProcessingState.loading: print('loading');
+    //     case ProcessingState.buffering: print('buffering');
+    //     case ProcessingState.ready: print('ready');
+    //     case ProcessingState.completed: print('completed');
+    //   }
+    // });
+
 
     setAudioSource(song.audioStreamUrls!.values.toList()[0]);
   }
@@ -93,15 +111,15 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      // Release the player's resources when not in use. We use "stop" so that
-      // if the app resumes later, it will still remember what position to
-      // resume from.
-      _player.stop();
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.paused) {
+  //     // Release the player's resources when not in use. We use "stop" so that
+  //     // if the app resumes later, it will still remember what position to
+  //     // resume from.
+  //     _player.stop();
+  //   }
+  // }
 
   // void onTimerTick(int elapsedMilliseconds) {
   //   _metronomePlayer.play();
@@ -137,19 +155,17 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   // }
 
 
-  /// Collects the data useful for displaying in a seek bar, using a handy
-  /// feature of rx_dart to combine the 3 streams of interest into one.
-  Stream<PositionData> get _positionDataStream =>
-      Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
+
+
+  StreamBuilder<PositionData> _overlayPanel() {
+
+    return StreamBuilder<PositionData>(
+      stream: Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
           _player.positionStream,
           _player.bufferedPositionStream,
           _player.durationStream,
           (position, bufferedPosition, duration) => PositionData(
-              position, bufferedPosition, duration ?? Duration.zero, _player.playing));
-
-  StreamBuilder<PositionData> _overlayPanel() {
-    return StreamBuilder<PositionData>(
-      stream: _positionDataStream,
+              position, bufferedPosition, duration ?? Duration.zero, _player.playing)),
       builder: (context, snapshot) {
         final playerState = snapshot.data;
         final playing = playerState?.playing;
@@ -157,7 +173,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         final progress = durationState?.position ?? Duration.zero;
         final buffered = durationState?.bufferedPosition ?? Duration.zero;
         final total = durationState?.duration ?? Duration.zero;        
-        return playing != true ? Scaffold(
+        return playing != true || playing == null ? Scaffold(
           backgroundColor: Colors.transparent.withOpacity(0.7), //yes
           appBar: AppBar(
             iconTheme: IconThemeData(
@@ -357,7 +373,11 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                 Scaffold(
                   backgroundColor: Colors.white,
                   body: GestureDetector(
-                    onTap: () => _player.pause(),
+                    onTap: () { 
+                      if (_player.playing) {
+                        _player.pause();
+                      }
+                    },
                     child: 
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
