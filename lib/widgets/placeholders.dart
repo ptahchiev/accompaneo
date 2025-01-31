@@ -6,32 +6,55 @@ class PlaylistElementPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return ListTile(
-        visualDensity: VisualDensity(vertical: 0),
+        visualDensity: VisualDensity(vertical: 1),
+        isThreeLine: true,
+        titleAlignment: ListTileTitleAlignment.center,
+        //dense: true,
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(10.0),
           child: Container(
-            height: 80.0,
+            height: 60.0,
             width: 60.0,
             color: Colors.white,
           ),
         ),
-        title: FractionallySizedBox(
-          widthFactor: 0.5,
-          alignment: Alignment.centerLeft,
-          child: Container(
-            width: 200,
-            height: 15.0,
-            color: Colors.white,
-          ),
+        title: Column(
+          spacing: 50,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FractionallySizedBox(
+              widthFactor: 0.5,
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 200,
+                height: 20.0,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
-        subtitle: FractionallySizedBox(
-          widthFactor: 0.3,
-          alignment: Alignment.centerLeft,
-          child: Container(
-            width: 10.0,
-            height: 15.0,
-            color: Colors.white
-          ),
+        subtitle: Column(
+          spacing: 10,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FractionallySizedBox(
+              widthFactor: 0.3,
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 10.0,
+                height: 14.0,
+                color: Colors.white
+              ),
+            ),
+            Wrap(
+              spacing: 10,
+              children: [
+                Container(color: Colors.white, width: 20, height: 10),
+                Container(color: Colors.white, width: 20, height: 10),
+                Container(color: Colors.white, width: 20, height: 10),
+              ]
+            )
+          ],
         ),
         trailing: Wrap(
           children: [
@@ -54,12 +77,14 @@ class PLaylistHeaderPlaceholder extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            padding: EdgeInsets.all(10),
-            width: 200,
-            height: 25.0,
-            color: Colors.white,
-            //margin: const EdgeInsets.only(bottom: 8.0),
+          Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Container(
+              width: 200,
+              height: 25.0,
+              color: Colors.white,
+              //margin: const EdgeInsets.only(bottom: 8.0),
+            ),
           ),
           Expanded(child: Divider(color: Colors.grey.shade500)),
           Align(

@@ -167,9 +167,10 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           //physics: ClampingScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListTile(
-                                    leading: Column(mainAxisAlignment: MainAxisAlignment.center, children: [BrowsableImage(imageUrl: snapshot.data!.firstPageSongs.content[index].picture!.url)]),
+                                    leading: BrowsableImage(imageUrl: snapshot.data!.firstPageSongs.content[index].picture!.url),
                                     visualDensity: VisualDensity(vertical: 1),
                                     isThreeLine: true,
+                                    titleAlignment: ListTileTitleAlignment.center,
                                     onTap: () {
                                       NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.firstPageSongs.content[index]});
                                     },
@@ -184,36 +185,33 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                         )
                                       ]
                                     ),
-                                    trailing: FittedBox(
-                                      alignment: Alignment.centerRight,
-                                      child: Wrap(
-                                        
-                                        children: [
-                                          IconButton(
-                                            icon: snapshot.data!.firstPageSongs.content[index].favoured ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined),
-                                            onPressed: () {
-                                              if(snapshot.data!.firstPageSongs.content[index].favoured) {
-                                                ApiService.removeSongFromFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code);
-                                                SnackbarHelper.showSnackBar('Song removed favourites');
-                                                snapshot.data!.firstPageSongs.content[index].favoured = false;
-                                                setState(() {
-                                                  futurePlaylist = Future.value(snapshot.data);
-                                                });
-                                              } else {
-                                                ApiService.addSongToFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code);
-                                                SnackbarHelper.showSnackBar('Song added to favourites');
-                                                snapshot.data!.firstPageSongs.content[index].favoured = true;
-                                                setState(() {
-                                                  futurePlaylist = Future.value(snapshot.data);
-                                                });                                              
-                                              }
-                                            }),
-                                          IconButton(
-                                            icon: Icon(Icons.more_horiz),
-                                            onPressed: () => _songDialogBuilder(context, snapshot.data!.firstPageSongs.content[index])
-                                          )
-                                        ],
-                                      ),
+                                    trailing: Wrap(
+                                      
+                                      children: [
+                                        IconButton(
+                                          icon: snapshot.data!.firstPageSongs.content[index].favoured ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined),
+                                          onPressed: () {
+                                            if(snapshot.data!.firstPageSongs.content[index].favoured) {
+                                              ApiService.removeSongFromFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code);
+                                              SnackbarHelper.showSnackBar('Song removed favourites');
+                                              snapshot.data!.firstPageSongs.content[index].favoured = false;
+                                              setState(() {
+                                                futurePlaylist = Future.value(snapshot.data);
+                                              });
+                                            } else {
+                                              ApiService.addSongToFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code);
+                                              SnackbarHelper.showSnackBar('Song added to favourites');
+                                              snapshot.data!.firstPageSongs.content[index].favoured = true;
+                                              setState(() {
+                                                futurePlaylist = Future.value(snapshot.data);
+                                              });                                              
+                                            }
+                                          }),
+                                        IconButton(
+                                          icon: Icon(Icons.more_horiz),
+                                          onPressed: () => _songDialogBuilder(context, snapshot.data!.firstPageSongs.content[index])
+                                        )
+                                      ],
                                     )
                             );
                           },
