@@ -17,8 +17,6 @@ class PlaylistsPage extends StatefulWidget {
 
 class CardList extends StatelessWidget {
   
-  // final Future<List<SimplePlaylist>> futurePlaylists;
-
   const CardList({super.key});
 
   @override
@@ -34,7 +32,10 @@ class CardList extends StatelessWidget {
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          if (index == 0) {
+                          if (playlists.items[index].latestPlayed) {
+                              return null;
+                          }
+                          if (playlists.items[index].favourites) {
                             return Wrap(
                               children: [
                                 ListTile(

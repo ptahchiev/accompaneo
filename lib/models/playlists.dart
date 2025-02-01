@@ -33,6 +33,8 @@ class PlaylistsModel extends ChangeNotifier {
     }
   }
 
+  
+
   void removeSongFromPlaylist(String playlistCode, Song song) {
     SimplePlaylist? playlist = _playlists.firstWhereOrNull((p) => p.code == playlistCode);
     if (playlist != null) {

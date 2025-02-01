@@ -171,7 +171,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                     isThreeLine: true,
                                     titleAlignment: ListTileTitleAlignment.center,
                                     onTap: () {
-                                      NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.firstPageSongs.content[index]});
+                                      ApiService.markSongAsPlayed(snapshot.data!.firstPageSongs.content[index].code).then((v) {
+                                        NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.firstPageSongs.content[index]});
+                                      });
                                     },
                                     title: Text(snapshot.data!.firstPageSongs.content[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
                                     subtitle: Column(

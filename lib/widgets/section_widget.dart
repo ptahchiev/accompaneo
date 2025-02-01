@@ -58,7 +58,6 @@ class Section extends StatelessWidget {
                 controller: controller,
                 elevation: 2.0,
                 backgroundColor: Colors.transparent,
-                //overlayColor: MaterialColor(Colors.red, Colors.black),
                 scrollDirection: Axis.horizontal,
                 itemSnapping: false,
                 reverse: false,

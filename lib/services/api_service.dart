@@ -199,6 +199,21 @@ class ApiService {
       }
       return Future.value(e.response);
     }
+  }
+
+  static Future<Response> markSongAsPlayed(String songCode) async {
+    final dio = Dio();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      return await dio.post('$baseUrl/song/$songCode/play', options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 401) {
+        prefs.remove(AppConstants.nemesisTokenHeader).then((b){
+          NavigationHelper.pushNamed(AppRoutes.login);
+        });
+      }
+      return Future.value(e.response);
+    }
   }    
 
   // static Future<Post> authenticate(int postId) async {

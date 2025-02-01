@@ -5,6 +5,8 @@ class SimplePlaylist extends Browseable{
 
   bool favourites;
 
+  bool latestPlayed;
+
   int totalSongs;
 
   String? url;
@@ -15,6 +17,7 @@ class SimplePlaylist extends Browseable{
     required super.name,
     required super.picture,
     required this.favourites,
+    required this.latestPlayed,
     required this.totalSongs,
     this.url
   });
@@ -24,6 +27,7 @@ class SimplePlaylist extends Browseable{
         name: json['name'] ?? '',
         picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: ''),
         favourites: json['favourites'] ?? false,
+        latestPlayed: json['latestPlayed'] ?? false,
         totalSongs: json['totalSongs'] ?? 0,
       );
 

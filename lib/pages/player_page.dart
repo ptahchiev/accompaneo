@@ -69,7 +69,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         //_player.load()
       });
     } on PlayerException catch (e) {
-      print("Error loading audio source: $e");
+      print("Error loading audio source: $audioSource $e");
     }
   }
 
