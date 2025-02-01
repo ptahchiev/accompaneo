@@ -172,6 +172,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                     titleAlignment: ListTileTitleAlignment.center,
                                     onTap: () {
                                       ApiService.markSongAsPlayed(snapshot.data!.firstPageSongs.content[index].code).then((v) {
+                                        Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(snapshot.data!.firstPageSongs.content[index]);
                                         NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.firstPageSongs.content[index]});
                                       });
                                     },

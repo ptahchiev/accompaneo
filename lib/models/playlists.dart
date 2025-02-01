@@ -9,7 +9,7 @@ class PlaylistsModel extends ChangeNotifier {
 
   UnmodifiableListView<Playlist> get items => UnmodifiableListView(_playlists);
 
-  Playlist getMostPopularPlaylist() {
+  Playlist getFavouritesPlaylist() {
     return _playlists.firstWhere((p) => p.favourites);
   }
 
@@ -46,6 +46,15 @@ class PlaylistsModel extends ChangeNotifier {
     if (playlist != null) {
       // playlist.firstPageSongs.content.remove(song);
       playlist.firstPageSongs.totalElements = playlist.firstPageSongs.totalElements - 1;
+      notifyListeners();
+    }
+  }
+
+  void addSongToLatestPlayed(Song song) {
+    Playlist? playlist = _playlists.firstWhereOrNull((p) => p.latestPlayed);
+    if (playlist != null) {
+      playlist.firstPageSongs.content.insert(0, song);
+      playlist.firstPageSongs.totalElements = playlist.firstPageSongs.totalElements + 1;
       notifyListeners();
     }
   }
