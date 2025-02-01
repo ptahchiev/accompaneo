@@ -108,7 +108,7 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                                   final result = ApiService.createPlaylist(nameController.text);
                                   result.then((response) {
                                     if (response.statusCode == 200) {
-                                      Provider.of<PlaylistsModel>(context, listen: false).add(SimplePlaylist.fromJson(response.data));
+                                      Provider.of<PlaylistsModel>(context, listen: false).add(Playlist.fromJson(response.data));
                                       SnackbarHelper.showSnackBar(
                                         AppStrings.playlistCreated,
                                       );

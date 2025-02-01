@@ -67,14 +67,14 @@ class ApiService {
     }
   }
 
-  static Future<List<SimplePlaylist>> getPlaylistsForCurrentUser() async {
+  static Future<List<Playlist>> getPlaylistsForCurrentUser() async {
     final dio = Dio();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await dio.get('$baseUrl/playlist', options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
 
     try {
         if (response.statusCode == 200) {
-          return List.from(response.data).map((e) => SimplePlaylist.fromJson(e)).toList();
+          return List.from(response.data).map((e) => Playlist.fromJson(e)).toList();
         } else {
           throw Exception('Failed to fetch playlists: ${response.statusCode}');
         }
@@ -136,7 +136,7 @@ class ApiService {
           NavigationHelper.pushNamed(AppRoutes.login);
         });
       }
-      return Future.value(Playlist(code: '', favourites: false, name: '', picture: null, firstPageSongs: Page(totalPages: 0, totalElements: 0, size: 0, number: 0, content: [])));
+      return Future.value(Playlist(code: '', favourites: false, latestPlayed: false, name: '', picture: null, firstPageSongs: Page(totalPages: 0, totalElements: 0, size: 0, number: 0, content: [])));
     }
   }
 

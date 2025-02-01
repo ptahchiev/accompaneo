@@ -2,9 +2,11 @@ import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/image.dart';
 import 'package:accompaneo/models/page.dart';
 
-class Playlist extends Browseable{
+class Playlist extends Browseable {
 
   bool favourites;
+
+  bool latestPlayed;
 
   Page firstPageSongs;
 
@@ -14,6 +16,7 @@ class Playlist extends Browseable{
     required super.name,
     required super.picture,
     required this.favourites,
+    required this.latestPlayed,
     required this.firstPageSongs
   });
 
@@ -22,6 +25,7 @@ class Playlist extends Browseable{
         name: json['name'] ?? '',
         picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: ''),
         favourites:  json['favourites'] ?? false,
+        latestPlayed:  json['latestPlayed'] ?? false,
         firstPageSongs: json['firstPageSongs'] != null ? Page.fromJson(json['firstPageSongs']) : Page(number: 0, size: 0, totalElements: 0, totalPages: 0, content: [])
       );
 

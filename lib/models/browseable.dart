@@ -34,4 +34,14 @@ class Browseable {
         'name': name,
         'picture': picture != null ? picture!.toJson() : '',
       };
+
+
+  @override
+  bool operator ==(Object other) =>
+      other is Browseable &&
+      other.runtimeType == runtimeType &&
+      other.code == code;
+
+  @override
+  int get hashCode => code.hashCode;
 }

@@ -109,4 +109,11 @@ class AppTheme {
     fontSize: 24,
     letterSpacing: 0.5,
   );
+
+  static const TextStyle heroCardTitle = TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+    fontSize: 20,
+    letterSpacing: 0.5,
+  );
 }

@@ -26,40 +26,40 @@ class CardList extends StatelessWidget {
       child: Column(
         children: [
           Consumer<PlaylistsModel>(
-                    builder: (context, playlists, child) {
-                      return ListView.builder(
-                        itemCount: playlists.items.length,
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          if (playlists.items[index].latestPlayed) {
-                              return null;
-                          }
-                          if (playlists.items[index].favourites) {
-                            return Wrap(
-                              children: [
-                                ListTile(
-                                  title: Text(playlists.items[index].name),
-                                  visualDensity: VisualDensity(vertical: 0),
-                                  leading: BrowsableImage(backgroundColor: Colors.red, icon: Icons.favorite),
-                                  subtitle: Text('${playlists.items[index].totalSongs} songs'),
-                                    onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${playlists.items[index].code}', 'playlistCode': ''})
-                                ),
-                                Divider(),
-                              ],
-                            );
-                          }
-                          return ListTile(
-                                  leading: BrowsableImage(),
-                                  visualDensity: VisualDensity(vertical: 0),
-                                  title: Text(playlists.items[index].name),
-                                  subtitle: Text('${playlists.items[index].totalSongs} songs'),
-                                  onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${playlists.items[index].code}', 'playlistCode': playlists.items[index].code})
-                          );
-                        },
-                      );
-                    }        
-                )
+            builder: (context, playlists, child) {
+              return ListView.builder(
+                itemCount: playlists.items.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  if (playlists.items[index].latestPlayed) {
+                      return Container();
+                  }
+                  if (playlists.items[index].favourites) {
+                    return Wrap(
+                      children: [
+                        ListTile(
+                          title: Text(playlists.items[index].name),
+                          visualDensity: VisualDensity(vertical: 0),
+                          leading: BrowsableImage(backgroundColor: Colors.red, icon: Icons.favorite),
+                          subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs'),
+                            onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${playlists.items[index].code}', 'playlistCode': ''})
+                        ),
+                        Divider(),
+                      ],
+                    );
+                  }
+                  return ListTile(
+                          leading: BrowsableImage(),
+                          visualDensity: VisualDensity(vertical: 0),
+                          title: Text(playlists.items[index].name),
+                          subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs'),
+                          onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${playlists.items[index].code}', 'playlistCode': playlists.items[index].code})
+                  );
+                },
+              );
+            }        
+            )
         ],
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/song/song.dart';
+import 'package:accompaneo/values/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class HeroLayoutCard extends StatelessWidget {
@@ -57,10 +58,7 @@ class HeroLayoutCard extends StatelessWidget {
                               imageInfo.name,
                               overflow: TextOverflow.clip,
                               softWrap: false,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.copyWith(color: Colors.white),
+                              style: AppTheme.heroCardTitle,
                             ),
                           ),
                           Visibility(
@@ -69,10 +67,7 @@ class HeroLayoutCard extends StatelessWidget {
                               (imageInfo is Song) ? (imageInfo as Song).artist.name : '',
                               overflow: TextOverflow.clip,
                               softWrap: false,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(color: Colors.white),
+                              style: AppTheme.bodySmall.copyWith(color: Colors.white),
                             ),
                           )
                         ],

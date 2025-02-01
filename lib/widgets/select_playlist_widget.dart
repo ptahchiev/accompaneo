@@ -1,3 +1,4 @@
+import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
@@ -24,8 +25,6 @@ class SelectPlaylistWidget extends StatefulWidget {
 class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
 
   final _formKey = GlobalKey<FormState>();
-  
-  late Future<List<SimplePlaylist>> futurePlaylists;
 
   final ValueNotifier<bool> fieldValidNotifier = ValueNotifier(false);
 
@@ -33,7 +32,6 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    futurePlaylists = ApiService.getPlaylistsForCurrentUser();
   }
 
   @override
@@ -80,26 +78,27 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                   ),
                   Divider(),
 
-                  FutureBuilder<List<SimplePlaylist>>(
-                    future: futurePlaylists, 
-                    builder: ((context, snapshot) {
-                      if (snapshot.hasData) {
+                  Consumer<PlaylistsModel>(
+                    builder: (context, playlists, child) {
                         return ListView.builder(
-                          itemCount: snapshot.data!.length,
+                          itemCount: playlists.items.length,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
+                            if (playlists.items[index].latestPlayed) {
+                                return Container();
+                            }
                             return ListTile(
                                     visualDensity: VisualDensity(vertical: 0),
-                                    leading: BrowsableImage(icon: snapshot.data![index].favourites ? Icons.favorite : Icons.music_note, backgroundColor: snapshot.data![index].favourites ? Colors.red : Theme.of(context).colorScheme.primary), //CircleAvatar(radius: 28, backgroundColor: snapshot.data![index].favourites ? Colors.red : Theme.of(context).colorScheme.primary, child: snapshot.data![index].favourites ? Icon(Icons.favorite, color: Colors.white, size: 28) : Icon(Icons.music_note, color: Colors.white, size: 28)),
-                                    title: Text(snapshot.data![index].name),
-                                    subtitle: Text('${snapshot.data![index].totalSongs} songs'),
+                                    leading: BrowsableImage(icon: playlists.items[index].favourites ? Icons.favorite : Icons.music_note, backgroundColor: playlists.items[index].favourites ? Colors.red : Theme.of(context).colorScheme.primary),
+                                    title: Text(playlists.items[index].name),
+                                    subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs'),
                                     onTap: ()  {
-                                        final result = ApiService.addSongToPlaylist(widget.song.code, snapshot.data![index].code);
+                                        final result = ApiService.addSongToPlaylist(widget.song.code, playlists.items[index].code);
                                         result.then((response) {
                                           if (response.statusCode == 200) {
                                             widget.addSongToPlaylist();
-                                            Provider.of<PlaylistsModel>(context, listen: false).addSongToPlaylist(snapshot.data![index].code, widget.song);
+                                            Provider.of<PlaylistsModel>(context, listen: false).addSongToPlaylist(playlists.items[index].code, widget.song);
                                             SnackbarHelper.showSnackBar('Song was added to playlist');
                                           } else {
                                             if (response.data != null && response.data['message'] != null) {
@@ -113,12 +112,8 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                             );
                           },
                         );
-                      } else if (snapshot.hasError) {
-                        return Text('ERROR ${snapshot.error}');
-                      }
-
-                      return const CircularProgressIndicator();
-                    }))
+                    }
+                  )
                 ],
               ),
             ),
