@@ -1,31 +1,18 @@
-class Category {
+import 'package:accompaneo/models/browseable.dart';
+import 'package:accompaneo/models/image.dart';
 
-  String code;
-
-  String name;
+class Category extends Browseable {
 
   // Constructor
   Category({
-    required this.code,
-    required this.name
+    required super.code,
+    required super.name,
+    required super.picture
   });
 
-  Category copy({
-    String? code,
-    String? name
-  }) =>
-      Category(
-        code: code ?? this.code,
-        name: name ?? this.name
-      );
-
   static Category fromJson(Map<String, dynamic> json) => Category(
-        code: json['code'],
-        name: json['name']
-      );
-
-  Map<String, dynamic> toJson() => {
-        'code': code,
-        'name': name
-      };
+    code: json['code'] ?? '',
+    name: json['name'] ?? '',
+    picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: '')
+  );  
 }

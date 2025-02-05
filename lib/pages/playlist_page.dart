@@ -33,11 +33,27 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   StreamController<Song?> songController = StreamController<Song?>.broadcast();
 
-  int _currentPage = 1;
+  bool _isLoading = true;
+  bool _hasMore = true;
+  int _currentPage = 0;
 
   PanelController pc = PanelController();
   final _scrollController = ScrollController();
   late Future<Playlist> futurePlaylist;
+  bool isLoadingVertical = false;
+  List<Song> filteredItems = [];
+  String _query = '';
+
+  void _handleSearch(String input) {
+    // _results.clear();
+    // for (var str in myCoolStrings){
+    //   if(str.toLowerCase().contains(input.toLowerCase())) {
+    //     setState(() {
+    //       futurePlaylist.asStream().add(str);
+    //     });
+    //   }
+    // }
+  }
 
   @override
   void initState() {
@@ -58,26 +74,52 @@ class _PlaylistPageState extends State<PlaylistPage> {
     super.dispose();
   }
 
-  void _loadMore() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      _currentPage++;
-      // setState(() {
-      //   futurePlaylist.addAll(List<String>.from(json.decode(response.body)));
-      // });
-    }
+
+
+  Future _loadMoreVertical() async {
+    setState(() {
+      isLoadingVertical = true;
+    });
+
+    // // Add in an artificial delay
+    // await new Future.delayed(const Duration(seconds: 2));
+
+    // verticalData.addAll(List.generate(increment, (index) => verticalData.length + index));
+
+    setState(() {
+      isLoadingVertical = false;
+    });
   }
 
-  void _handleSearch(String input) {
-    // _results.clear();
-    // for (var str in myCoolStrings){
-    //   if(str.toLowerCase().contains(input.toLowerCase())) {
-    //     setState(() {
-    //       futurePlaylist.asStream().add(str);
-    //     });
-    //   }
-    // }
-  }
 
+  // // Triggers fecth() and then add new items or change _hasMore flag
+  // void _loadMore() {
+  //   _isLoading = true;
+  //   ApiService.getPlaylistByUrl(this.widget.playlistUrl, page: _currentPage).then((res) {
+  //     if (res.firstPageSongs.content.isEmpty) {
+  //       setState(() {
+  //         _isLoading = false;
+  //         _hasMore = false;
+  //       });
+  //     } else {
+  //       setState(() {
+  //         _isLoading = false;
+  //         _pairList.addAll(fetchedList);
+  //       });
+  //     }
+  //   });
+
+  // }
+
+
+  // void _loadMore() {
+  //   if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+  //     _currentPage++;
+  //     // setState(() {
+  //     //   futurePlaylist.addAll(List<String>.from(json.decode(response.body)));
+  //     // });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +156,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
       body: SlidingUpPanel(backdropEnabled: true, 
                            body: createPopUpContent(), 
                            controller: pc, 
-                           //panel: SelectPlaylistWidget(addSongToPlaylist: () {}),
                            borderRadius: radius,
                            maxHeight: MediaQuery.of(context).size.height - 300,
                            minHeight: 0,

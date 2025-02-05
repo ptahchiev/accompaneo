@@ -1,12 +1,11 @@
 import 'package:accompaneo/models/artist.dart';
 import 'package:accompaneo/models/browseable.dart';
-import 'package:accompaneo/models/playlists.dart';
+import 'package:accompaneo/models/category.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../values/app_theme.dart';
 import 'package:accompaneo/widgets/hero_layout_card.dart';
 
@@ -25,7 +24,7 @@ class Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final double height = MediaQuery.sizeOf(context).height;
+    final double height = MediaQuery.sizeOf(context).height - 100;
     final CarouselController controller = CarouselController(initialItem: 0);
 
     return Visibility(
@@ -71,6 +70,11 @@ class Section extends StatelessWidget {
                 NavigationHelper.pushNamed(AppRoutes.player, arguments : {'song' : sectionData![index] as Song});
                 return;
               }
+
+              if (sectionData![index] is Category) {
+                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'playlistUrl' : '/category/${(sectionData![index] as Category).code}', 'playlistCode' : ''});
+                return;
+              }              
 
               if (sectionData![index] is Artist) {
                 NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'playlistUrl' : '/artist/${(sectionData![index] as Artist).code}', 'playlistCode' : ''});

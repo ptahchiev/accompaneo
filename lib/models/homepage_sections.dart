@@ -1,10 +1,12 @@
 import 'package:accompaneo/models/artist.dart';
+import 'package:accompaneo/models/browseable.dart';
+import 'package:accompaneo/models/category.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
 
 class HomepageSections {
 
-  List<SimplePlaylist> genres;
+  List<Browseable> genres;
 
   List<Artist> artists;
 
@@ -27,7 +29,7 @@ class HomepageSections {
   });
 
   HomepageSections copy({
-    List<SimplePlaylist>? genres,
+    List<Browseable>? genres,
     List<Artist>? artists,
     List<Song>? latestAdded,
     List<Song>? latestPlayed,
@@ -44,12 +46,12 @@ class HomepageSections {
       );
 
   static HomepageSections fromJson(Map<String, dynamic> json) => HomepageSections(
-        genres: (json['genres'] as List).map((e) => SimplePlaylist.fromJson(e)).toList(), //List.from(json['genres']).map((e) => BannerData(title: e['name'], subtitle: e['description'], url: '', imageUrl: '')).toList(),
-        artists: (json['artists'] as List).map((e) => Artist.fromJson(e)).toList(), //List.from(json['artists']).map((e)=> BannerData(title: e['name'], subtitle: '', url: '/artist/${e["code"]}', imageUrl: e['picture']?['url'])).toList(),
-        latestAdded: (json['latestAdded'] as List).map((e) => Song.fromJson(e)).toList(), //List.from(json['latestAdded']).map((e)=> BannerData(title: e['title'], subtitle: e['artist']?['name'], url: '', imageUrl: e['picture']?['url'])).toList(),
-        latestPlayed: (json['latestPlayed'] as List).map((e) => Song.fromJson(e)).toList(), //List.from(json['latestPlayed']).map((e)=> BannerData(title: e['title'], subtitle: e['artist']?['name'], url: '', imageUrl: e['picture']?['url'])).toList(),
-        mostPopular: (json['mostPopular'] as List).map((e) => Song.fromJson(e)).toList(), //List.from(json['mostPopular']).map((e)=> BannerData(title: e['title'], subtitle: e['artist']?['name'], url: '', imageUrl: e['picture']?['url'])).toList(),
-        favourites: (json['favourites'] as List).map((e) => Song.fromJson(e)).toList() //List.from(json['favourites']).map((e)=> BannerData(title: e['title'], subtitle: e['artist']?['name'], url: '', imageUrl: e['picture']?['url'])).toList()
+        genres: (json['genres'] as List).map((e) => Category.fromJson(e)).toList(),
+        artists: (json['artists'] as List).map((e) => Artist.fromJson(e)).toList(),
+        latestAdded: (json['latestAdded'] as List).map((e) => Song.fromJson(e)).toList(),
+        latestPlayed: (json['latestPlayed'] as List).map((e) => Song.fromJson(e)).toList(),
+        mostPopular: (json['mostPopular'] as List).map((e) => Song.fromJson(e)).toList(),
+        favourites: (json['favourites'] as List).map((e) => Song.fromJson(e)).toList()
   );
 
   Map<String, dynamic> toJson() => {

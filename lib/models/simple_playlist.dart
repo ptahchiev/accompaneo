@@ -1,7 +1,7 @@
 import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/image.dart';
 
-class SimplePlaylist extends Browseable{
+class SimplePlaylist extends Browseable {
 
   bool favourites;
 

@@ -24,9 +24,9 @@ class Browseable {
       );
 
   static Browseable fromJson(Map<String, dynamic> json) => Browseable(
-        code: json['code'],
-        name: json['subtitle'],
-        picture: json['url']
+        code: json['code'] ?? '',
+        name: json['name'] ?? '',
+        picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: '')
       );
 
   Map<String, dynamic> toJson() => {

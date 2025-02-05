@@ -65,8 +65,9 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   Future<void> setAudioSource(String audioSource) async {
     try {
-      await _player.setUrl(audioSource, preload: true, initialPosition: _player.duration).then((s) => {
-        //_player.load()
+      print("position: ${_player.position}");
+      _player.setAudioSource(AudioSource.uri(Uri.parse(audioSource)), initialPosition: _player.position, preload: true).then((dur) {
+        //_player.pause();
       });
     } on PlayerException catch (e) {
       print("Error loading audio source: $audioSource $e");
@@ -77,14 +78,14 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     // Inform the operating system of our app's audio attributes etc.
     // We pick a reasonable default for an app that plays speech.
     final session = await AudioSession.instance;
-    await session.configure(const AudioSessionConfiguration.speech());
+    await session.configure(const AudioSessionConfiguration.music());
+
     // Listen toerrors during playback.
     
-    // _player.playbackEventStream.listen((event) {},
-    //     onError: (Object e, StackTrace stackTrace) {
-    //   print('A stream error occurred: $e');
-    // });
-
+    _player.playbackEventStream.listen((event) {},
+        onError: (Object e, StackTrace stackTrace) {
+      print('A stream error occurred: $e');
+    });
 
     // _player.playerStateStream.listen((state) {
     //   if (state.playing) {
@@ -111,15 +112,15 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
   }
 
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if (state == AppLifecycleState.paused) {
-  //     // Release the player's resources when not in use. We use "stop" so that
-  //     // if the app resumes later, it will still remember what position to
-  //     // resume from.
-  //     _player.stop();
-  //   }
-  // }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      // Release the player's resources when not in use. We use "stop" so that
+      // if the app resumes later, it will still remember what position to
+      // resume from.
+      _player.stop();
+    }
+  }
 
   // void onTimerTick(int elapsedMilliseconds) {
   //   _metronomePlayer.play();
@@ -165,10 +166,10 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
           _player.bufferedPositionStream,
           _player.durationStream,
           (position, bufferedPosition, duration) => PositionData(
-              position, bufferedPosition, duration ?? Duration.zero, _player.playing)),
+              position, bufferedPosition, duration ?? Duration.zero, _player.playerState)),
       builder: (context, snapshot) {
         final playerState = snapshot.data;
-        final playing = playerState?.playing;
+        final playing = playerState?.playerState.playing;
         final durationState = snapshot.data;
         final progress = durationState?.position ?? Duration.zero;
         final buffered = durationState?.bufferedPosition ?? Duration.zero;
@@ -244,6 +245,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                             // This callback updates the set of selected segment values.
                             onSelectionChanged: (Set<PracticeType> newSelection) {
                               //SystemSound.play(SystemSoundType.click);
+
                               setAudioSource(song.audioStreamUrls![newSelection.first.name]).then((v) {
                                 setState(() {
                                   _segmentedButtonSelection = newSelection;
@@ -262,8 +264,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                     ),
                     Align(
                       alignment: Alignment.center,
-                      child: _playButton()
-                      //IconButton(onPressed: () =>_playPause(), icon: Icon(Icons.play_arrow_outlined, color: Colors.white, size: 150))
+                      child: _playButton(snapshot)
                     ),
                     Align(
                       alignment: Alignment.bottomCenter,
@@ -311,13 +312,10 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   }
 
 
-  StreamBuilder<PlayerState> _playButton() {
-    return StreamBuilder<PlayerState>(
-      stream: _player.playerStateStream,
-      builder: (context, snapshot) {
+  Widget _playButton(AsyncSnapshot<PositionData> snapshot) {
         final playerState = snapshot.data;
-        final processingState = playerState?.processingState;
-        final playing = playerState?.playing;
+        final processingState = playerState?.playerState.processingState;
+        final playing = playerState?.playerState.playing;
         if (processingState == ProcessingState.loading ||
             processingState == ProcessingState.buffering) {
           return Container(
@@ -349,8 +347,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                 _player.seek(Duration.zero),
           );
         }
-      },
-    );  
   }
 
   @override
