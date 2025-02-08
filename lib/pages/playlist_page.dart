@@ -50,6 +50,21 @@ class _PlaylistPageState extends State<PlaylistPage> {
   bool isLoadingVertical = false;
   List<Song> filteredItems = [];
 
+  Map<Function, Timer> _timeouts = {};
+  void debounce(Duration timeout, Function target, [List arguments = const []]) {
+    if (_timeouts.containsKey(target)) {
+      _timeouts[target]!.cancel();
+    }
+
+    Timer timer = Timer(timeout, () {
+      Function.apply(target, arguments);
+    });
+
+    _timeouts[target] = timer;
+  }
+
+
+
   void _handleSearch(String input) {
 
 
@@ -154,7 +169,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
             prefixIcon: Icon(Icons.search),
             border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
           ),
-          onChanged: _handleSearch,
+          onChanged: (val) => debounce(const Duration(milliseconds: 300), _handleSearch, [val]),
         ),
         actions: [
           Visibility(
