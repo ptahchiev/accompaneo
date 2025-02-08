@@ -27,7 +27,7 @@ class Routes {
         return SlideRightRoute(widget: const ForgotPasswordPage());
 
       case AppRoutes.playlistSearch:
-        return SlideRightRoute(widget: const PlaylistPage(playlistUrl: '/search', playlistCode: ''));
+        return SlideRightRoute(widget: const PlaylistPage(queryTerm: '', playlistName: 'Search', playlistUrl: '/search', playlistCode: ''));
 
       case AppRoutes.player: {
         final args = settings.arguments as Map<String, Song>;
@@ -38,7 +38,7 @@ class Routes {
       case AppRoutes.playlist: {
         final args = settings.arguments as Map<String, String>;
 
-        return SlideRightRoute(widget:  PlaylistPage(playlistUrl: args['playlistUrl']!, playlistCode: args['playlistCode']!));
+        return SlideRightRoute(widget:  PlaylistPage(queryTerm: args['queryTerm'], playlistName: args['playlistName']!, playlistUrl: args['playlistUrl']!, playlistCode: args['playlistCode']!));
       }      
 
       case AppRoutes.home:

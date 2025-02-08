@@ -48,7 +48,7 @@ class Section extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(icon: Icon(Icons.arrow_circle_right_outlined), onPressed: () {
-                        NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : playlistUrl!, 'playlistCode' : ''});
+                        NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistName': title, 'playlistUrl' : playlistUrl!, 'playlistCode' : ''});
                       }),
                     )
                 )
@@ -72,17 +72,17 @@ class Section extends StatelessWidget {
               }
 
               if (sectionData![index] is Category) {
-                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'playlistUrl' : '/category/${(sectionData![index] as Category).code}', 'playlistCode' : ''});
+                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'queryTerm' : ':allCategories:${(sectionData![index] as Category).code}', 'playlistName' : (sectionData![index] as Category).name, 'playlistUrl' : '/category/${(sectionData![index] as Category).code}', 'playlistCode' : ''});
                 return;
               }              
 
               if (sectionData![index] is Artist) {
-                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'playlistUrl' : '/artist/${(sectionData![index] as Artist).code}', 'playlistCode' : ''});
+                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'queryTerm' : ':artist.code:${(sectionData![index] as Artist).code}', 'playlistName':'Songs by ${(sectionData![index] as Artist).name}', 'playlistUrl' : '/artist/${(sectionData![index] as Artist).code}', 'playlistCode' : ''});
                 return;
               }
 
               if (sectionData![index] is SimplePlaylist) {
-                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'playlistUrl' : '/category/${sectionData![index].code}', 'playlistCode' : ''});
+                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'playlistName':sectionData![index].name, 'playlistUrl' : '/category/${sectionData![index].code}', 'playlistCode' : ''});
                 return;
               }
             },

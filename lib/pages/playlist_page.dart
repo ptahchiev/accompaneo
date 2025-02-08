@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/playlists.dart';
+import 'package:accompaneo/models/search_page.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
@@ -19,11 +21,15 @@ import 'package:shimmer/shimmer.dart';
 
 class PlaylistPage extends StatefulWidget {
 
+  final String? queryTerm;
+
   final String playlistUrl;
 
   final String playlistCode;
 
-  const PlaylistPage({super.key, required this.playlistUrl, required this.playlistCode});
+  final String playlistName;
+
+  const PlaylistPage({super.key, this.queryTerm, required this.playlistUrl, required this.playlistName, required this.playlistCode});
 
   @override
   State<PlaylistPage> createState() => _PlaylistPageState();
@@ -39,12 +45,19 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   PanelController pc = PanelController();
   final _scrollController = ScrollController();
-  late Future<Playlist> futurePlaylist;
+  late Future<PageDto> futurePage;
+  late Future<SearchPage> futureSongs;
   bool isLoadingVertical = false;
   List<Song> filteredItems = [];
-  String _query = '';
 
   void _handleSearch(String input) {
+
+
+    setState(() {
+      futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl, query: input);
+    });
+
+
     // _results.clear();
     // for (var str in myCoolStrings){
     //   if(str.toLowerCase().contains(input.toLowerCase())) {
@@ -65,7 +78,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
         print('load more');
       }
     });
-    futurePlaylist = ApiService.getPlaylistByUrl(this.widget.playlistUrl);
+    futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl);
+    //futureSongs = ApiService.search(queryTerm: widget.queryTerm ?? '');
   }
 
   @override
@@ -95,20 +109,19 @@ class _PlaylistPageState extends State<PlaylistPage> {
   // // Triggers fecth() and then add new items or change _hasMore flag
   // void _loadMore() {
   //   _isLoading = true;
-  //   ApiService.getPlaylistByUrl(this.widget.playlistUrl, page: _currentPage).then((res) {
-  //     if (res.firstPageSongs.content.isEmpty) {
-  //       setState(() {
-  //         _isLoading = false;
-  //         _hasMore = false;
-  //       });
-  //     } else {
-  //       setState(() {
-  //         _isLoading = false;
-  //         _pairList.addAll(fetchedList);
-  //       });
-  //     }
-  //   });
-
+  //   //futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl, page: _currentPage);//.then((res) {
+  //   //   if (res.firstPageSongs.content.isEmpty) {
+  //   //     setState(() {
+  //   //       _isLoading = false;
+  //   //       _hasMore = false;
+  //   //     });
+  //   //   } else {
+  //   //     setState(() {
+  //   //       _isLoading = false;
+  //   //       _pairList.addAll(fetchedList);
+  //   //     });
+  //   //   }
+  //   // });
   // }
 
 
@@ -123,8 +136,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _searchController = TextEditingController();
-
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(24.0),
       topRight: Radius.circular(24.0),
@@ -135,7 +146,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: TextField(
-          controller: _searchController,
+          //controller: _searchController,
           decoration: const InputDecoration(
             hintText: 'Search for songs, artists...',
             hintStyle: TextStyle(color: Colors.grey),
@@ -172,8 +183,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   Widget createPopUpContent() {
-    return FutureBuilder<Playlist>(
-      future: futurePlaylist, 
+    return FutureBuilder<PageDto>(
+      future: futurePage, 
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
           return ListView(
@@ -188,43 +199,41 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Text(
-                                  snapshot.data!.name,
+                                  widget.playlistName,
                                   style: AppTheme.sectionTitle,
                                 ),
                               ),
                               Expanded(child: Divider(color: Colors.grey.shade500)),
                               Align(
                                 alignment: Alignment.centerRight,
-                                child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${snapshot.data!.firstPageSongs.totalElements} songs')),
+                                child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${snapshot.data!.totalElements} songs')),
                               )
                             ],
                           ),
                   ),                  
                   ListView.builder(
-                          itemCount: snapshot.data?.firstPageSongs.content.length,
+                          itemCount: snapshot.data?.content.length,
                           shrinkWrap: true,
-                          // controller: _scrollController,
-                          //physics: ClampingScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListTile(
-                                    leading: BrowsableImage(imageUrl: snapshot.data!.firstPageSongs.content[index].picture!.url),
+                                    leading: BrowsableImage(imageUrl: snapshot.data!.content[index].picture),
                                     visualDensity: VisualDensity(vertical: 1),
                                     isThreeLine: true,
                                     titleAlignment: ListTileTitleAlignment.center,
                                     onTap: () {
-                                      ApiService.markSongAsPlayed(snapshot.data!.firstPageSongs.content[index].code).then((v) {
-                                        Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(snapshot.data!.firstPageSongs.content[index]);
-                                        NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.firstPageSongs.content[index]});
+                                      ApiService.markSongAsPlayed(snapshot.data!.content[index].code).then((v) {
+                                        Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(snapshot.data!.content[index]);
+                                        NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.content[index]});
                                       });
                                     },
-                                    title: Text(snapshot.data!.firstPageSongs.content[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
+                                    title: Text(snapshot.data!.content[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
                                     subtitle: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(snapshot.data!.firstPageSongs.content[index].artist.name),
+                                        Text(snapshot.data!.content[index].artist.name),
                                         Wrap(
                                           spacing: 10,
-                                          children: snapshot.data!.firstPageSongs.content[index].chords!.map<Widget>((ch) => Container(padding: EdgeInsets.all(3), decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(5)), child: Text(ch.name))).toList(),
+                                          children: snapshot.data!.content[index].chords!.map<Widget>((ch) => Container(padding: EdgeInsets.all(3), decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(5)), child: Text(ch.name))).toList(),
                                         )
                                       ]
                                     ),
@@ -232,25 +241,25 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                       
                                       children: [
                                         IconButton(
-                                          icon: snapshot.data!.firstPageSongs.content[index].favoured ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined),
+                                          icon: snapshot.data!.content[index].favoured ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined),
                                           onPressed: () {
-                                            if(snapshot.data!.firstPageSongs.content[index].favoured) {
-                                              ApiService.removeSongFromFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code).then((v) {
-                                                Provider.of<PlaylistsModel>(context, listen: false).removeSongFromFavourites(snapshot.data!.firstPageSongs.content[index]);
+                                            if(snapshot.data!.content[index].favoured) {
+                                              ApiService.removeSongFromFavouritesPlaylist(snapshot.data!.content[index].code).then((v) {
+                                                Provider.of<PlaylistsModel>(context, listen: false).removeSongFromFavourites(snapshot.data!.content[index]);
                                                 SnackbarHelper.showSnackBar('Song removed favourites');
-                                                snapshot.data!.firstPageSongs.content[index].favoured = false;
+                                                snapshot.data!.content[index].favoured = false;
                                                 setState(() {
-                                                  futurePlaylist = Future.value(snapshot.data);
+                                                  //futurePlaylist = Future.value(snapshot.data);
                                                 });
 
                                               });
                                             } else {
-                                              ApiService.addSongToFavouritesPlaylist(snapshot.data!.firstPageSongs.content[index].code).then((v) {
-                                                Provider.of<PlaylistsModel>(context, listen: false).addSongToFavourites(snapshot.data!.firstPageSongs.content[index]);
+                                              ApiService.addSongToFavouritesPlaylist(snapshot.data!.content[index].code).then((v) {
+                                                Provider.of<PlaylistsModel>(context, listen: false).addSongToFavourites(snapshot.data!.content[index]);
                                                 SnackbarHelper.showSnackBar('Song added to favourites');
-                                                snapshot.data!.firstPageSongs.content[index].favoured = true;
+                                                snapshot.data!.content[index].favoured = true;
                                                 setState(() {
-                                                  futurePlaylist = Future.value(snapshot.data);
+                                                  //futurePlaylist = Future.value(snapshot.data);
                                                 });
                                               });
                                        
@@ -258,7 +267,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                           }),
                                         IconButton(
                                           icon: Icon(Icons.more_horiz),
-                                          onPressed: () => _songDialogBuilder(context, snapshot.data!.firstPageSongs.content[index])
+                                          onPressed: () => _songDialogBuilder(context, snapshot.data!.content[index])
                                         )
                                       ],
                                     )
@@ -343,7 +352,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     leading: Icon(Icons.search, color: Colors.black, size: 28),
                     onTap: () {
                       Navigator.pop(context, true);
-                      NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl':'/artist/${song.artist.code}', 'playlistCode' : ''});
+                      NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistName': 'Songs by ${song.artist.name}', 'playlistUrl':'/artist/${song.artist.code}', 'playlistCode' : ''});
                     }
                   ),
                 ],

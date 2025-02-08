@@ -1,9 +1,7 @@
-import 'package:accompaneo/models/image.dart';
-
 class Browseable {
   final String code;
   final String name;
-  final ImageData? picture;
+  final String? picture;
 
   // Constructor
   Browseable({
@@ -15,7 +13,7 @@ class Browseable {
   Browseable copy({
     String? code,
     String? name,
-    ImageData? picture
+    String? picture
   }) =>
       Browseable(
         code: code ?? this.code,
@@ -26,13 +24,13 @@ class Browseable {
   static Browseable fromJson(Map<String, dynamic> json) => Browseable(
         code: json['code'] ?? '',
         name: json['name'] ?? '',
-        picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: '')
+        picture: json['picture'] ?? ''
       );
 
   Map<String, dynamic> toJson() => {
         'code': code,
         'name': name,
-        'picture': picture != null ? picture!.toJson() : '',
+        'picture': picture
       };
 
 

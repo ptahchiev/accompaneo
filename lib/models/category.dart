@@ -13,6 +13,6 @@ class Category extends Browseable {
   static Category fromJson(Map<String, dynamic> json) => Category(
     code: json['code'] ?? '',
     name: json['name'] ?? '',
-    picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: '')
+    picture: json['picture'] ?? ''
   );  
 }

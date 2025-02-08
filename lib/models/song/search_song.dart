@@ -3,7 +3,7 @@ import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/image.dart';
 import 'package:accompaneo/models/song/chord.dart';
 
-class Song extends Browseable {
+class SearchSong extends Browseable {
   Artist artist;
   double bpm;
   bool favoured;
@@ -12,7 +12,7 @@ class Song extends Browseable {
   Map<String, dynamic>? audioStreamUrls;
 
   // Constructor
-  Song({
+  SearchSong({
     required super.code, required super.name, required super.picture,
     required this.artist,
     required this.bpm,
@@ -22,7 +22,7 @@ class Song extends Browseable {
     this.audioStreamUrls
   });
 
-  static Song fromJson(Map<String, dynamic> json) => Song(
+  static SearchSong fromJson(Map<String, dynamic> json) => SearchSong(
         code: json['code'] ?? '',
         name: json['name'] ?? '',
         picture: json['picture'] ?? '',
@@ -39,7 +39,7 @@ class Song extends Browseable {
         'name': name,
         'picture': picture,
         'artist': artist,
-        'bpm': bpm,
+        'tempo': bpm,
         'favoured': favoured
       };
 }

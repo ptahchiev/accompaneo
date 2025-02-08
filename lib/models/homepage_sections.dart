@@ -1,7 +1,6 @@
 import 'package:accompaneo/models/artist.dart';
 import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/category.dart';
-import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
 
 class HomepageSections {

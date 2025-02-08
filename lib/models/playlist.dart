@@ -8,7 +8,7 @@ class Playlist extends Browseable {
 
   bool latestPlayed;
 
-  Page firstPageSongs;
+  PageDto firstPageSongs;
 
   // Constructor
   Playlist({
@@ -23,16 +23,16 @@ class Playlist extends Browseable {
   static Playlist fromJson(Map<String, dynamic> json) => Playlist(
         code: json['code'] ?? '',
         name: json['name'] ?? '',
-        picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: ''),
+        picture: json['picture'] ?? '',
         favourites:  json['favourites'] ?? false,
         latestPlayed:  json['latestPlayed'] ?? false,
-        firstPageSongs: json['firstPageSongs'] != null ? Page.fromJson(json['firstPageSongs']) : Page(number: 0, size: 0, totalElements: 0, totalPages: 0, content: [])
+        firstPageSongs: json['firstPageSongs'] != null ? PageDto.fromJson(json['firstPageSongs']) : PageDto(number: 0, size: 0, totalElements: 0, totalPages: 0, content: [])
       );
 
   Map<String, dynamic> toJson() => {
         'code': code,
         'name': name,
-        'picture': picture != null ? picture!.toJson() : '',
+        'picture': picture,
         'songs': firstPageSongs,
       };
 }

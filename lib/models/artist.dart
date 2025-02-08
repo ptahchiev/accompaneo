@@ -1,5 +1,4 @@
 import 'package:accompaneo/models/browseable.dart';
-import 'package:accompaneo/models/image.dart';
 
 class Artist extends Browseable{
 
@@ -13,7 +12,7 @@ class Artist extends Browseable{
   static Artist fromJson(Map<String, dynamic> json) => Artist(
         code: json['code'],
         name: json['name'],
-        picture: json['picture'] != null ? ImageData.fromJson(json['picture']) : ImageData(code: '', url: '')
+        picture: json['picture'] ?? ''
       );
 
   Map<String, dynamic> toJson() => {

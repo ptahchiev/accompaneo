@@ -43,7 +43,7 @@ class CardList extends StatelessWidget {
                           visualDensity: VisualDensity(vertical: 0),
                           leading: BrowsableImage(backgroundColor: Colors.red, icon: Icons.favorite),
                           subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs'),
-                            onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${playlists.items[index].code}', 'playlistCode': ''})
+                            onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistName':playlists.items[index].name, 'playlistUrl' : '/${playlists.items[index].code}', 'playlistCode': ''})
                         ),
                         Divider(),
                       ],
@@ -54,7 +54,7 @@ class CardList extends StatelessWidget {
                           visualDensity: VisualDensity(vertical: 0),
                           title: Text(playlists.items[index].name),
                           subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs'),
-                          onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistUrl' : '/${playlists.items[index].code}', 'playlistCode': playlists.items[index].code})
+                          onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistName':playlists.items[index].name, 'playlistUrl' : '/${playlists.items[index].code}', 'playlistCode': playlists.items[index].code})
                   );
                 },
               );

@@ -1,7 +1,9 @@
 import 'package:accompaneo/models/homepage_sections.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlist.dart';
+import 'package:accompaneo/models/search_page.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
+import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/models/user/registration.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_constants.dart';
@@ -119,14 +121,14 @@ class ApiService {
   }  
 
 
-  static Future<Playlist> getPlaylistByUrl(String playlistUrl, {int page = 0}) async {
+  static Future<PageDto> getPlaylistByUrl(String playlistUrl, {String query = '', int page = 0, size = 50}) async {
     final dio = Dio();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      final response = await dio.get('$baseUrl/playlist$playlistUrl', queryParameters: {'size' : 50, 'page': page}, options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
+      final response = await dio.get('$baseUrl/playlist$playlistUrl', queryParameters: {'query' : query, 'size' : size, 'page': page}, options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
 
       if (response.statusCode == 200) {
-        return Playlist.fromJson(response.data);
+        return PageDto.fromJson(response.data);
       } else {
         throw Exception('Failed to fetch playlist: ${response.statusCode}');
       }
@@ -136,7 +138,7 @@ class ApiService {
           NavigationHelper.pushNamed(AppRoutes.login);
         });
       }
-      return Future.value(Playlist(code: '', favourites: false, latestPlayed: false, name: '', picture: null, firstPageSongs: Page(totalPages: 0, totalElements: 0, size: 0, number: 0, content: [])));
+      return Future.value(PageDto(totalPages: 0, totalElements: 0, size: 0, number: 0, content: []));
     }
   }
 
@@ -214,7 +216,41 @@ class ApiService {
       }
       return Future.value(e.response);
     }
-  }    
+  }
+
+  static Future<SearchPage> search({int page = 0, int size = 50, String sort = '_score,DESC', String queryTerm = '', String queryName = 'default'}) async {
+    final dio = Dio();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      final response = await dio.get('$baseUrl/search', 
+        queryParameters: {
+          'size' : size, 
+          'page': page,
+          'q' : queryTerm,
+          'sort': sort,
+          'projection': 'io.accompaneo.backend.module.search.dto.SongFacetSearchPageDtoDefinition',
+          'queryName': queryName,
+          'type': 'song'
+        }, 
+        options: Options(headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')}));
+
+      if (response.statusCode == 200) {
+        return SearchPage.fromJson(response.data);
+      } else {
+        throw Exception('Failed to fetch playlist: ${response.statusCode}');
+      }
+
+
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 401) {
+        prefs.remove(AppConstants.nemesisTokenHeader).then((b){
+          NavigationHelper.pushNamed(AppRoutes.login);
+        });
+      }
+      return Future.value(SearchPage(totalPages: 0, totalElements: 0, size: 0, number: 0, content:[]));
+    }
+  }
 
   // static Future<Post> authenticate(int postId) async {
   //   final dio = Dio();

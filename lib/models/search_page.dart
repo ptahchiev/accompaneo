@@ -1,6 +1,6 @@
 import 'package:accompaneo/models/song/song.dart';
 
-class PageDto {
+class SearchPage {
 
   int totalPages;
 
@@ -13,7 +13,7 @@ class PageDto {
   List<Song> content;
 
   // Constructor
-  PageDto({
+  SearchPage({
     required this.totalPages,
     required this.totalElements,
     required this.size,
@@ -21,14 +21,14 @@ class PageDto {
     required this.content
   });
 
-  PageDto copy({
+  SearchPage copy({
     int? totalPages,
     int? totalElements,
     int? size,
     int? number,
     List<Song>? content
   }) =>
-      PageDto(
+      SearchPage(
         totalPages: totalPages ?? this.totalPages,
         totalElements: totalElements ?? this.totalElements,
         size: size ?? this.size,
@@ -36,12 +36,12 @@ class PageDto {
         content: content ?? this.content
       );
 
-  static PageDto fromJson(Map<String, dynamic> json) => PageDto(
+  static SearchPage fromJson(Map<String, dynamic> json) => SearchPage(
         totalPages: json['totalPages'] ?? 0,
         totalElements: json['totalElements'] ?? 0,
         size: json['size'] ?? 0,
         number: json['number'] ?? 0,
-        content: (json['content'] as List).map((e) => Song.fromJson(e)).toList()
+        content: (json['content'] as List).map((e) => Song.fromJson(e['properties'])).toList()
       );
 
   Map<String, dynamic> toJson() => {
