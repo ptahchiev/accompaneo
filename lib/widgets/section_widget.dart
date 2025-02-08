@@ -1,11 +1,14 @@
 import 'package:accompaneo/models/artist.dart';
 import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/category.dart';
+import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
+import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../values/app_theme.dart';
 import 'package:accompaneo/widgets/hero_layout_card.dart';
 
@@ -67,7 +70,11 @@ class Section extends StatelessWidget {
             flexWeights: const <int>[1, 1, 1],
             onTap: (index) {
               if (sectionData![index] is Song) {
-                NavigationHelper.pushNamed(AppRoutes.player, arguments : {'song' : sectionData![index] as Song});
+                ApiService.markSongAsPlayed(sectionData![index].code).then((v) {
+                  Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(sectionData![index] as Song);
+                  NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : sectionData![index] as Song});
+                });
+                //NavigationHelper.pushNamed(AppRoutes.player, arguments : {'song' : sectionData![index] as Song});
                 return;
               }
 
