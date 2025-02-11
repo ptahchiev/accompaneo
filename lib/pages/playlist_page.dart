@@ -230,8 +230,10 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                     titleAlignment: ListTileTitleAlignment.center,
                                     onTap: () {
                                       ApiService.markSongAsPlayed(snapshot.data!.content[index].code).then((v) {
-                                        Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(snapshot.data!.content[index]);
-                                        NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.content[index]});
+                                        if (v.statusCode == 200) {
+                                          Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(snapshot.data!.content[index]);
+                                          NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.content[index]});
+                                        }
                                       });
                                     },
                                     title: Text(snapshot.data!.content[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),

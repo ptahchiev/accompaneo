@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
                   Section(playlist: SimplePlaylist(code: '', name: 'Latest', url: '/latestAdded'), sectionData: snapshot.data?.latestAdded),
                   Consumer<PlaylistsModel>(
                       builder: (context, playlists, child) {
-                        return Section(playlist: SimplePlaylist(code: '', name: 'Jump back in', url: '/latestPlayed', favourites: false, latestPlayed: true), sectionData: playlists.getLatestPlayedPlaylist().firstPageSongs.content);
+                        return Section(playlist: SimplePlaylist(code: '', name: 'Jump back in', url: '/latestPlayed', favourites: false, latestPlayed: true), sectionData: playlists.getLatestPlayedPlaylistSongs());
                       }
                   ),
                   Consumer<PlaylistsModel>(

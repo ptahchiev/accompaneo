@@ -12,6 +12,37 @@ enum ChordType {
 class ChordsHelper {
   const ChordsHelper._();
 
+  static const Map<ChordType, Color> chordTypeColors = {
+    ChordType.A: Colors.blueGrey,
+    ChordType.B: Colors.purple,
+    ChordType.C: Colors.red,
+    ChordType.D: Colors.orange,
+    ChordType.E: Colors.brown,
+    ChordType.F: Colors.blue,
+    ChordType.G: Colors.green,
+    ChordType.Am: Colors.blueGrey,
+    ChordType.Bm: Colors.purple,
+    ChordType.Cm: Colors.red,
+    ChordType.Dm: Colors.orange,
+    ChordType.Em: Colors.brown,
+    ChordType.Fm: Colors.blue,
+    ChordType.Gm: Colors.green,
+    ChordType.Ab: Colors.blueGrey,
+    ChordType.Bb: Colors.purple,
+    ChordType.Cb: Colors.red,
+    ChordType.Db: Colors.orange,
+    ChordType.Eb: Colors.brown,
+    ChordType.Fb: Colors.blue,
+    ChordType.Gb: Colors.green,  
+    ChordType.A7: Colors.blueGrey,
+    ChordType.B7: Colors.purple,
+    ChordType.C7: Colors.red,
+    ChordType.D7: Colors.orange,
+    ChordType.E7: Colors.brown,
+    ChordType.F7: Colors.blue,
+    ChordType.G7: Colors.green,
+  };
+
   static const Map<ChordType, FlutterGuitarChord> chordTypeOptions = {
     ChordType.A: A,
     ChordType.B: B,

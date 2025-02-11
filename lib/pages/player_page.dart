@@ -17,7 +17,7 @@ import '../utils/helpers/chords_helper.dart';
 import 'package:just_audio/just_audio.dart';
 import 'dart:math';
 import 'package:reliable_interval_timer/reliable_interval_timer.dart';
-
+import 'package:guitar_chord_library/guitar_chord_library.dart';
 
 class PlayerPage extends StatefulWidget {
 
@@ -31,16 +31,9 @@ class PlayerPage extends StatefulWidget {
 
 T? ambiguate<T>(T? value) => value;
 
-enum PracticeType { BandNoVocals, BandFull, PracticeFull, click }
+enum PracticeType { BandNoVocals, BandFull, PracticeFull, Click }
 
 // double _tempo = 93.88489208633094;
-
-const Map<PracticeType, String> practiceTypeOptions = {
-  PracticeType.PracticeFull: 'Practice',
-  PracticeType.BandNoVocals: 'Band',
-  PracticeType.BandFull: '+Vocals',
-  PracticeType.click: 'Click'
-};
 
 class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
@@ -217,16 +210,20 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                 <WidgetStatesConstraint, Color>{
                                   WidgetState.focused: Colors.white,
                                   WidgetState.selected : Colors.white,
+                                  WidgetState.disabled: Colors.black,
                                   WidgetState.any: AppColors.primaryColor,
                                 }
                               ),
                               backgroundColor: WidgetStateProperty<Color>.fromMap(
                                   <WidgetStatesConstraint, Color>{
                                     WidgetState.focused: Colors.white,
+                                    WidgetState.disabled: Colors.grey.shade400,
                                     WidgetState.selected : AppColors.primaryColor,
                                     WidgetState.any: Colors.white,
                                   }
-                              )
+                              ),
+
+                              
                             ),
                             // ToggleButtons above allows multiple or no selection.
                             // Set `multiSelectionEnabled` and `emptySelectionAllowed` to true
@@ -241,8 +238,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                             // This callback updates the set of selected segment values.
                             onSelectionChanged: (Set<PracticeType> newSelection) {
                               //SystemSound.play(SystemSoundType.click);
-
-                              setAudioSource(song.audioStreamUrls![newSelection.first.name]).then((v) {
+                              final String clickUrl = '';
+                              setAudioSource(newSelection.first == PracticeType.Click ? clickUrl : song.audioStreamUrls![newSelection.first.name]).then((v) {
                                 setState(() {
                                   _segmentedButtonSelection = newSelection;
                                   //_audioUrl = song.audioStreamUrls![newSelection.first.name];
@@ -252,10 +249,12 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                             },
                             // SegmentedButton uses a List<ButtonSegment<T>> to build its children
                             // instead of a List<Widget> like ToggleButtons.
-                            segments: song.audioStreamUrls!.keys.map<ButtonSegment<PracticeType>>((practiceType) {
-                                PracticeType practiceTypeEnum = PracticeType.values.firstWhere((e) => e.toString() == 'PracticeType.$practiceType');
-                                return ButtonSegment<PracticeType>(value: practiceTypeEnum, label: Text(practiceTypeOptions[practiceTypeEnum]!));
-                            }).toList(),
+                            segments: [
+                                ButtonSegment<PracticeType>(label: Text('Practice'), value: PracticeType.PracticeFull, enabled: song.audioStreamUrls!.keys.contains('PracticeFull')),
+                                ButtonSegment<PracticeType>(label: Text('Band'), value: PracticeType.BandNoVocals, enabled: song.audioStreamUrls!.keys.contains('BandNoVocals')),
+                                ButtonSegment<PracticeType>(label: Text('+Vocals'), value: PracticeType.BandFull, enabled: song.audioStreamUrls!.keys.contains('BandFull')),
+                                ButtonSegment<PracticeType>(label: Text('Click'), value: PracticeType.Click),
+                            ]
                         )
                     ),
                     Align(
@@ -348,7 +347,22 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
 
-    FlutterGuitarChord nextChord = ChordsHelper.chordTypeOptions[ChordType.A] ?? ChordsHelper.MISSING;
+    var _selection = 'Guitar';
+    var _useFlat = false;
+
+    var instrument = (_selection == null || _selection == 'Guitar')
+        ? GuitarChordLibrary.instrument()
+        : GuitarChordLibrary.instrument(InstrumentType.ukulele);
+
+    List<String> keys = instrument.getKeys(_useFlat);
+
+    List<Chord>? chords = instrument.getChordsByKey('A', _useFlat);
+
+    var index = 0;
+    Chord chord = chords![index];
+    var position = chord.chordPositions[0]; //I 
+
+    //FlutterGuitarChord nextChord = ChordsHelper.chordTypeOptions[ChordType.A] ?? ChordsHelper.MISSING;
 
     BorderRadiusGeometry radius = BorderRadius.only(
       topRight: Radius.circular(75.0),
@@ -395,13 +409,32 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                           children: 
                                           [
                                             Text('Next', style: AppTheme.titleMedium.copyWith(color: Colors.black)),
-                                            CircleAvatar(backgroundColor: nextChord.tabBackgroundColor,
-                                              child: Text(nextChord.chordName, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
+                                            CircleAvatar(backgroundColor: ChordsHelper.chordTypeColors[chord],
+                                              child: Text(chord.name, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
                                           ]
                                         ),
                                       ),
                                       Expanded(
-                                        child: nextChord
+                                        child: Flexible(
+                                          child: FlutterGuitarChord(
+                                            baseFret: position.baseFret,
+                                            chordName: chord.name,
+                                            fingers: position.fingers,
+                                            frets: position.frets,
+                                            totalString: instrument.stringCount,
+                                            stringStroke: 0.4,
+                                            //differentStringStrokes: _useStringThickness,
+                                            // stringColor: Colors.red,
+                                            // labelColor: Colors.teal,
+                                            // tabForegroundColor: Colors.white,
+                                            // tabBackgroundColor: Colors.deepOrange,
+                                            firstFrameStroke: 10,
+                                            barStroke: 0.5,
+                                            //firstFrameColor: Colors.red,
+                                            barColor: Colors.grey,
+                                            // labelOpenStrings: true,                          
+                                          ),
+                                        ),
                                       )
                                   ]
                                 ),

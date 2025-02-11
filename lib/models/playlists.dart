@@ -1,9 +1,12 @@
 import 'package:accompaneo/models/playlist.dart';
+import 'package:accompaneo/utils/fixed_size_fifo_queue.dart';
 import 'package:collection/collection.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:flutter/material.dart';
 
 class PlaylistsModel extends ChangeNotifier {
+
+  final FixedSizeFIFOQueue<Song> latestPlayed = FixedSizeFIFOQueue(capacity: 50);
 
   final List<Playlist> _playlists = [];
 
@@ -13,8 +16,8 @@ class PlaylistsModel extends ChangeNotifier {
     return _playlists.firstWhere((p) => p.favourites);
   }
 
-  Playlist getLatestPlayedPlaylist() {
-    return _playlists.firstWhere((p) => p.latestPlayed);
+  List<Song> getLatestPlayedPlaylistSongs() {
+    return latestPlayed.queue.toList();
   }  
 
   void add(Playlist item) {
@@ -24,8 +27,12 @@ class PlaylistsModel extends ChangeNotifier {
 
   void addAll(List<Playlist> items) {
     for (Playlist item in items ) {
-      if (!_playlists.any((pi) => pi.code == item.code)) {
-        _playlists.add(item);
+      if (item.latestPlayed) {
+        latestPlayed.enqueueAll(item.firstPageSongs.content);
+      } else {
+        if (!_playlists.any((pi) => pi.code == item.code)) {
+          _playlists.add(item);
+        }
       }
     }
 
@@ -51,12 +58,16 @@ class PlaylistsModel extends ChangeNotifier {
   }
 
   void addSongToLatestPlayed(Song song) {
-    Playlist? playlist = _playlists.firstWhereOrNull((p) => p.latestPlayed);
-    if (playlist != null) {
-      playlist.firstPageSongs.content.insert(0, song);
-      playlist.firstPageSongs.totalElements = playlist.firstPageSongs.totalElements + 1;
-      notifyListeners();
-    }
+    latestPlayed.enqueue(song);
+    notifyListeners();
+
+
+    // Playlist? playlist = _playlists.firstWhereOrNull((p) => p.latestPlayed);
+    // if (playlist != null) {
+    //   playlist.firstPageSongs.content.insert(0, song);
+    //   playlist.firstPageSongs.totalElements = playlist.firstPageSongs.totalElements + 1;
+    //   n
+    // }
   }
 
   void addSongToFavourites(Song song) {

@@ -68,8 +68,9 @@ class Section extends StatelessWidget {
             onTap: (index) {
               if (sectionData![index] is Song) {
                 ApiService.markSongAsPlayed(sectionData![index].code).then((v) {
-                  Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(sectionData![index] as Song);
-                  NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : sectionData![index] as Song});
+                  Song song = sectionData![index] as Song;
+                  Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(song);
+                  NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : song});
                 });
                 return;
               }
