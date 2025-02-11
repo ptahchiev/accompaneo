@@ -14,15 +14,12 @@ import 'package:accompaneo/widgets/hero_layout_card.dart';
 
 class Section extends StatelessWidget {
 
-  final String title;
+  final SimplePlaylist playlist;
 
-  final String? playlistCode;
-
-  final String? playlistUrl;
 
   final List<Browseable>? sectionData;
 
-  const Section({super.key, required this.title, this.playlistCode, required this.playlistUrl, required this.sectionData});
+  const Section({super.key, required this.playlist, required this.sectionData});
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +39,16 @@ class Section extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Text(
-                    title,
+                    playlist.name,
                     style: AppTheme.sectionTitle,
                   ),
                 ),
                 Expanded(child: Divider(color: Colors.grey.shade600)),
-                Visibility(visible: playlistUrl != null,
+                Visibility(visible: playlist.url != null,
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(icon: Icon(Icons.arrow_circle_right_outlined), onPressed: () {
-                        NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistName': title, 'playlistUrl' : playlistUrl!, 'playlistCode' : ''});
+                        NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlist' : playlist});
                       }),
                     )
                 )
@@ -74,22 +71,21 @@ class Section extends StatelessWidget {
                   Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(sectionData![index] as Song);
                   NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : sectionData![index] as Song});
                 });
-                //NavigationHelper.pushNamed(AppRoutes.player, arguments : {'song' : sectionData![index] as Song});
                 return;
               }
 
               if (sectionData![index] is Category) {
-                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'queryTerm' : ':allCategories:${(sectionData![index] as Category).code}', 'playlistName' : (sectionData![index] as Category).name, 'playlistUrl' : '/category/${(sectionData![index] as Category).code}', 'playlistCode' : ''});
+                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'queryTerm' : ':allCategories:${(sectionData![index] as Category).code}', 'playlist' : SimplePlaylist(code: '', name: (sectionData![index] as Category).name, favourites: false, latestPlayed: false, searchable: true)});
                 return;
               }              
 
               if (sectionData![index] is Artist) {
-                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'queryTerm' : ':artist.code:${(sectionData![index] as Artist).code}', 'playlistName':'Songs by ${(sectionData![index] as Artist).name}', 'playlistUrl' : '/artist/${(sectionData![index] as Artist).code}', 'playlistCode' : ''});
+                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'queryTerm' : ':artistCode:${(sectionData![index] as Artist).code}', 'playlist' : SimplePlaylist(code: '', name: 'Songs by ${(sectionData![index] as Artist).name}', favourites: false, latestPlayed: false, searchable: true)});
                 return;
               }
 
               if (sectionData![index] is SimplePlaylist) {
-                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'playlistName':sectionData![index].name, 'playlistUrl' : '/category/${sectionData![index].code}', 'playlistCode' : ''});
+                NavigationHelper.pushNamed(AppRoutes.playlist, arguments : {'playlist' : sectionData![index]});
                 return;
               }
             },

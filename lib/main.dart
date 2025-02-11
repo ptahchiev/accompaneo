@@ -72,6 +72,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
           child: Scaffold(
             appBar: AppBar(
               title: const Text('Accompaneo'),
+              centerTitle: true,
               backgroundColor: Theme.of(context).colorScheme.inversePrimary,
               actions: <Widget>[
                 IconButton(
@@ -164,6 +165,7 @@ class Accompaneo extends StatelessWidget {
       navigatorKey: NavigationHelper.key,
       scaffoldMessengerKey: SnackbarHelper.key,
       onGenerateRoute: Routes.generateRoute,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

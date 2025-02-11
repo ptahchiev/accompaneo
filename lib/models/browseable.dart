@@ -4,10 +4,10 @@ class Browseable {
   final String? picture;
 
   // Constructor
-  Browseable({
+  const Browseable({
     required this.code,
     required this.name,
-    required this.picture
+    this.picture
   });
 
   Browseable copy({

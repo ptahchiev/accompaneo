@@ -1,4 +1,5 @@
 import 'package:accompaneo/main.dart';
+import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/player_page.dart';
 import 'package:accompaneo/pages/playlist_page.dart';
@@ -27,7 +28,7 @@ class Routes {
         return SlideRightRoute(widget: const ForgotPasswordPage());
 
       case AppRoutes.playlistSearch:
-        return SlideRightRoute(widget: const PlaylistPage(queryTerm: '', playlistName: 'Search', playlistUrl: '/search', playlistCode: ''));
+        return SlideRightRoute(widget: const PlaylistPage(playlist: SimplePlaylist(code: '', name: 'Search', latestPlayed: false, favourites: false, searchable: true)));
 
       case AppRoutes.player: {
         final args = settings.arguments as Map<String, Song>;
@@ -36,9 +37,9 @@ class Routes {
       }
 
       case AppRoutes.playlist: {
-        final args = settings.arguments as Map<String, String>;
+        final args = settings.arguments as Map<String, Object>;
 
-        return SlideRightRoute(widget:  PlaylistPage(queryTerm: args['queryTerm'], playlistName: args['playlistName']!, playlistUrl: args['playlistUrl']!, playlistCode: args['playlistCode']!));
+        return SlideRightRoute(widget:  PlaylistPage(queryTerm: args['queryTerm'] != null ? args['queryTerm'] as String: '', playlist: args['playlist'] as SimplePlaylist));
       }      
 
       case AppRoutes.home:

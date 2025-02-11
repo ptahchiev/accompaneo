@@ -1,5 +1,4 @@
 import 'package:accompaneo/models/browseable.dart';
-import 'package:accompaneo/models/image.dart';
 
 class Category extends Browseable {
 

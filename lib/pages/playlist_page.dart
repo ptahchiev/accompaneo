@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:accompaneo/models/page.dart';
-import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/playlists.dart';
-import 'package:accompaneo/models/search_page.dart';
+import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
@@ -23,13 +22,10 @@ class PlaylistPage extends StatefulWidget {
 
   final String? queryTerm;
 
-  final String playlistUrl;
+  final SimplePlaylist playlist;
 
-  final String playlistCode;
 
-  final String playlistName;
-
-  const PlaylistPage({super.key, this.queryTerm, required this.playlistUrl, required this.playlistName, required this.playlistCode});
+  const PlaylistPage({super.key, this.queryTerm, required this.playlist});
 
   @override
   State<PlaylistPage> createState() => _PlaylistPageState();
@@ -46,7 +42,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
   PanelController pc = PanelController();
   final _scrollController = ScrollController();
   late Future<PageDto> futurePage;
-  late Future<SearchPage> futureSongs;
   bool isLoadingVertical = false;
   List<Song> filteredItems = [];
 
@@ -63,24 +58,15 @@ class _PlaylistPageState extends State<PlaylistPage> {
     _timeouts[target] = timer;
   }
 
-
-
   void _handleSearch(String input) {
-
-
     setState(() {
-      futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl, query: input);
+      //futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl, query: input);
+      if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
+        futurePage = ApiService.getPlaylistByUrl(widget.playlist.url!);
+      } else {
+        futurePage = ApiService.search(queryTerm: '$input${widget.queryTerm ?? ""}');
+      }
     });
-
-
-    // _results.clear();
-    // for (var str in myCoolStrings){
-    //   if(str.toLowerCase().contains(input.toLowerCase())) {
-    //     setState(() {
-    //       futurePlaylist.asStream().add(str);
-    //     });
-    //   }
-    // }
   }
 
   @override
@@ -93,8 +79,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
         print('load more');
       }
     });
-    futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl);
-    //futureSongs = ApiService.search(queryTerm: widget.queryTerm ?? '');
+    //futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl);
+    if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
+      futurePage = ApiService.getPlaylistByUrl(widget.playlist.url!);
+    } else {
+      futurePage = ApiService.search(queryTerm: widget.queryTerm ?? '');
+    }
   }
 
   @override
@@ -160,21 +150,24 @@ class _PlaylistPageState extends State<PlaylistPage> {
       resizeToAvoidBottomInset:false,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: TextField(
-          //controller: _searchController,
-          decoration: const InputDecoration(
-            hintText: 'Search for songs, artists...',
-            hintStyle: TextStyle(color: Colors.grey),
-            contentPadding: EdgeInsets.all(15),
-            prefixIcon: Icon(Icons.search),
-            border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
-          ),
-          onChanged: (val) => debounce(const Duration(milliseconds: 300), _handleSearch, [val]),
-        ),
+        title: widget.playlist.searchable ?
+          TextField(
+            //controller: _searchController,
+            decoration: const InputDecoration(
+              hintText: 'Search for songs, artists...',
+              hintStyle: TextStyle(color: Colors.grey),
+              contentPadding: EdgeInsets.all(15),
+              prefixIcon: Icon(Icons.search),
+              border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
+            ),
+            onChanged: (val) => debounce(const Duration(milliseconds: 300), _handleSearch, [val]),
+          )
+          :
+          Container(),
         actions: [
           Visibility(
-            visible: widget.playlistCode.isNotEmpty,
-            child: IconButton(onPressed: () { _playlistDialogBuilder(context, widget.playlistCode);}, icon: Icon(Icons.more_vert))
+            visible: widget.playlist.code.isNotEmpty,
+            child: IconButton(onPressed: () { _playlistDialogBuilder(context, widget.playlist.code);}, icon: Icon(Icons.more_vert))
           )
           
         ],
@@ -214,7 +207,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Text(
-                                  widget.playlistName,
+                                  widget.playlist.name,
                                   style: AppTheme.sectionTitle,
                                 ),
                               ),
@@ -248,7 +241,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                         Text(snapshot.data!.content[index].artist.name),
                                         Wrap(
                                           spacing: 10,
-                                          children: snapshot.data!.content[index].chords!.map<Widget>((ch) => Container(padding: EdgeInsets.all(3), decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(5)), child: Text(ch.name))).toList(),
+                                          children: snapshot.data!.content[index].chords!.map<Widget>((ch) => Container(padding: EdgeInsets.all(3), decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(5)), child: Text(ch))).toList(),
                                         )
                                       ]
                                     ),
@@ -266,7 +259,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                                 setState(() {
                                                   //futurePlaylist = Future.value(snapshot.data);
                                                 });
-
                                               });
                                             } else {
                                               ApiService.addSongToFavouritesPlaylist(snapshot.data!.content[index].code).then((v) {
@@ -277,7 +269,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                                   //futurePlaylist = Future.value(snapshot.data);
                                                 });
                                               });
-                                       
                                             }
                                           }),
                                         IconButton(
@@ -328,17 +319,17 @@ class _PlaylistPageState extends State<PlaylistPage> {
         return SimpleDialog(
                 children: [
                   Visibility(
-                    visible: widget.playlistCode.isNotEmpty,
+                    visible: widget.playlist.code.isNotEmpty,
                     child: ListTile(
                       title: Text('Remove from playlist'),
                       leading: Icon(Icons.remove, color: Colors.black, size: 28),
                       onTap: () {
                         Navigator.pop(context, true);
                         
-                        final result = ApiService.removeSongFromPlaylist(song.code, widget.playlistCode);
+                        final result = ApiService.removeSongFromPlaylist(song.code, widget.playlist.code);
                         result.then((response) {
                           if (response.statusCode == 200) {
-                            Provider.of<PlaylistsModel>(context, listen: false).removeSongFromPlaylist(widget.playlistCode, song);
+                            Provider.of<PlaylistsModel>(context, listen: false).removeSongFromPlaylist(widget.playlist.code, song);
                             SnackbarHelper.showSnackBar('Song removed from playlist');
                           } else {
                             if (response.data != null && response.data['message'] != null) {
@@ -367,7 +358,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                     leading: Icon(Icons.search, color: Colors.black, size: 28),
                     onTap: () {
                       Navigator.pop(context, true);
-                      NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlistName': 'Songs by ${song.artist.name}', 'playlistUrl':'/artist/${song.artist.code}', 'playlistCode' : ''});
+                      NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlist': SimplePlaylist(code: '', name: 'Songs by ${song.artist.name}', searchable: true), 'queryTerm' : ':artistCode:${song.artist.code}'});
                     }
                   ),
                 ],

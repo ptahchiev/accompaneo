@@ -1,5 +1,6 @@
 import 'package:accompaneo/models/homepage_sections.dart';
 import 'package:accompaneo/models/playlists.dart';
+import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/widgets/placeholders.dart';
 import 'package:flutter/material.dart';
@@ -36,18 +37,18 @@ class _HomePageState extends State<HomePage> {
             return Consumer<PlaylistsModel>(
               builder: (context, playlists, child) {
                 return ListView(children: [
-                  Section(title: 'Genres', sectionData: snapshot.data?.genres, playlistUrl: null),
-                  Section(title: 'Artists', sectionData: snapshot.data?.artists, playlistUrl: null),
-                  Section(title: 'Most Popular', sectionData: snapshot.data?.mostPopular, playlistUrl: '/mostPopular'),
-                  Section(title: 'Latest', sectionData: snapshot.data?.latestAdded, playlistUrl: '/latestAdded'),
+                  Section(playlist: SimplePlaylist(code: '', name: 'Genres'), sectionData: snapshot.data?.genres),
+                  Section(playlist: SimplePlaylist(code: '', name: 'Artists'), sectionData: snapshot.data?.artists),
+                  Section(playlist: SimplePlaylist(code: '', name: 'Most Popular', url: '/mostPopular'), sectionData: snapshot.data?.mostPopular),
+                  Section(playlist: SimplePlaylist(code: '', name: 'Latest', url: '/latestAdded'), sectionData: snapshot.data?.latestAdded),
                   Consumer<PlaylistsModel>(
                       builder: (context, playlists, child) {
-                        return Section(title: 'Jump back in', sectionData: playlists.getLatestPlayedPlaylist().firstPageSongs.content, playlistUrl: '/latestPlayed');
+                        return Section(playlist: SimplePlaylist(code: '', name: 'Jump back in', url: '/latestPlayed', favourites: false, latestPlayed: true), sectionData: playlists.getLatestPlayedPlaylist().firstPageSongs.content);
                       }
                   ),
                   Consumer<PlaylistsModel>(
                       builder: (context, playlists, child) {
-                        return Section(title: 'Your favourites', sectionData: playlists.getFavouritesPlaylist().firstPageSongs.content, playlistUrl: '/favourites');
+                        return Section(playlist: SimplePlaylist(code: '', name: 'Your favourites', url: '/favourites', favourites: true, latestPlayed: false), sectionData: playlists.getFavouritesPlaylist().firstPageSongs.content);
                       }
                   )
                 ]);

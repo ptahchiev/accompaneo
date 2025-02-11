@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/position_data.dart';
+import 'package:accompaneo/services/api_service.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:audio_session/audio_session.dart';
@@ -9,6 +11,7 @@ import 'package:accompaneo/values/app_theme.dart';
 import 'package:accompaneo/values/app_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_guitar_chord/flutter_guitar_chord.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import '../utils/helpers/chords_helper.dart';
 import 'package:just_audio/just_audio.dart';
@@ -87,18 +90,11 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       print('A stream error occurred: $e');
     });
 
-    // _player.playerStateStream.listen((state) {
-    //   if (state.playing) {
-    //     print('playing');
-    //   }
-    //   switch (state.processingState) {
-    //     case ProcessingState.idle: print('idle');
-    //     case ProcessingState.loading: print('loading');
-    //     case ProcessingState.buffering: print('buffering');
-    //     case ProcessingState.ready: print('ready');
-    //     case ProcessingState.completed: print('completed');
-    //   }
-    // });
+    _player.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+          // completed show next song screen
+      }
+    });
 
 
     setAudioSource(song.audioStreamUrls!.values.toList()[0]);
@@ -276,7 +272,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  IconButton(onPressed: ()=> {}, icon: Icon(Icons.favorite_outline, color: Colors.white, size: 30)),
+                                  song.favoured ? Icon(Icons.favorite, color: Colors.white) : Icon(Icons.favorite_outline_outlined, color: Colors.white),
                                   Text(song.name, textAlign: TextAlign.center, style: AppTheme.titleLarge.copyWith(color: Colors.white)),
                                   Text(song.artist.name, textAlign: TextAlign.center, style: AppTheme.sectionTitle.copyWith(color: Colors.white))
                                 ]),

@@ -2,8 +2,6 @@ import 'package:accompaneo/models/homepage_sections.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/search_page.dart';
-import 'package:accompaneo/models/simple_playlist.dart';
-import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/models/user/registration.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_constants.dart';
