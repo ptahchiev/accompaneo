@@ -1,6 +1,4 @@
-import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/playlists.dart';
-import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';

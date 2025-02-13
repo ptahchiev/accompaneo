@@ -2,6 +2,7 @@ import 'package:accompaneo/models/playlists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/home_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/settings_page.dart';
@@ -14,7 +15,7 @@ import 'utils/helpers/navigation_helper.dart';
 import 'utils/helpers/snackbar_helper.dart';
 import 'routes.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -23,11 +24,13 @@ void main() {
     const SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light),
   );
 
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
     (_) => runApp(
       ChangeNotifierProvider(
         create: (context) => PlaylistsModel(),
-        child: Accompaneo(),
+        child: Accompaneo(token: prefs.getString('token')),
       ),
     )
   );
@@ -156,11 +159,18 @@ class _AccompaneoState extends State<AccompaneoApp> {
 }
 
 class Accompaneo extends StatelessWidget {
+
+  String? token;
+
+  Accompaneo({required this.token});
+
   @override
   Widget build(BuildContext context) {
+    bool hasValidToken = token != null;
+
     return MaterialApp(
       title: 'Accompaneo',
-      initialRoute: AppRoutes.login,
+      initialRoute: hasValidToken ? AppRoutes.home : AppRoutes.login,
       theme: AppTheme.themeData,
       navigatorKey: NavigationHelper.key,
       scaffoldMessengerKey: SnackbarHelper.key,

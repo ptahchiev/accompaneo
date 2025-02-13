@@ -1,6 +1,5 @@
 import 'package:accompaneo/models/artist.dart';
 import 'package:accompaneo/models/browseable.dart';
-import 'package:accompaneo/models/song/chord.dart';
 
 class Song extends Browseable {
   Artist artist;

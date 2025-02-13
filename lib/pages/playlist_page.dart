@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:accompaneo/models/facet.dart';
+import 'package:accompaneo/models/facet_value.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
@@ -10,6 +12,8 @@ import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/values/app_strings.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
+import 'package:accompaneo/widgets/chord_chip.dart';
+import 'package:accompaneo/widgets/genre_chip.dart';
 import 'package:accompaneo/widgets/placeholders.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +28,6 @@ class PlaylistPage extends StatefulWidget {
 
   final SimplePlaylist playlist;
 
-
   const PlaylistPage({super.key, this.queryTerm, required this.playlist});
 
   @override
@@ -36,16 +39,22 @@ class _PlaylistPageState extends State<PlaylistPage> {
   StreamController<Song?> songController = StreamController<Song?>.broadcast();
 
   bool _isLoading = true;
+
+
   bool _hasMore = true;
   int _currentPage = 0;
+  int _selectedFacetTile = -1; 
+  // Map<String, List<FacetValueDto>> selectedFacets = Map.of({'allCategories' : [], 'chords': [], 'tempo': []});
 
   PanelController pc = PanelController();
   final _scrollController = ScrollController();
   late Future<PageDto> futurePage;
+
   bool isLoadingVertical = false;
   List<Song> filteredItems = [];
 
   Map<Function, Timer> _timeouts = {};
+
   void debounce(Duration timeout, Function target, [List arguments = const []]) {
     if (_timeouts.containsKey(target)) {
       _timeouts[target]!.cancel();
@@ -64,7 +73,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
         futurePage = ApiService.getPlaylistByUrl(widget.playlist.url!);
       } else {
-        futurePage = ApiService.search(queryTerm: '$input${widget.queryTerm ?? ""}');
+        futurePage = ApiService.search(queryTerm: input);
       }
     });
   }
@@ -92,8 +101,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
     _scrollController.dispose();
     super.dispose();
   }
-
-
 
   Future _loadMoreVertical() async {
     setState(() {
@@ -160,7 +167,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               prefixIcon: Icon(Icons.search),
               border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
             ),
-            onChanged: (val) => debounce(const Duration(milliseconds: 300), _handleSearch, [val]),
+            onChanged: (val) => debounce(const Duration(milliseconds: 300), _handleSearch, ['$val${widget.queryTerm ?? ""}']),
           )
           :
           Container(),
@@ -168,23 +175,32 @@ class _PlaylistPageState extends State<PlaylistPage> {
           Visibility(
             visible: widget.playlist.code.isNotEmpty,
             child: IconButton(onPressed: () { _playlistDialogBuilder(context, widget.playlist.code);}, icon: Icon(Icons.more_vert))
-          )
-          
+          ),
+          Visibility(
+            visible: widget.playlist.searchable,
+            child: FutureBuilder(future: futurePage, builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Padding(padding: EdgeInsets.only(right: 25), child: IconButton(onPressed: () { _filtersDialogBuilder(context, () => futurePage);}, icon: Icon(Icons.tune_rounded)));
+              } else {
+                return Padding(padding: EdgeInsets.only(right: 25), child: Icon(Icons.tune_rounded));
+              }
+            }))
         ],
       ),
-      body: SlidingUpPanel(backdropEnabled: true, 
-                           body: createPopUpContent(), 
-                           controller: pc, 
-                           borderRadius: radius,
-                           maxHeight: MediaQuery.of(context).size.height - 300,
-                           minHeight: 0,
-                           panel: StreamBuilder(
-                            stream: songController.stream,
-                            builder: (context, snapshot) {
-                              if (snapshot.data == null) return const SizedBox.shrink();
-                              return SelectPlaylistWidget(addSongToPlaylist: () {pc.close();}, song: snapshot.data!);
-                            },
-                           )
+      body: SlidingUpPanel(
+              backdropEnabled: true, 
+              body: createPopUpContent(), 
+              controller: pc, 
+              borderRadius: radius,
+              maxHeight: MediaQuery.of(context).size.height - 300,
+              minHeight: 0,
+              panel: StreamBuilder(
+              stream: songController.stream,
+              builder: (context, snapshot) {
+                if (snapshot.data == null) return const SizedBox.shrink();
+                return SelectPlaylistWidget(addSongToPlaylist: () {pc.close();}, song: snapshot.data!);
+              },
+            )
                           
       ),
     );
@@ -199,26 +215,74 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 controller: _scrollController,
                 children: [
                   Container(
-                        color: Colors.transparent,
-                        padding: EdgeInsets.all(10),
-                        child: 
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: Text(
-                                  widget.playlist.name,
-                                  style: AppTheme.sectionTitle,
-                                ),
-                              ),
-                              Expanded(child: Divider(color: Colors.grey.shade500)),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${snapshot.data!.totalElements} songs')),
-                              )
-                            ],
+                  color: Colors.transparent,
+                  padding: EdgeInsets.all(10),
+                  child: 
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            widget.playlist.name,
+                            style: AppTheme.sectionTitle,
                           ),
-                  ),                  
+                        ),
+                        Expanded(child: Divider(color: Colors.grey.shade500)),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${snapshot.data!.totalElements} songs')),
+                        )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    child: Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [ 
+                          Wrap(
+                            alignment: WrapAlignment.start,
+                            spacing: 10.0,
+                            runSpacing: 10.0,
+                            children: [
+                              ...snapshot.data!.appliedFacets!.map((af) {
+                                return GenreChip(selected: true, facetValueName: af.facetValueName, onDeleted: () {
+                                  _handleSearch(af.removeQueryUrl);
+                                });
+                              }),
+
+
+
+                              // ...selectedFacets['allCategories']!.map((e) {
+                              //   return GenreChip(selected: true, facetValue: e, onDeleted: () {
+                              //     setState(() {
+                              //       selectedFacets['allCategories']!.remove(e);
+                              //     });
+                              //   });
+                              // }),
+                              // ...selectedFacets['chords']!.map((e) {
+                              //   return ChordChip(selected: true, facetValue: e, onDeleted: () {
+                              //     //add remove search
+                              //     setState(() {
+                              //       selectedFacets['chords']!.remove(e);
+                              //     });
+                              //   },);
+                              // }),
+                              // ...selectedFacets['tempo']!.map((e) {
+                              //   return InputChip(
+                              //     label: Text(e.code),
+                              //     onDeleted: () => {},
+                              //   );
+                              // }),
+                            ]
+                          )
+                        ]
+                      ),
+                    ),
+                  ),
                   ListView.builder(
                           itemCount: snapshot.data?.content.length,
                           shrinkWrap: true,
@@ -369,6 +433,131 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
+  List<Widget> _getGenreChips(String facetCode, List<FacetValueDto> facetValues, Function setDialogState) {
+    return facetValues.where((fv) => fv.code != '001').map((fv) {
+      bool selected = false;//selectedFacets[facetCode]!.contains(fv);
+      return GenreChip(selected: selected, facetValueName: fv.name, onSelected: (bool selected) {
+        setDialogState(() {
+          _handleSearch(fv.currentQueryUrl);
+          // setState(() {
+          //   if (selected) {
+          //     selectedFacets[facetCode]!.add(fv);
+          //   } else {
+          //     selectedFacets[facetCode]!.remove(fv);
+          //   }
+          // });
+        });
+      });
+    }).toList();
+  }
+
+  List<Widget> _getChordsChips(String facetCode, List<FacetValueDto> facetValues, Function setDialogState) {
+    return facetValues.map((fv) {
+      bool selected = false;//selectedFacets[facetCode]!.contains(fv);
+      return ChordChip(selected: selected, facetValue: fv, onSelected: (bool selected) {
+        setDialogState(() {
+          _handleSearch(fv.currentQueryUrl);
+          // setState(() {
+          //   if (selected) {
+          //     selectedFacets[facetCode]!.add(fv);
+          //   } else {
+          //     selectedFacets[facetCode]!.remove(fv);
+          //   }
+          // });
+        });
+      });
+    }).toList();
+  }
+
+  List<Widget> _getTempoSlider(String facetCode, List<FacetValueDto> facetValues, Function setState) {
+    return facetValues.map((fv) {
+      return InputChip(avatar: Icon(Icons.check) , label: Text(fv.name), selectedColor: Colors.red);
+    }).toList();
+  }
+
+  Future<void> _filtersDialogBuilder(BuildContext context, Future<PageDto> Function() fetchPage) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, refresh) {
+            return FutureBuilder(
+              future: fetchPage(), 
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator()); // Show loading state
+                }
+                var page = snapshot.data!;
+                List<Widget> widgets = [];
+                widgets.insert(0, Center(child: Text('Filter by:', style: AppTheme.titleMedium.copyWith(color: Colors.black))));
+                widgets.insert(1, Container(
+                  width: MediaQuery.of(context).size.width - 200,
+                  //height: MediaQuery.of(context).size.height -  500,
+                  padding: EdgeInsets.all(20),
+                  child: ExpansionPanelList(
+                    dividerColor: Colors.grey.shade500,
+                    elevation: 0,
+                    expandedHeaderPadding: EdgeInsets.all(0),
+                    animationDuration: Duration(seconds: 1),
+                    //expandedHeaderPadding: EdgeInsets.all(32),
+                    children: page.facets!.map<ExpansionPanel>((f) {
+                      return ExpansionPanel(
+                        canTapOnHeader: true,
+                        isExpanded: _selectedFacetTile == page.facets!.indexOf(f),
+                        backgroundColor: Colors.transparent,
+                        headerBuilder: (context, isOpen) {
+                          return Text(f.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, height: 2.5));
+                        }, 
+                        body: 
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [ 
+                                Wrap(
+                                  alignment: WrapAlignment.center,
+                                  spacing: 10.0,
+                                  runSpacing: 10.0,
+                                  children: [
+                                    if (f.code == 'allCategories') ..._getGenreChips(f.code, f.values, refresh),
+                                    if (f.code == 'chords') ..._getChordsChips(f.code, f.values, refresh),
+                                    if (f.code == 'tempo') ..._getTempoSlider(f.code, f.values, refresh)
+                                  ]
+                                )
+                              ]
+                            ),
+                          )
+                      );
+                    }).toList(),
+
+                    expansionCallback: (panelIndex, isExpanded) => {
+                      if (isExpanded) {
+                        refresh(() {
+                          setState(() {
+                            _selectedFacetTile = panelIndex;
+                          });
+                        }),
+
+                      } else {
+                        refresh(() {
+                          setState(() {
+                            _selectedFacetTile = -1;
+                          });
+                        }),                    
+
+                      }
+                    },
+                  
+                  ),
+                ));
+                return SimpleDialog(insetPadding: EdgeInsets.all(10), children: widgets);
+              });
+          });
+      },
+    );
+  }
+
   Future<void> _playlistDialogBuilder(BuildContext context, String playlistCode) {
     return showDialog<void>(
       context: context,
@@ -400,6 +589,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
         );
       },
     );
-  }  
+  }
 
 }

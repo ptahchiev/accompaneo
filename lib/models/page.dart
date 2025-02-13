@@ -1,3 +1,5 @@
+import 'package:accompaneo/models/applied_facet.dart';
+import 'package:accompaneo/models/facet.dart';
 import 'package:accompaneo/models/song/song.dart';
 
 class PageDto {
@@ -12,14 +14,20 @@ class PageDto {
 
   List<Song> content;
 
+  List<FacetDto>? facets;
+
+  List<AppliedFacetDto>? appliedFacets;
+
   // Constructor
   PageDto({
     required this.totalPages,
     required this.totalElements,
     required this.size,
     required this.number,
-    required this.content
-  });
+    required this.content,
+    List<FacetDto>? facets,
+    List<AppliedFacetDto>? appliedFacets
+  }) : facets = facets ?? [], appliedFacets = appliedFacets ?? [];
 
   PageDto copy({
     int? totalPages,
@@ -41,7 +49,9 @@ class PageDto {
         totalElements: json['totalElements'] ?? 0,
         size: json['size'] ?? 0,
         number: json['number'] ?? 0,
-        content: (json['content'] as List).map((e) => Song.fromJson(e)).toList()
+        content: (json['content'] as List).map((e) => Song.fromJson(e)).toList(),
+        facets: json['facets'] != null ? (json['facets'] as Map).entries.map((e) => FacetDto.fromJson(e.key, e.value)).toList() : [],
+        appliedFacets: json['appliedFacets'] != null ? (json['appliedFacets'] as List).map((e) => AppliedFacetDto.fromJson(e)).toList() : [],
       );
 
   Map<String, dynamic> toJson() => {
