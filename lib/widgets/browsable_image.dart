@@ -23,9 +23,11 @@ class BrowsableImage extends StatelessWidget {
         width: 60,
         child: 
           imageUrl != null && imageUrl!.isNotEmpty ?
-            Image(height: 60, fit: BoxFit.fill, image: NetworkImage(imageUrl!))
+            Image.network(imageUrl!, height: 60, fit: BoxFit.fill, errorBuilder: (context, error, stackTrace) {
+              return FittedBox(fit: BoxFit.fill, child: Container(color:backgroundColor ?? Theme.of(context).colorScheme.primary, child: Padding(padding: EdgeInsets.all(10), child: Icon(icon, color: Colors.white))));
+            },)
           :
-            FittedBox(fit: BoxFit.fill, child: Container(color:backgroundColor ?? Theme.of(context).colorScheme.primary, child: Padding(padding: EdgeInsets.all(10), child: Icon(icon, color: Colors.white)))) 
+            FittedBox(fit: BoxFit.fill, child: Container(color:backgroundColor ?? Theme.of(context).colorScheme.primary, child: Padding(padding: EdgeInsets.all(10), child: Icon(icon, color: Colors.white))))
       ),
     );
   }
