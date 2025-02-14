@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../utils/helpers/snackbar_helper.dart';
 import '../values/app_regex.dart';
-
+import 'dart:convert' as convert;
 import '../widgets/app_text_form_field.dart';
 import '../resources/resources.dart';
 import '../widgets/gradient_background.dart';
@@ -152,16 +152,17 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: isValid
                             ? () {
                                 final result = ApiService.login(emailController.text, passwordController.text);
-                                result.then((response) => {
+                                result.then((response) {
                                   if (response.statusCode == 200) {
-                                    emailController.clear(),
-                                    passwordController.clear(),
-                                    NavigationHelper.pushReplacementNamed(AppRoutes.home)
+                                    emailController.clear();
+                                    passwordController.clear();
+                                    NavigationHelper.pushReplacementNamed(AppRoutes.home);
                                   } else {
-                                    if (response.data != null && response.data['message'] != null) {
-                                      SnackbarHelper.showSnackBar(response.data['message'], isError: true)
+                                    var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+                                    if (jsonResponse['message'] != null) {
+                                      SnackbarHelper.showSnackBar(jsonResponse['message'], isError: true);
                                     } else {
-                                      SnackbarHelper.showSnackBar('Failed to login: ${response.statusCode}', isError: true)
+                                      SnackbarHelper.showSnackBar('Failed to login: ${response.statusCode}', isError: true);
                                     }
                                   }
                                 });

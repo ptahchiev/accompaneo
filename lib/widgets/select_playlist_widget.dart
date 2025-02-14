@@ -1,3 +1,4 @@
+import 'dart:convert' as convert;
 import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
@@ -99,8 +100,9 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                                             Provider.of<PlaylistsModel>(context, listen: false).addSongToPlaylist(playlists.items[index].code, widget.song);
                                             SnackbarHelper.showSnackBar('Song was added to playlist');
                                           } else {
-                                            if (response.data != null && response.data['message'] != null) {
-                                              SnackbarHelper.showSnackBar(response.data['message'], isError: true);
+                                            var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+                                            if (jsonResponse['message'] != null) {
+                                              SnackbarHelper.showSnackBar(jsonResponse['message'], isError: true);
                                             } else {
                                               SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true);
                                             }

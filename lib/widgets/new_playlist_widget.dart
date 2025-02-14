@@ -1,6 +1,6 @@
+import 'dart:convert' as convert;
 import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/playlists.dart';
-import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -107,8 +107,9 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                               ? () {
                                   final result = ApiService.createPlaylist(nameController.text);
                                   result.then((response) {
+                                    var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
                                     if (response.statusCode == 200) {
-                                      Provider.of<PlaylistsModel>(context, listen: false).add(Playlist.fromJson(response.data));
+                                      Provider.of<PlaylistsModel>(context, listen: false).add(Playlist.fromJson(jsonResponse));
                                       SnackbarHelper.showSnackBar(
                                         AppStrings.playlistCreated,
                                       );

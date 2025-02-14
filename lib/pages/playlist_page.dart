@@ -1,6 +1,5 @@
 import 'dart:async';
-
-import 'package:accompaneo/models/facet.dart';
+import 'dart:convert' as convert;
 import 'package:accompaneo/models/facet_value.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlists.dart';
@@ -39,12 +38,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
   StreamController<Song?> songController = StreamController<Song?>.broadcast();
 
   bool _isLoading = true;
-
-
   bool _hasMore = true;
   int _currentPage = 0;
   int _selectedFacetTile = -1; 
   // Map<String, List<FacetValueDto>> selectedFacets = Map.of({'allCategories' : [], 'chords': [], 'tempo': []});
+
+  List<FacetValueDto> selectedFacets = [];
 
   PanelController pc = PanelController();
   final _scrollController = ScrollController();
@@ -391,15 +390,15 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       leading: Icon(Icons.remove, color: Colors.black, size: 28),
                       onTap: () {
                         Navigator.pop(context, true);
-                        
                         final result = ApiService.removeSongFromPlaylist(song.code, widget.playlist.code);
                         result.then((response) {
                           if (response.statusCode == 200) {
                             Provider.of<PlaylistsModel>(context, listen: false).removeSongFromPlaylist(widget.playlist.code, song);
                             SnackbarHelper.showSnackBar('Song removed from playlist');
                           } else {
-                            if (response.data != null && response.data['message'] != null) {
-                              SnackbarHelper.showSnackBar(response.data['message'], isError: true);
+                            var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+                            if (jsonResponse['message'] != null) {
+                              SnackbarHelper.showSnackBar(jsonResponse['message'], isError: true);
                             } else {
                               SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true);
                             }
@@ -435,15 +434,15 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   List<Widget> _getGenreChips(String facetCode, List<FacetValueDto> facetValues, Function setDialogState) {
     return facetValues.where((fv) => fv.code != '001').map((fv) {
-      bool selected = false;//selectedFacets[facetCode]!.contains(fv);
-      return GenreChip(selected: selected, facetValueName: fv.name, onSelected: (bool selected) {
+      bool selected = selectedFacets.contains(fv);
+      return GenreChip(selected: selected, facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
         setDialogState(() {
           _handleSearch(fv.currentQueryUrl);
           // setState(() {
           //   if (selected) {
-          //     selectedFacets[facetCode]!.add(fv);
+          //     selectedFacets.add(fv);
           //   } else {
-          //     selectedFacets[facetCode]!.remove(fv);
+          //     selectedFacets.remove(fv);
           //   }
           // });
         });
@@ -453,17 +452,17 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   List<Widget> _getChordsChips(String facetCode, List<FacetValueDto> facetValues, Function setDialogState) {
     return facetValues.map((fv) {
-      bool selected = false;//selectedFacets[facetCode]!.contains(fv);
+      bool selected = selectedFacets.contains(fv);
       return ChordChip(selected: selected, facetValue: fv, onSelected: (bool selected) {
         setDialogState(() {
           _handleSearch(fv.currentQueryUrl);
-          // setState(() {
-          //   if (selected) {
-          //     selectedFacets[facetCode]!.add(fv);
-          //   } else {
-          //     selectedFacets[facetCode]!.remove(fv);
-          //   }
-          // });
+          setState(() {
+            if (selected) {
+              selectedFacets.add(fv);
+            } else {
+              selectedFacets.remove(fv);
+            }
+          });
         });
       });
     }).toList();

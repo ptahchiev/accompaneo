@@ -8,6 +8,8 @@ class GenreChip extends StatelessWidget {
 
   final String facetValueName;
 
+  final int? facetValueCount;
+
   final ValueChanged<bool>? onSelected;
 
   final VoidCallback? onDeleted;
@@ -16,6 +18,7 @@ class GenreChip extends StatelessWidget {
     super.key,
     required this.selected,
     required this.facetValueName,
+    this.facetValueCount,
     this.onSelected,
     this.onDeleted
   });
@@ -26,7 +29,7 @@ class GenreChip extends StatelessWidget {
       return InputChip(
         isEnabled: true,
         avatar: selected ? CircleAvatar(backgroundColor: AppColors.primaryColor) : Container(), 
-        label: Text(facetValueName),
+        label: facetValueCount != null ? Text('$facetValueName ($facetValueCount)') : Text(facetValueName),
         selected: selected,
         showCheckmark: true,
         //color: selected ? Colors.grey : Colors.black,

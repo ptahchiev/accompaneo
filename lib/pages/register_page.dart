@@ -1,3 +1,4 @@
+import 'dart:convert' as convert;
 import 'package:accompaneo/models/user/registration.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
@@ -225,21 +226,22 @@ class _RegisterPageState extends State<RegisterPage> {
                           isValid
                             ? () {
                                 final result = ApiService.register(Registration(name: nameController.text, username: emailController.text, password: passwordController.text, repeatPassword: confirmPasswordController.text));
-                                result.then((response) => {
+                                result.then((response) {
+                                  var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
                                   if (response.statusCode == 200) {
-                                    nameController.clear(),
-                                    emailController.clear(),
-                                    passwordController.clear(),
-                                    confirmPasswordController.clear(),
+                                    nameController.clear();
+                                    emailController.clear();
+                                    passwordController.clear();
+                                    confirmPasswordController.clear();
                                     NavigationHelper.pushReplacementNamed(
                                       AppRoutes.login,
-                                    ),
-                                    SnackbarHelper.showSnackBar('Registered')
+                                    );
+                                    SnackbarHelper.showSnackBar('Registered');
                                   } else {
-                                    if (response.data != null && response.data['message'] != null) {
-                                      SnackbarHelper.showSnackBar(response.data['message'], isError: true)
+                                    if (jsonResponse['message'] != null) {
+                                      SnackbarHelper.showSnackBar(jsonResponse['message'], isError: true);
                                     } else {
-                                      SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true)
+                                      SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true);
                                     }
                                   }
                                 });
