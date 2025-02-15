@@ -11,12 +11,15 @@ import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
 import 'package:accompaneo/values/app_colors.dart';
+import 'package:accompaneo/values/app_constants.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/values/app_strings.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
 import 'package:accompaneo/widgets/chord_chip.dart';
 import 'package:accompaneo/widgets/genre_chip.dart';
 import 'package:accompaneo/widgets/placeholders.dart';
+import 'package:accompaneo/widgets/practice_type_chip.dart';
+import 'package:accompaneo/widgets/range_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -89,8 +92,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
     _scrollController.addListener(() {
 
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        //_loadMoreItems();
-        print('load more');
         _loadMore();
       }
     });
@@ -285,7 +286,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   List<Widget> _getGenreChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
     return facetValues.where((fv) => fv.code != '001').map((fv) {
-      return GenreChip(selected: isApplied(fv), facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
+      return GenreChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
         setDialogState(() {
           _handleSearch(fv.currentQueryUrl);
         });
@@ -295,7 +296,17 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   List<Widget> _getChordsChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
     return facetValues.map((fv) {
-      return ChordChip(selected: isApplied(fv), facetValue: fv, onSelected: (bool selected) {
+      return ChordChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
+        setDialogState(() {
+          _handleSearch(fv.currentQueryUrl);
+        });
+      });
+    }).toList();
+  }
+
+  List<Widget> _getPracticeTypeChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
+    return facetValues.map((fv) {
+      return PracticeTypesChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, showCheckmark: false, onSelected: (bool selected) {
         setDialogState(() {
           _handleSearch(fv.currentQueryUrl);
         });
@@ -305,25 +316,33 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   List<Widget> _getTempoSlider(SliderFacetDto sliderFacet, Function setDialogState) {
     return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+            Text('${tempoRangeValues.start.round()} - ${tempoRangeValues.end.round()}',
+              style: AppTheme.titleMedium.copyWith(backgroundColor: AppColors.primaryColor),
+            )
+        ]
+      ),
       RangeSlider(
         values: RangeValues(tempoRangeValues.start, tempoRangeValues.end),
-        min: sliderFacet.initialMinValue,
-        max: sliderFacet.initialMaxValue,
-        divisions: 1,
-        // labels: RangeLabels(
-        //   sliderFacet.userSelectionMin.round().toString(),
-        //   sliderFacet.userSelectionMax.round().toString(),
-        // ),
+        min: sliderFacet.initialMinValue.roundToDouble(),
+        max: sliderFacet.initialMaxValue.roundToDouble(),
+        divisions: 20,
+        labels: RangeLabels(
+          tempoRangeValues.start.round().toString(),
+          tempoRangeValues.end.round().toString(),
+        ),
         onChanged: (RangeValues values) {
           setDialogState(() {
-            tempoRangeValues = values;
+            //setState(() {
+              tempoRangeValues = values;
+            //});
           });
         },
         onChangeEnd: (RangeValues values) {
           String query = ':tempo:[${values.start.round()}-${values.end.round()}][${sliderFacet.initialMinValue}-${sliderFacet.initialMaxValue}]';
-          setDialogState(() {
-            _handleSearch(query);
-          });
+          _handleSearch(query);
         },
       )
     ];
@@ -376,7 +395,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                   children: [
                                     if (f.code == 'allCategories') ..._getGenreChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, refresh),
                                     if (f.code == 'chords') ..._getChordsChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, refresh),
-                                    if (f.code == 'practiceTypes') ..._getGenreChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, refresh),
+                                    if (f.code == 'practiceTypes') ..._getPracticeTypeChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, refresh),
                                     if (f.code == 'tempo') ..._getTempoSlider(f as SliderFacetDto, refresh)
                                   ]
                                 )
@@ -465,9 +484,33 @@ class _PlaylistPageState extends State<PlaylistPage> {
               runSpacing: 10.0,
               children: [
                 ...snapshot.data!.appliedFacets!.map((af) {
-                  return GenreChip(selected: true, facetValueName: af.facetValueName, onDeleted: () {
-                    _handleSearch(af.removeQueryUrl);
-                  });
+                  switch(af.facetCode) {
+                    case 'allCategories': {
+                      return GenreChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: true, onDeleted: () {
+                        _handleSearch(af.removeQueryUrl);
+                      });
+                    }
+                    case 'chords': {
+                      return ChordChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: false, onDeleted: () {
+                        _handleSearch(af.removeQueryUrl);
+                      });
+                    }
+                    case 'practiceTypes': {
+                      return PracticeTypesChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: false, onDeleted: () {
+                        _handleSearch(af.removeQueryUrl);
+                      });
+                    }
+                    case 'tempo': {
+                      return RangeChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: true, onDeleted: () {
+                        setState(() {
+                          tempoRangeValues = RangeValues(60, 100);
+                        });
+
+                        _handleSearch(af.removeQueryUrl);
+                      });                      
+                    }
+                  }
+                  return Container();
                 }),
               ]
             )

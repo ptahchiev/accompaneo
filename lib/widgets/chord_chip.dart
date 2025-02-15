@@ -1,45 +1,33 @@
 
-import 'package:accompaneo/models/facet_value.dart';
 import 'package:accompaneo/utils/helpers/chords_helper.dart';
+import 'package:accompaneo/widgets/facet_chip.dart';
 import 'package:flutter/material.dart';
 
-class ChordChip extends StatelessWidget {
-
-  final bool selected;
-
-  final FacetValueDto facetValue;
-
-  final ValueChanged<bool>? onSelected;
-
-  final VoidCallback? onDeleted;
+class ChordChip extends FacetChip {
 
   const ChordChip({
     super.key,
-    required this.selected,
-    required this.facetValue,
-    this.onSelected,
-    this.onDeleted
+    required super.selected,
+    required super.facetValueCode,
+    required super.facetValueName,
+    super.showCheckmark,
+    super.facetValueCount,
+    super.onSelected,
+    super.onDeleted
   });
 
-
   @override
-  Widget build(BuildContext context) {
-    return InputChip(
-      isEnabled: true,
-      selected: selected,
-      avatar: onDeleted != null ? null : CircleAvatar(backgroundColor: getChordColor(facetValue.name), child: Text('')),
-      label: onDeleted != null ? Container(decoration: BoxDecoration(color: getChordColor(facetValue.code),
+  Widget? getAvatar() {
+    return onDeleted != null ? null : CircleAvatar(backgroundColor: getChordColor(facetValueName), child: Text(''));
+  }
+
+  @override getLabel() {
+    return onDeleted != null ? Container(decoration: BoxDecoration(color: getChordColor(facetValueName),
         borderRadius: BorderRadius.all(Radius.circular(15)),
-      ), child: Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text(facetValue.code, style: TextStyle(color: Colors.white)))) : Text('${facetValue.name} (${facetValue.count})'),
-      showCheckmark: onDeleted == null,
-      checkmarkColor: Colors.white,
-      side: BorderSide(color: selected ? Colors.grey : Colors.grey.shade400),
-      onSelected: onSelected,
-      onDeleted: onDeleted
-    );
+      ), child: Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text(facetValueName, style: TextStyle(color: Colors.white)))) : Text('$facetValueName ($facetValueCount)');
   }
 
   Color? getChordColor(String chord) {
-    return ChordsHelper.chordTypeColors[ChordType.values.firstWhere((e) => e.toString() == 'ChordType.${chord}', orElse: () => ChordType.UNKNOWN)];
+    return ChordsHelper.chordTypeColors[ChordType.values.firstWhere((e) => e.toString() == 'ChordType.$chord', orElse: () => ChordType.UNKNOWN)];
   }
 }
