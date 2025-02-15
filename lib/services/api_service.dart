@@ -188,7 +188,7 @@ class ApiService {
     return response;
   }
 
-  static Future<SearchPage> search({int page = 0, int size = 15, String sort = '_score,DESC', String queryTerm = '', String queryName = 'default'}) async {
+  static Future<SearchPage> search({int page = 0, int size = 24, String sort = '_score,DESC', String queryTerm = '', String queryName = 'default'}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var url = UrlHelper.buildUrlWithQueryParams('$baseUrl/search', queryParams: {'size': size.toString(), 'page': page.toString(), 'q': queryTerm, 'sort': sort, 'projection': 'io.accompaneo.backend.module.search.dto.SongFacetSearchPageDtoDefinition', 'queryName': queryName, 'type' : 'song'});
 

@@ -46,6 +46,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   List<FacetValueDto> selectedFacets = [];
 
+  final TextEditingController searchController = TextEditingController();
   PanelController pc = PanelController();
   final _scrollController = ScrollController();
   late Future<PageDto> futurePage;
@@ -159,13 +160,20 @@ class _PlaylistPageState extends State<PlaylistPage> {
         backgroundColor: Colors.transparent,
         title: widget.playlist.searchable ?
           TextField(
-            //controller: _searchController,
-            decoration: const InputDecoration(
+            controller: searchController,
+            decoration: InputDecoration(
               hintText: 'Search for songs, artists...',
-              hintStyle: TextStyle(color: Colors.grey),
-              contentPadding: EdgeInsets.all(15),
-              prefixIcon: Icon(Icons.search),
-              border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
+              hintStyle: const TextStyle(color: Colors.grey),
+              contentPadding: const EdgeInsets.all(15),
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: searchController.text.isNotEmpty ? IconButton(    
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  searchController.clear();
+                  _handleSearch(widget.queryTerm ?? "");
+                }
+              ) : null,
+              border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
             ),
             onChanged: (val) => debounce(const Duration(milliseconds: 300), _handleSearch, ['$val${widget.queryTerm ?? ""}']),
           )
@@ -435,17 +443,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   List<Widget> _getGenreChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
     return facetValues.where((fv) => fv.code != '001').map((fv) {
-      bool selected = isApplied(fv);
-      return GenreChip(selected: selected, facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
+      return GenreChip(selected: isApplied(fv), facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
         setDialogState(() {
           _handleSearch(fv.currentQueryUrl);
-          // setState(() {
-          //   if (selected) {
-          //     selectedFacets.add(fv);
-          //   } else {
-          //     selectedFacets.remove(fv);
-          //   }
-          // });
         });
       });
     }).toList();
@@ -453,21 +453,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   List<Widget> _getChordsChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
     return facetValues.map((fv) {
-
-      bool selected = isApplied(fv);
-
-      //bool selected = selectedFacets.contains(fv);
-      //print(selected);
-      return ChordChip(selected: selected, facetValue: fv, onSelected: (bool selected) {
+      return ChordChip(selected: isApplied(fv), facetValue: fv, onSelected: (bool selected) {
         setDialogState(() {
           _handleSearch(fv.currentQueryUrl);
-          // setState(() {
-          //   if (selected) {
-          //     selectedFacets.add(fv);
-          //   } else {
-          //     selectedFacets.remove(fv);
-          //   }
-          // });
         });
       });
     }).toList();
@@ -483,19 +471,16 @@ class _PlaylistPageState extends State<PlaylistPage> {
         labels: RangeLabels(
           sliderFacet.userSelectionMin.round().toString(),
           sliderFacet.userSelectionMax.round().toString(),
-
         ),
         onChanged: (RangeValues values) {
+          // setState(() {
+          //   _currentRangeValues = values;
+          // });
+        },
+        onChangeEnd: (RangeValues values) {
           String query = ':tempo:[${values.start}-${values.end}][${sliderFacet.userSelectionMin}-${sliderFacet.userSelectionMax}]';
           setDialogState(() {
             _handleSearch(query);
-            // setState(() {
-            //   if (selected) {
-            //     selectedFacets.add(fv);
-            //   } else {
-            //     selectedFacets.remove(fv);
-            //   }
-            // });
           });
         },
       )
