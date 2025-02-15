@@ -1,5 +1,7 @@
 import 'package:accompaneo/models/applied_facet.dart';
 import 'package:accompaneo/models/facet.dart';
+import 'package:accompaneo/models/facet_value.dart';
+import 'package:accompaneo/models/slider_facet.dart';
 import 'package:accompaneo/models/song/song.dart';
 
 class PageDto {
@@ -45,20 +47,24 @@ class PageDto {
       );
 
   static PageDto fromJson(Map<String, dynamic> json) => PageDto(
-        totalPages: json['totalPages'] ?? 0,
-        totalElements: json['totalElements'] ?? 0,
-        size: json['size'] ?? 0,
-        number: json['number'] ?? 0,
-        content: (json['content'] as List).map((e) => Song.fromJson(e)).toList(),
-        facets: json['facets'] != null ? (json['facets'] as Map).entries.map((e) => FacetDto.fromJson(e.key, e.value)).toList() : [],
-        appliedFacets: json['appliedFacets'] != null ? (json['appliedFacets'] as List).map((e) => AppliedFacetDto.fromJson(e)).toList() : [],
-      );
+    totalPages: json['totalPages'] ?? 0,
+    totalElements: json['totalElements'] ?? 0,
+    size: json['size'] ?? 0,
+    number: json['number'] ?? 0,
+    content: (json['content'] as List).map((e) => Song.fromJson(e)).toList(),
+    facets: json['facets'] != null ? (json['facets'] as Map).entries.map((e) => e.value['@class'] == 'io.nemesis.platform.module.search.facade.dto.TermsFacetDto' ? FacetDto.fromJson(e.value) : SliderFacetDto.fromJson(e.value)).toList() : [],
+    appliedFacets: json['appliedFacets'] != null ? (json['appliedFacets'] as List).map((e) => AppliedFacetDto.fromJson(e)).toList() : [],
+  );
 
   Map<String, dynamic> toJson() => {
-        'totalPages': totalPages,
-        'totalElements': totalElements,
-        'size': size,
-        'number': number,
-        'content': content
-      };
+    'totalPages': totalPages,
+    'totalElements': totalElements,
+    'size': size,
+    'number': number,
+    'content': content
+  };
+
+  bool isFacetValueApplied(FacetValueDto facetValue) {
+    return appliedFacets != null && (appliedFacets!.where((af) => af.facetValueName == facetValue.name)).firstOrNull != null;
+  }
 }

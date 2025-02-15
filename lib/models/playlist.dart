@@ -18,13 +18,13 @@ class Playlist extends SimplePlaylist {
   });
 
   static Playlist fromJson(Map<String, dynamic> json) => Playlist(
-        code: json['code'] ?? '',
-        name: json['name'] ?? '',
-        picture: json['picture'] ?? '',
-        favourites:  json['favourites'] ?? false,
-        latestPlayed:  json['latestPlayed'] ?? false,
-        firstPageSongs: json['firstPageSongs'] != null ? PageDto.fromJson(json['firstPageSongs']) : PageDto(number: 0, size: 0, totalElements: 0, totalPages: 0, content: [])
-      );
+    code: json['code'] ?? '',
+    name: json['name'] ?? '',
+    picture: json['picture'] ?? '',
+    favourites:  json['favourites'] ?? false,
+    latestPlayed:  json['latestPlayed'] ?? false,
+    firstPageSongs: json['firstPageSongs'] != null ? PageDto.fromJson(json['firstPageSongs']) : PageDto(number: 0, size: 0, totalElements: 0, totalPages: 0, content: [])
+  );
 
 
   Playlist copy({

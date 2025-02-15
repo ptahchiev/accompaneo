@@ -71,7 +71,6 @@ class ApiService {
 
     final response = await http.get(url, headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')!});
 
-    var jsonResponse = convert.jsonDecode(response.body) as List<dynamic>;
     if (response.statusCode == 401) {
       prefs.remove(AppConstants.nemesisTokenHeader).then((b){
         NavigationHelper.pushNamed(AppRoutes.login);
@@ -79,8 +78,8 @@ class ApiService {
       return Future.value([]);
     }
 
-
     if (response.statusCode == 200) {
+      var jsonResponse = convert.jsonDecode(response.body) as List<dynamic>;
       return List.from(jsonResponse).map((e) => Playlist.fromJson(e)).toList();
     } else {
       throw Exception('Failed to fetch playlists: ${response.statusCode}');

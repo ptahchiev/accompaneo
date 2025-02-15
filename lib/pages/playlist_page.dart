@@ -4,6 +4,7 @@ import 'package:accompaneo/models/facet_value.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
+import 'package:accompaneo/models/slider_facet.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
@@ -432,9 +433,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
-  List<Widget> _getGenreChips(String facetCode, List<FacetValueDto> facetValues, Function setDialogState) {
+  List<Widget> _getGenreChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
     return facetValues.where((fv) => fv.code != '001').map((fv) {
-      bool selected = selectedFacets.contains(fv);
+      bool selected = isApplied(fv);
       return GenreChip(selected: selected, facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
         setDialogState(() {
           _handleSearch(fv.currentQueryUrl);
@@ -450,28 +451,55 @@ class _PlaylistPageState extends State<PlaylistPage> {
     }).toList();
   }
 
-  List<Widget> _getChordsChips(String facetCode, List<FacetValueDto> facetValues, Function setDialogState) {
+  List<Widget> _getChordsChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
     return facetValues.map((fv) {
-      bool selected = selectedFacets.contains(fv);
+
+      bool selected = isApplied(fv);
+
+      //bool selected = selectedFacets.contains(fv);
+      //print(selected);
       return ChordChip(selected: selected, facetValue: fv, onSelected: (bool selected) {
         setDialogState(() {
           _handleSearch(fv.currentQueryUrl);
-          setState(() {
-            if (selected) {
-              selectedFacets.add(fv);
-            } else {
-              selectedFacets.remove(fv);
-            }
-          });
+          // setState(() {
+          //   if (selected) {
+          //     selectedFacets.add(fv);
+          //   } else {
+          //     selectedFacets.remove(fv);
+          //   }
+          // });
         });
       });
     }).toList();
   }
 
-  List<Widget> _getTempoSlider(String facetCode, List<FacetValueDto> facetValues, Function setState) {
-    return facetValues.map((fv) {
-      return InputChip(avatar: Icon(Icons.check) , label: Text(fv.name), selectedColor: Colors.red);
-    }).toList();
+  List<Widget> _getTempoSlider(SliderFacetDto sliderFacet, Function setDialogState) {
+    return [
+      RangeSlider(
+        values: RangeValues(sliderFacet.userSelectionMin, sliderFacet.userSelectionMax),
+        min: sliderFacet.initialMinValue,
+        max: sliderFacet.initialMaxValue,
+        divisions: 1,
+        labels: RangeLabels(
+          sliderFacet.userSelectionMin.round().toString(),
+          sliderFacet.userSelectionMax.round().toString(),
+
+        ),
+        onChanged: (RangeValues values) {
+          String query = ':tempo:[${values.start}-${values.end}][${sliderFacet.userSelectionMin}-${sliderFacet.userSelectionMax}]';
+          setDialogState(() {
+            _handleSearch(query);
+            // setState(() {
+            //   if (selected) {
+            //     selectedFacets.add(fv);
+            //   } else {
+            //     selectedFacets.remove(fv);
+            //   }
+            // });
+          });
+        },
+      )
+    ];
   }
 
   Future<void> _filtersDialogBuilder(BuildContext context, Future<PageDto> Function() fetchPage) {
@@ -519,9 +547,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                                   spacing: 10.0,
                                   runSpacing: 10.0,
                                   children: [
-                                    if (f.code == 'allCategories') ..._getGenreChips(f.code, f.values, refresh),
-                                    if (f.code == 'chords') ..._getChordsChips(f.code, f.values, refresh),
-                                    if (f.code == 'tempo') ..._getTempoSlider(f.code, f.values, refresh)
+                                    if (f.code == 'allCategories') ..._getGenreChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, refresh),
+                                    if (f.code == 'chords') ..._getChordsChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, refresh),
+                                    if (f.code == 'tempo') ..._getTempoSlider(f as SliderFacetDto, refresh)
                                   ]
                                 )
                               ]
