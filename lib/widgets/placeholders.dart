@@ -66,8 +66,8 @@ class PlaylistElementPlaceholder extends StatelessWidget {
   }
 }
 
-class PLaylistHeaderPlaceholder extends StatelessWidget {
-  const PLaylistHeaderPlaceholder({super.key});
+class PlaylistHeaderPlaceholder extends StatelessWidget {
+  const PlaylistHeaderPlaceholder({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +99,32 @@ class PLaylistHeaderPlaceholder extends StatelessWidget {
           ),   ),
           )
         ],
+      ),
+    );
+  }
+}
+
+class AppliedFacetsPlaceholder extends StatelessWidget {
+  const AppliedFacetsPlaceholder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Expanded(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [ 
+            Wrap(
+              alignment: WrapAlignment.start,
+              spacing: 10.0,
+              runSpacing: 10.0,
+              children: []
+            )
+          ]
+        ),
       ),
     );
   }

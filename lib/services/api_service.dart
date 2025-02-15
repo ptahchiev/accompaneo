@@ -35,7 +35,7 @@ class ApiService {
   }
 
   static Future<Response> register(Registration registration) async {
-    return await http.post(UrlHelper.buildUrlWithQueryParams('$baseUrl/account/register'), headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8'}, body: registration.toJson());
+    return await http.post(UrlHelper.buildUrlWithQueryParams('$baseUrl/account/register'), headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8'}, body: jsonEncode(registration.toJson()));
   }
 
   static Future<Response> recoverPassword(String loginEmail) async {
