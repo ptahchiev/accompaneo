@@ -38,18 +38,6 @@ class PlaylistPage extends StatefulWidget {
   State<PlaylistPage> createState() => _PlaylistPageState(queryTerm: queryTerm);
 }
 
-// class PlaylistResultsState extends _PlaylistPageState {
-  
-//   PlaylistResultsState({required super.queryTerm});
-  
-//   @override
-//   Widget build(BuildContext context) {
-
-//   }
-
-// }
-
-
 class PageProvider extends InheritedWidget {
   const PageProvider({
     Key? key,
@@ -72,43 +60,6 @@ class PageProvider extends InheritedWidget {
     return oldWidget.page != page;
   }
 }
-
-
-// class MyCounterWidget extends StatefulWidget {
-
-//   const MyCounterWidget({Key? key, required this.child}) : super(key: key);
-
-//   final Widget child;
-
-//   @override
-//   _MyCounterWidgetState createState() => _MyCounterWidgetState();
-// }
-
-// class _MyCounterWidgetState extends State<MyCounterWidget> {
-//   late PageDto _page;
-
-//   void search() {
-//     setState(() {
-//       _counter++;
-//     });
-//   }
-
-//   void loadMore() {
-//     setState(() {
-//       _counter--;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return PageProvider(
-//       page: _page,
-//       search: search,
-//       loadMore: loadMore,
-//       child: widget.child,
-//     );
-//   }
-// }
 
 class _PlaylistPageState extends State<PlaylistPage> {
 
@@ -193,27 +144,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
           ),
         );
       }
-    });    
-
-    // isLoading = true;
-    // if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
-    //   ApiService.getPlaylistByUrl(widget.playlist.url!).then((val) {
-    //     setState(() {
-    //       isLoading = false;
-    //       futurePage = val;
-    //       tempoRangeValues = val.getTempoRangeValues();
-    //     });
-    //   });
-    // } else {
-    //   queryTerm = widget.queryTerm;
-    //   ApiService.search(queryTerm: widget.queryTerm).then((val) {
-    //     setState(() {
-    //       isLoading = false;
-    //       futurePage = val;
-    //       tempoRangeValues = val.getTempoRangeValues();
-    //     });
-    //   });
-    // }
+    });
   }
 
   Future<void> _fetchPage(int pageKey) async {
@@ -305,7 +236,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         }, 
         body: SlidingUpPanel(
           backdropEnabled: true, 
-          body: createPopUpContent(), 
+          body: _refreshIndicator(), 
           controller: pc, 
           borderRadius: radius,
           maxHeight: MediaQuery.of(context).size.height - 300,
@@ -322,42 +253,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
     );
   }
-
-  Widget createPopUpContent() {
-    // if (!_completed) {
-    //   return getLoadingWidget();
-    // } else {
-    //   if (futurePage.content.isEmpty) {
-    //     return _noDataView('No data to display');
-    //   }
-    // }
-    return _refreshIndicator();
-
-
-
-    // return FutureBuilder<PageDto>(
-    //   future: futurePage, 
-    //   builder: ((context, snapshot) {
-    //     switch (snapshot.connectionState) {
-    //       case ConnectionState.none:
-    //       case ConnectionState.active:
-    //         break;
-    //       case ConnectionState.waiting:
-    //         return getLoadingWidget();
-    //       case ConnectionState.done: {
-    //         if (!snapshot.hasData || snapshot.data!.content.isEmpty) {
-    //           return _noDataView('No data to display');
-    //         }
-    //         if (snapshot.hasError) {
-    //           return _noDataView("There was an error while fetching data");
-    //         }
-
-    //         return _refreshIndicator();
-    //       }
-    //     }
-    //     return _noDataView('Unable to fetch data from server');
-    // }));
-  }  
 
   Future<void> _songDialogBuilder(BuildContext context, Song song) {
     return showDialog<void>(
@@ -562,18 +457,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
-  // void _loadMore() async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //     ApiService.search(page: page++, queryTerm: queryTerm).then((val) {
-  //       setState(() {
-  //         isLoading = false;
-  //         futurePage.content.addAll(val.content);
-  //       });
-  //   });
-  // }  
-
   Future<void> _pullRefresh() async {
     _pagingController.refresh();
   }
@@ -708,15 +591,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
   
-  
-  // ListView.builder(
-  //   itemCount: futurePage.content.length,
-  //   shrinkWrap: true,
-  //   itemBuilder: (context, index) {
-  //     return playlistSong(futurePage.content[index]);
-  //   },
-  // );
-
   /// Returns a `Widget` informing of "No Data Fetched"
   Widget _noDataView(String message) => Center(
     child: Text(
