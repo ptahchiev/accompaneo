@@ -1,5 +1,4 @@
 
-import 'package:accompaneo/values/app_colors.dart';
 import 'package:accompaneo/widgets/facet_chip.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +17,7 @@ class RangeChip extends FacetChip {
 
   @override
   Widget? getAvatar() {
-    return selected ? CircleAvatar(backgroundColor: AppColors.primaryColor) : Container();
+    return selected ? Icon(Icons.speed) : Container();
   }
 
   @override 

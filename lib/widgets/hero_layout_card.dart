@@ -24,28 +24,28 @@ class HeroLayoutCard extends StatelessWidget {
         alignment: AlignmentDirectional.bottomStart,
         children: <Widget>[
                 ClipRect(
-                      child: SizedBox(
-                        width: width,
-                        height: height,
-                        child: 
-                            imageInfo.picture != null && imageInfo.picture!.isNotEmpty ?
-                              Image.network(
-                                  imageInfo.picture!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return FittedBox(fit: BoxFit.fill, child: Container(color:Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white)));
-                                  },                                  
-                              )
-                              :
-                              FittedBox(fit: BoxFit.fill, child: Container(color:Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white)))
-                      ),
+                  child: SizedBox(
+                    width: width,
+                    height: height,
+                    child: 
+                      imageInfo.picture != null && imageInfo.picture!.isNotEmpty ?
+                        Image.network(
+                          imageInfo.picture!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return FittedBox(fit: BoxFit.fill, child: Container(color:Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white)));
+                          },                                  
+                        )
+                        :
+                        FittedBox(fit: BoxFit.fill, child: Container(color:Theme.of(context).colorScheme.primary, child: Icon(Icons.music_note, color: Colors.white)))
+                  ),
                   ),
                 Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.transparent.withOpacity(0), Colors.black]))),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent.withOpacity(0), Colors.black]))),
                 Visibility(
                   visible: imageInfo.name.isNotEmpty || isSubtitlePresent(),
                   child: 

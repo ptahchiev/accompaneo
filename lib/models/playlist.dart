@@ -23,7 +23,7 @@ class Playlist extends SimplePlaylist {
     picture: json['picture'] ?? '',
     favourites:  json['favourites'] ?? false,
     latestPlayed:  json['latestPlayed'] ?? false,
-    firstPageSongs: json['firstPageSongs'] != null ? PageDto.fromJson(json['firstPageSongs']) : PageDto(number: 0, size: 0, totalElements: 0, totalPages: 0, content: [])
+    firstPageSongs: json['firstPageSongs'] != null ? PageDto.fromJson(json['firstPageSongs']) : PageDto(number: 0, size: 0, totalElements: 0, totalPages: 0, first: false, last: false, content: [])
   );
 
 

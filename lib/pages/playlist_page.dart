@@ -3,7 +3,6 @@ import 'dart:convert' as convert;
 import 'package:accompaneo/models/facet_value.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlists.dart';
-import 'package:accompaneo/models/search_page.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/models/slider_facet.dart';
 import 'package:accompaneo/models/song/song.dart';
@@ -11,7 +10,6 @@ import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
 import 'package:accompaneo/values/app_colors.dart';
-import 'package:accompaneo/values/app_constants.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:accompaneo/values/app_strings.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
@@ -21,6 +19,7 @@ import 'package:accompaneo/widgets/placeholders.dart';
 import 'package:accompaneo/widgets/practice_type_chip.dart';
 import 'package:accompaneo/widgets/range_chip.dart';
 import 'package:flutter/material.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../values/app_theme.dart';
@@ -36,32 +35,103 @@ class PlaylistPage extends StatefulWidget {
   const PlaylistPage({super.key, this.queryTerm, required this.playlist});
 
   @override
-  State<PlaylistPage> createState() => _PlaylistPageState();
+  State<PlaylistPage> createState() => _PlaylistPageState(queryTerm: queryTerm);
 }
+
+// class PlaylistResultsState extends _PlaylistPageState {
+  
+//   PlaylistResultsState({required super.queryTerm});
+  
+//   @override
+//   Widget build(BuildContext context) {
+
+//   }
+
+// }
+
+
+class PageProvider extends InheritedWidget {
+  const PageProvider({
+    Key? key,
+    required this.page,
+    required this.search,
+    required this.loadMore,
+    required Widget child,
+  }) : super(key: key, child: child);
+
+  final PageDto page;
+  final VoidCallback search;
+  final VoidCallback loadMore;
+
+  static PageProvider? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<PageProvider>();
+  }
+
+  @override
+  bool updateShouldNotify(PageProvider oldWidget) {
+    return oldWidget.page != page;
+  }
+}
+
+
+// class MyCounterWidget extends StatefulWidget {
+
+//   const MyCounterWidget({Key? key, required this.child}) : super(key: key);
+
+//   final Widget child;
+
+//   @override
+//   _MyCounterWidgetState createState() => _MyCounterWidgetState();
+// }
+
+// class _MyCounterWidgetState extends State<MyCounterWidget> {
+//   late PageDto _page;
+
+//   void search() {
+//     setState(() {
+//       _counter++;
+//     });
+//   }
+
+//   void loadMore() {
+//     setState(() {
+//       _counter--;
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return PageProvider(
+//       page: _page,
+//       search: search,
+//       loadMore: loadMore,
+//       child: widget.child,
+//     );
+//   }
+// }
 
 class _PlaylistPageState extends State<PlaylistPage> {
 
   StreamController<Song?> songController = StreamController<Song?>.broadcast();
 
-  bool _isLoading = true;
-  bool _hasMore = true;
+  final PagingController<int, Song> _pagingController = PagingController(firstPageKey: 0);
+
+  _PlaylistPageState({required this.queryTerm});
+
+  String? queryTerm = "";
   int page = 0;
-  final int size = 40;
-  List<Song> records = [];
-
   int _selectedFacetTile = -1; 
+  bool isLoading = true;
 
-  late RangeValues tempoRangeValues = RangeValues(60, 100);
+  late RangeValues tempoRangeValues;
 
   final TextEditingController searchController = TextEditingController();
   final PanelController pc = PanelController();
-  final _scrollController = ScrollController();
-  late Future<PageDto> futurePage;
+  late PageDto futurePage;
 
-  bool isLoadingVertical = false;
   List<Song> filteredItems = [];
 
-  Map<Function, Timer> _timeouts = {};
+  final Map<Function, Timer> _timeouts = {};
 
   void debounce(Duration timeout, Function target, [List arguments = const []]) {
     if (_timeouts.containsKey(target)) {
@@ -75,71 +145,114 @@ class _PlaylistPageState extends State<PlaylistPage> {
     _timeouts[target] = timer;
   }
 
-  void _handleSearch(String input) {
-    setState(() {
-      //futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl, query: input);
-      if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
-        futurePage = ApiService.getPlaylistByUrl(widget.playlist.url!);
-      } else {
-        futurePage = ApiService.search(queryTerm: input);
-      }
-    });
+  void _handleSearch(String? input) {
+    // setState(() {
+    //   isLoading = true;
+    // });
+    if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
+      ApiService.getPlaylistByUrl(widget.playlist.url!).then((val) {
+        setState(() {
+          futurePage = val;
+          // isLoading = false;
+          tempoRangeValues = val.getTempoRangeValues();
+        });
+      });
+    } else {
+      ApiService.search(queryTerm: input).then((val) {
+        setState(() {
+          queryTerm = input;
+          futurePage = val;
+          // isLoading = false;
+          tempoRangeValues = val.getTempoRangeValues();
+        });
+        _pagingController.refresh();        
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() {
-
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-        _loadMore();
-      }
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
     });
 
-    //futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl);
-    if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
-      futurePage = ApiService.getPlaylistByUrl(widget.playlist.url!);
-    } else {
-      futurePage = ApiService.search(queryTerm: widget.queryTerm ?? '');
+    _pagingController.addStatusListener((status) {
+      if (status == PagingStatus.completed) {
+        // setState(() {
+        //   _completed = true;
+        // });
+      }
+      if (status == PagingStatus.subsequentPageError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Something went wrong while fetching a new page.',
+            ),
+            action: SnackBarAction(
+              label: 'Retry',
+              onPressed: () => _pagingController.retryLastFailedRequest(),
+            ),
+          ),
+        );
+      }
+    });    
+
+    // isLoading = true;
+    // if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
+    //   ApiService.getPlaylistByUrl(widget.playlist.url!).then((val) {
+    //     setState(() {
+    //       isLoading = false;
+    //       futurePage = val;
+    //       tempoRangeValues = val.getTempoRangeValues();
+    //     });
+    //   });
+    // } else {
+    //   queryTerm = widget.queryTerm;
+    //   ApiService.search(queryTerm: widget.queryTerm).then((val) {
+    //     setState(() {
+    //       isLoading = false;
+    //       futurePage = val;
+    //       tempoRangeValues = val.getTempoRangeValues();
+    //     });
+    //   });
+    // }
+  }
+
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      ApiService.search(page: (pageKey).toInt(), queryTerm: queryTerm ?? '').then((newPage) {
+        final isLastPage = newPage.last;
+        if (isLastPage) {
+          _pagingController.appendLastPage(newPage.content);
+        } else {
+          final nextPageKey = pageKey+1;
+          _pagingController.appendPage(newPage.content, nextPageKey);
+        }
+        if (pageKey == 0) {
+          setState(() {
+            futurePage = newPage;
+            isLoading = false;
+            tempoRangeValues = newPage.getTempoRangeValues();
+          });
+        }
+
+      });
+    } catch (error) {
+      _pagingController.error = error;
     }
   }
 
+
   @override
   void dispose() {
-    _scrollController.dispose();
+    _pagingController.dispose();
     super.dispose();
   }
 
-  // // Triggers fecth() and then add new items or change _hasMore flag
-  // void _loadMore() {
-  //   _isLoading = true;
-  //   //futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl, page: _currentPage);//.then((res) {
-  //   //   if (res.firstPageSongs.content.isEmpty) {
-  //   //     setState(() {
-  //   //       _isLoading = false;
-  //   //       _hasMore = false;
-  //   //     });
-  //   //   } else {
-  //   //     setState(() {
-  //   //       _isLoading = false;
-  //   //       _pairList.addAll(fetchedList);
-  //   //     });
-  //   //   }
-  //   // });
-  // }
-
-
-  // void _loadMore() {
-  //   if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-  //     _currentPage++;
-  //     // setState(() {
-  //     //   futurePlaylist.addAll(List<String>.from(json.decode(response.body)));
-  //     // });
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
+
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(24.0),
       topRight: Radius.circular(24.0),
@@ -147,87 +260,106 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
     return Scaffold(
       resizeToAvoidBottomInset:false,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: widget.playlist.searchable ?
-          TextField(
-            controller: searchController,
-            decoration: InputDecoration(
-              hintText: 'Search for songs, artists...',
-              hintStyle: const TextStyle(color: Colors.grey),
-              contentPadding: const EdgeInsets.all(15),
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: searchController.text.isNotEmpty ? IconButton(    
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  searchController.clear();
-                  _handleSearch(widget.queryTerm ?? "");
-                }
-              ) : null,
-              border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
-            ),
-            onChanged: (val) => debounce(const Duration(milliseconds: 300), _handleSearch, ['$val${widget.queryTerm ?? ""}']),
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (context, isScrolled) {
+          return [
+            SliverAppBar(
+              snap: true,
+              floating:true,
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              title: widget.playlist.searchable ?
+                TextField(
+                  controller: searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search for songs, artists...',
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    contentPadding: const EdgeInsets.all(15),
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: searchController.text.isNotEmpty ? IconButton(    
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        searchController.clear();
+                        _handleSearch(widget.queryTerm);
+                      }
+                    ) : null,
+                    border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
+                  ),
+                  onChanged: (val) => debounce(const Duration(milliseconds: 300), _handleSearch, [val]),
+                )
+                :
+                Container(),
+              actions: [
+                Visibility(
+                  visible: widget.playlist.code.isNotEmpty,
+                  child: IconButton(onPressed: () { _playlistDialogBuilder(context, widget.playlist.code);}, icon: Icon(Icons.more_vert))
+                ),
+                Visibility(
+                  visible: widget.playlist.searchable,
+                  child: isLoading ?
+                      Padding(padding: EdgeInsets.only(right: 25), child: Icon(Icons.tune_rounded))
+                    : 
+                      Padding(padding: EdgeInsets.only(right: 25), child: IconButton(onPressed: () { _filtersDialogBuilder(context);}, icon: Icon(Icons.tune_rounded)))
+                )
+              ],
+            )
+          ];
+        }, 
+        body: SlidingUpPanel(
+          backdropEnabled: true, 
+          body: createPopUpContent(), 
+          controller: pc, 
+          borderRadius: radius,
+          maxHeight: MediaQuery.of(context).size.height - 300,
+          minHeight: 0,
+          panel: StreamBuilder(
+            stream: songController.stream,
+            builder: (context, snapshot) {
+              if (snapshot.data == null) return const SizedBox.shrink();
+              return SelectPlaylistWidget(addSongToPlaylist: () {pc.close();}, song: snapshot.data!);
+            },
           )
-          :
-          Container(),
-        actions: [
-          Visibility(
-            visible: widget.playlist.code.isNotEmpty,
-            child: IconButton(onPressed: () { _playlistDialogBuilder(context, widget.playlist.code);}, icon: Icon(Icons.more_vert))
-          ),
-          Visibility(
-            visible: widget.playlist.searchable,
-            child: FutureBuilder(future: futurePage, builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Padding(padding: EdgeInsets.only(right: 25), child: IconButton(onPressed: () { _filtersDialogBuilder(context, () => futurePage);}, icon: Icon(Icons.tune_rounded)));
-              } else {
-                return Padding(padding: EdgeInsets.only(right: 25), child: Icon(Icons.tune_rounded));
-              }
-            }))
-        ],
-      ),
-      body: SlidingUpPanel(
-        backdropEnabled: true, 
-        body: createPopUpContent(), 
-        controller: pc, 
-        borderRadius: radius,
-        maxHeight: MediaQuery.of(context).size.height - 300,
-        minHeight: 0,
-        panel: StreamBuilder(
-          stream: songController.stream,
-          builder: (context, snapshot) {
-            if (snapshot.data == null) return const SizedBox.shrink();
-            return SelectPlaylistWidget(addSongToPlaylist: () {pc.close();}, song: snapshot.data!);
-          },
-        )
-                          
+                            
+        ),
       ),
     );
   }
 
   Widget createPopUpContent() {
-    return FutureBuilder<PageDto>(
-      future: futurePage, 
-      builder: ((context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.none:
-          case ConnectionState.active:
-            break;
-          case ConnectionState.waiting:
-            return getLoadingWidget();
-          case ConnectionState.done: {
-            if (!snapshot.hasData || snapshot.data!.content.isEmpty) {
-              return _noDataView('No data to display');
-            }
-            if (snapshot.hasError) {
-              return _noDataView("There was an error while fetching data");
-            }
+    // if (!_completed) {
+    //   return getLoadingWidget();
+    // } else {
+    //   if (futurePage.content.isEmpty) {
+    //     return _noDataView('No data to display');
+    //   }
+    // }
+    return _refreshIndicator();
 
-            return _refreshIndicator(snapshot);
-          }
-        }
-        return _noDataView('Unable to fetch data from server');
-    }));
+
+
+    // return FutureBuilder<PageDto>(
+    //   future: futurePage, 
+    //   builder: ((context, snapshot) {
+    //     switch (snapshot.connectionState) {
+    //       case ConnectionState.none:
+    //       case ConnectionState.active:
+    //         break;
+    //       case ConnectionState.waiting:
+    //         return getLoadingWidget();
+    //       case ConnectionState.done: {
+    //         if (!snapshot.hasData || snapshot.data!.content.isEmpty) {
+    //           return _noDataView('No data to display');
+    //         }
+    //         if (snapshot.hasError) {
+    //           return _noDataView("There was an error while fetching data");
+    //         }
+
+    //         return _refreshIndicator();
+    //       }
+    //     }
+    //     return _noDataView('Unable to fetch data from server');
+    // }));
   }  
 
   Future<void> _songDialogBuilder(BuildContext context, Song song) {
@@ -297,9 +429,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
   List<Widget> _getChordsChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
     return facetValues.map((fv) {
       return ChordChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
-        setDialogState(() {
-          _handleSearch(fv.currentQueryUrl);
-        });
+        _handleSearch(fv.currentQueryUrl);
       });
     }).toList();
   }
@@ -307,169 +437,173 @@ class _PlaylistPageState extends State<PlaylistPage> {
   List<Widget> _getPracticeTypeChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
     return facetValues.map((fv) {
       return PracticeTypesChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, showCheckmark: false, onSelected: (bool selected) {
-        setDialogState(() {
-          _handleSearch(fv.currentQueryUrl);
-        });
+        _handleSearch(fv.currentQueryUrl);
       });
     }).toList();
   }
 
   List<Widget> _getTempoSlider(SliderFacetDto sliderFacet, Function setDialogState) {
     return [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-            Text('${tempoRangeValues.start.round()} - ${tempoRangeValues.end.round()}',
-              style: AppTheme.titleMedium.copyWith(backgroundColor: AppColors.primaryColor),
-            )
-        ]
-      ),
-      RangeSlider(
-        values: RangeValues(tempoRangeValues.start, tempoRangeValues.end),
-        min: sliderFacet.initialMinValue.roundToDouble(),
-        max: sliderFacet.initialMaxValue.roundToDouble(),
-        divisions: 20,
-        labels: RangeLabels(
-          tempoRangeValues.start.round().toString(),
-          tempoRangeValues.end.round().toString(),
+      Padding(
+        padding: EdgeInsets.only(bottom: 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text('${tempoRangeValues.start.ceilToDouble()} - ${tempoRangeValues.end.ceilToDouble()}', style: AppTheme.titleMedium)),
+              )
+          ]
         ),
-        onChanged: (RangeValues values) {
-          setDialogState(() {
-            //setState(() {
-              tempoRangeValues = values;
-            //});
-          });
-        },
-        onChangeEnd: (RangeValues values) {
-          String query = ':tempo:[${values.start.round()}-${values.end.round()}][${sliderFacet.initialMinValue}-${sliderFacet.initialMaxValue}]';
-          _handleSearch(query);
-        },
-      )
+      ),
+      tempoRangeValues.start != -1 && tempoRangeValues.end != -1 ?
+        RangeSlider(
+          values: tempoRangeValues,
+          min: sliderFacet.initialMinValue.ceilToDouble(),
+          max: sliderFacet.initialMaxValue.ceilToDouble(),
+          labels: RangeLabels(
+            tempoRangeValues.start.ceilToDouble().toString(),
+            tempoRangeValues.end.ceilToDouble().toString(),
+          ),
+          onChanged: (RangeValues values) {
+            setDialogState(() {
+              //setState(() {
+                tempoRangeValues = values;
+              //});
+            });
+          },
+          onChangeEnd: (RangeValues values) {
+            String query = '${queryTerm ?? ''}:tempo:[${values.start.ceilToDouble()}-${values.end.ceilToDouble()}][${sliderFacet.initialMinValue.ceilToDouble()}-${sliderFacet.initialMaxValue.ceilToDouble()}]';
+            _handleSearch(query);
+          },
+        ) : Container()
     ];
   }
 
-  Future<void> _filtersDialogBuilder(BuildContext context, Future<PageDto> Function() fetchPage) {
+  Future<void> _filtersDialogBuilder(BuildContext context) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
-          builder: (context, refresh) {
-            return FutureBuilder(
-              future: fetchPage(), 
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator()); // Show loading state
-                }
-                var page = snapshot.data!;
-                List<Widget> widgets = [];
-                widgets.insert(0, Center(child: Text('Filter by:', style: AppTheme.titleMedium.copyWith(color: Colors.black))));
-                widgets.insert(1, Container(
-                  width: MediaQuery.of(context).size.width - 200,
-                  //height: MediaQuery.of(context).size.height -  500,
-                  padding: EdgeInsets.all(20),
-                  child: ExpansionPanelList(
-                    dividerColor: Colors.grey.shade500,
-                    elevation: 0,
-                    expandedHeaderPadding: EdgeInsets.all(0),
-                    animationDuration: Duration(seconds: 1),
-                    //expandedHeaderPadding: EdgeInsets.all(32),
-                    children: page.facets!.map<ExpansionPanel>((f) {
-                      return ExpansionPanel(
-                        canTapOnHeader: true,
-                        isExpanded: _selectedFacetTile == page.facets!.indexOf(f),
-                        backgroundColor: Colors.transparent,
-                        headerBuilder: (context, isOpen) {
-                          return Text(f.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, height: 2.5));
-                        }, 
-                        body: 
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 20),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [ 
-                                Wrap(
-                                  alignment: WrapAlignment.center,
-                                  spacing: 10.0,
-                                  runSpacing: 10.0,
-                                  children: [
-                                    if (f.code == 'allCategories') ..._getGenreChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, refresh),
-                                    if (f.code == 'chords') ..._getChordsChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, refresh),
-                                    if (f.code == 'practiceTypes') ..._getPracticeTypeChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, refresh),
-                                    if (f.code == 'tempo') ..._getTempoSlider(f as SliderFacetDto, refresh)
-                                  ]
-                                )
+          builder: (dialogContext, setDialogState) {
+            
+            // if (isLoading) {
+            //   return Center(child: CircularProgressIndicator()); // Show loading state
+            // }
+            PageDto page = futurePage;
+            List<Widget> widgets = [];
+            widgets.insert(0, Center(child: Text('Filter by:', style: AppTheme.titleMedium.copyWith(color: Colors.black))));
+            widgets.insert(1, Container(
+              width: MediaQuery.of(dialogContext).size.width - 200,
+              //height: MediaQuery.of(context).size.height -  500,
+              padding: EdgeInsets.all(20),
+              child: ExpansionPanelList(
+                dividerColor: Colors.grey.shade500,
+                elevation: 0,
+                expandedHeaderPadding: EdgeInsets.all(0),
+                animationDuration: Duration(seconds: 1),
+                //expandedHeaderPadding: EdgeInsets.all(32),
+                children: page.facets!.map<ExpansionPanel>((f) {
+                  return ExpansionPanel(
+                    canTapOnHeader: true,
+                    isExpanded: _selectedFacetTile == page.facets!.indexOf(f),
+                    backgroundColor: Colors.transparent,
+                    headerBuilder: (dialogContext, isOpen) {
+                      return Text(f.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, height: 2.5));
+                    }, 
+                    body: 
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [ 
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 10.0,
+                              runSpacing: 10.0,
+                              children: [
+                                if (f.code == 'allCategories') ..._getGenreChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState),
+                                if (f.code == 'chords') ..._getChordsChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState),
+                                if (f.code == 'practiceTypes') ..._getPracticeTypeChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState),
+                                if (f.code == 'tempo') ..._getTempoSlider(f as SliderFacetDto, setDialogState)
                               ]
-                            ),
-                          )
-                      );
-                    }).toList(),
+                            )
+                          ]
+                        ),
+                      )
+                  );
+                }).toList(),
 
-                    expansionCallback: (panelIndex, isExpanded) => {
-                      if (isExpanded) {
-                        refresh(() {
-                          setState(() {
-                            _selectedFacetTile = panelIndex;
-                          });
-                        }),
+                expansionCallback: (panelIndex, isExpanded) => {
+                  if (isExpanded) {
+                    setDialogState(() {
+                      setState(() {
+                        _selectedFacetTile = panelIndex;
+                      });
+                    }),
 
-                      } else {
-                        refresh(() {
-                          setState(() {
-                            _selectedFacetTile = -1;
-                          });
-                        }),                    
+                  } else {
+                    setDialogState(() {
+                      setState(() {
+                        _selectedFacetTile = -1;
+                      });
+                    }),                    
 
-                      }
-                    },
-                  
-                  ),
-                ));
-                return SimpleDialog(insetPadding: EdgeInsets.all(10), children: widgets);
-              });
-          });
-      },
+                  }
+                },
+              
+              ),
+            ));
+            return SimpleDialog(insetPadding: EdgeInsets.all(10), children: widgets);
+          }
+        );
+      }
     );
   }
 
-  void _loadMore() async {
-    SearchPage? moreItems = await ApiService.search(page: page++);
-    setState(() {
-      futurePage = Future.value(moreItems);
-    });
-  }  
+  // void _loadMore() async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //     ApiService.search(page: page++, queryTerm: queryTerm).then((val) {
+  //       setState(() {
+  //         isLoading = false;
+  //         futurePage.content.addAll(val.content);
+  //       });
+  //   });
+  // }  
 
   Future<void> _pullRefresh() async {
-    setState(() {
-      //futurePage = ApiService.getPlaylistByUrl(widget.playlistUrl, query: input);
-      if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
-        futurePage = ApiService.getPlaylistByUrl(widget.playlist.url!);
-      } else {
-        futurePage = ApiService.search(queryTerm: widget.queryTerm!);
-      }
-    });
+    _pagingController.refresh();
   }
 
-  Widget playlistHeader(AsyncSnapshot<PageDto> snapshot) {
+  Widget playlistHeader() {
     return Row(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text(
-            widget.playlist.name,
-            style: AppTheme.sectionTitle,
+          child: FittedBox(
+            fit: BoxFit.fitWidth,
+            child: Text(
+              widget.playlist.name,
+              style: AppTheme.sectionTitle,
+            ),
           ),
         ),
         Expanded(child: Divider(color: Colors.grey.shade500)),
         Align(
           alignment: Alignment.centerRight,
-          child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${snapshot.data!.totalElements} songs')),
+          child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${futurePage.totalElements} songs', overflow: TextOverflow.clip)),
         )
       ],
     );
   }
 
-  Widget appliedFacetsWidget(AsyncSnapshot<PageDto> snapshot) {
+  Widget appliedFacetsWidget() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Expanded(
@@ -483,7 +617,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               spacing: 10.0,
               runSpacing: 10.0,
               children: [
-                ...snapshot.data!.appliedFacets!.map((af) {
+                ...futurePage.appliedFacets!.map((af) {
                   switch(af.facetCode) {
                     case 'allCategories': {
                       return GenreChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: true, onDeleted: () {
@@ -501,13 +635,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       });
                     }
                     case 'tempo': {
-                      return RangeChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: true, onDeleted: () {
-                        setState(() {
-                          tempoRangeValues = RangeValues(60, 100);
-                        });
-
+                      return RangeChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: false, onDeleted: () {
                         _handleSearch(af.removeQueryUrl);
-                      });                      
+                      });
                     }
                   }
                   return Container();
@@ -521,19 +651,21 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   /// Returns a `RefreshIndicator` wrapping our results `ListView`
-  Widget _refreshIndicator(AsyncSnapshot<PageDto> snapshot) => RefreshIndicator(
+  Widget _refreshIndicator() => RefreshIndicator(
     backgroundColor: const Color.fromARGB(255, 255, 255, 255),
     triggerMode: RefreshIndicatorTriggerMode.anywhere,
     color: AppColors.primaryColor,
     onRefresh: _pullRefresh,
-    child: ListView(
-      controller: _scrollController,
-      children: [
-        playlistHeader(snapshot),
-        appliedFacetsWidget(snapshot),
-        _listView(snapshot)
-      ],
-    )    
+    child: _listView()
+    
+    // ListView (
+    //   //controller: _scrollController,
+    //   children: [
+    //     playlistHeader(),
+    //     appliedFacetsWidget(),
+    //     _listView()
+    //   ],
+    // )    
   );
 
   Widget getLoadingWidget() {
@@ -563,68 +695,30 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
-  Widget _listView(AsyncSnapshot<PageDto> snapshot) => ListView.builder(
-    itemCount: snapshot.data?.content.length,
-    shrinkWrap: true,
-    itemBuilder: (context, index) {
-      return ListTile(
-        leading: BrowsableImage(imageUrl: snapshot.data!.content[index].picture),
-        visualDensity: VisualDensity(vertical: 1),
-        isThreeLine: true,
-        titleAlignment: ListTileTitleAlignment.center,
-        onTap: () {
-          ApiService.markSongAsPlayed(snapshot.data!.content[index].code).then((v) {
-            if (v.statusCode == 200) {
-              Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(snapshot.data!.content[index]);
-              NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : snapshot.data!.content[index]});
-            }
-          });
-        },
-        title: Text(snapshot.data!.content[index].name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(snapshot.data!.content[index].artist.name),
-            Wrap(
-              spacing: 10,
-              children: snapshot.data!.content[index].chords!.map<Widget>((ch) => Container(padding: EdgeInsets.all(3), decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(5)), child: Text(ch))).toList(),
-            )
-          ]
-        ),
-        trailing: Wrap(
-          children: [
-            IconButton(
-              icon: snapshot.data!.content[index].favoured ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined),
-              onPressed: () {
-                if(snapshot.data!.content[index].favoured) {
-                  ApiService.removeSongFromFavouritesPlaylist(snapshot.data!.content[index].code).then((v) {
-                    Provider.of<PlaylistsModel>(context, listen: false).removeSongFromFavourites(snapshot.data!.content[index]);
-                    SnackbarHelper.showSnackBar('Song removed favourites');
-                    snapshot.data!.content[index].favoured = false;
-                    setState(() {
-                      //futurePlaylist = Future.value(snapshot.data);
-                    });
-                  });
-                } else {
-                  ApiService.addSongToFavouritesPlaylist(snapshot.data!.content[index].code).then((v) {
-                    Provider.of<PlaylistsModel>(context, listen: false).addSongToFavourites(snapshot.data!.content[index]);
-                    SnackbarHelper.showSnackBar('Song added to favourites');
-                    snapshot.data!.content[index].favoured = true;
-                    setState(() {
-                      //futurePlaylist = Future.value(snapshot.data);
-                    });
-                  });
-                }
-              }),
-            IconButton(
-              icon: Icon(Icons.more_horiz),
-              onPressed: () => _songDialogBuilder(context, snapshot.data!.content[index])
-            )
-          ],
+  Widget _listView() {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: isLoading ? PlaylistHeaderPlaceholder() : playlistHeader()),
+        SliverToBoxAdapter(child: isLoading ? AppliedFacetsPlaceholder() : appliedFacetsWidget()),
+        PagedSliverList<int, Song>(
+          //shrinkWrap: true,
+          pagingController: _pagingController,
+          builderDelegate: PagedChildBuilderDelegate<Song>(
+            itemBuilder: (context, item, index) => playlistSong(item)
+          ),
         )
-      );
-    },
-  );
+      ],
+    );
+  }
+  
+  
+  // ListView.builder(
+  //   itemCount: futurePage.content.length,
+  //   shrinkWrap: true,
+  //   itemBuilder: (context, index) {
+  //     return playlistSong(futurePage.content[index]);
+  //   },
+  // );
 
   /// Returns a `Widget` informing of "No Data Fetched"
   Widget _noDataView(String message) => Center(
@@ -636,6 +730,66 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
     ),
   );
+
+
+  Widget playlistSong(Song song) {
+    return ListTile(
+      leading: BrowsableImage(imageUrl: song.picture),
+      visualDensity: VisualDensity(vertical: 1),
+      isThreeLine: true,
+      titleAlignment: ListTileTitleAlignment.center,
+      onTap: () {
+        ApiService.markSongAsPlayed(song.code).then((v) {
+          if (v.statusCode == 200) {
+            Provider.of<PlaylistsModel>(context, listen: false).addSongToLatestPlayed(song);
+            NavigationHelper.pushNamed(AppRoutes.player, arguments: {'song' : song});
+          }
+        });
+      },
+      title: Text(song.name, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black)),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(song.artist.name),
+          Wrap(
+            spacing: 10,
+            children: song.chords!.map<Widget>((ch) => Container(padding: EdgeInsets.all(3), decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(5)), child: Text(ch))).toList(),
+          )
+        ]
+      ),
+      trailing: Wrap(
+        children: [
+          IconButton(
+            icon: song.favoured ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_outline_outlined),
+            onPressed: () {
+              if(song.favoured) {
+                ApiService.removeSongFromFavouritesPlaylist(song.code).then((v) {
+                  Provider.of<PlaylistsModel>(context, listen: false).removeSongFromFavourites(song);
+                  SnackbarHelper.showSnackBar('Song removed favourites');
+                  song.favoured = false;
+                  setState(() {
+                    //futurePlaylist = Future.value(snapshot.data);
+                  });
+                });
+              } else {
+                ApiService.addSongToFavouritesPlaylist(song.code).then((v) {
+                  Provider.of<PlaylistsModel>(context, listen: false).addSongToFavourites(song);
+                  SnackbarHelper.showSnackBar('Song added to favourites');
+                  song.favoured = true;
+                  setState(() {
+                    //futurePlaylist = Future.value(snapshot.data);
+                  });
+                });
+              }
+            }),
+          IconButton(
+            icon: Icon(Icons.more_horiz),
+            onPressed: () => _songDialogBuilder(context, song)
+          )
+        ],
+      )
+    );
+  }
 
   Future<void> _playlistDialogBuilder(BuildContext context, String playlistCode) {
     return showDialog<void>(

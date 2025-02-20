@@ -120,7 +120,7 @@ class ApiService {
       prefs.remove(AppConstants.nemesisTokenHeader).then((b){
         NavigationHelper.pushNamed(AppRoutes.login);
       });
-      return Future.value(PageDto(totalPages: 0, totalElements: 0, size: 0, number: 0, content: []));
+      return Future.value(PageDto(totalPages: 0, totalElements: 0, size: 0, number: 0, first: false, last: false, content: []));
     }
 
     var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
@@ -187,16 +187,19 @@ class ApiService {
     return response;
   }
 
-  static Future<SearchPage> search({int page = 0, int size = 24, String sort = '_score,DESC', String queryTerm = '', String queryName = 'default'}) async {
+  static Future<SearchPage> search({int page = 0, int size = 24, String sort = '_score,DESC', String? queryTerm = '', String queryName = 'default'}) async {
+    
+    //await Future.delayed(const Duration(seconds: 4));
+    
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var url = UrlHelper.buildUrlWithQueryParams('$baseUrl/search', queryParams: {'size': size.toString(), 'page': page.toString(), 'q': queryTerm, 'sort': sort, 'projection': 'io.accompaneo.backend.module.search.dto.SongFacetSearchPageDtoDefinition', 'queryName': queryName, 'type' : 'song'});
+    var url = UrlHelper.buildUrlWithQueryParams('$baseUrl/search', queryParams: {'size': size.toString(), 'page': page.toString(), 'q': queryTerm ?? '', 'sort': sort, 'projection': 'io.accompaneo.backend.module.search.dto.SongFacetSearchPageDtoDefinition', 'queryName': queryName, 'type' : 'song'});
 
     final response = await http.get(url, headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')!});
     if (response.statusCode == 401) {
       prefs.remove(AppConstants.nemesisTokenHeader).then((b){
         NavigationHelper.pushNamed(AppRoutes.login);
       });
-      return Future.value(SearchPage(totalPages: 0, totalElements: 0, size: 0, number: 0, content:[]));
+      return Future.value(SearchPage(totalPages: 0, totalElements: 0, size: 0, number: 0, first: false, last: false, content:[]));
     }
     var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
 

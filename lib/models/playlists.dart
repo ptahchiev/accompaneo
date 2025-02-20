@@ -12,8 +12,8 @@ class PlaylistsModel extends ChangeNotifier {
 
   UnmodifiableListView<Playlist> get items => UnmodifiableListView(_playlists);
 
-  Playlist getFavouritesPlaylist() {
-    return _playlists.firstWhere((p) => p.favourites);
+  Playlist? getFavouritesPlaylist() {
+    return _playlists.firstWhereOrNull((p) => p.favourites);
   }
 
   List<Song> getLatestPlayedPlaylistSongs() {

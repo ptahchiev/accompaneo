@@ -76,6 +76,23 @@ class AppTheme {
         textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
       ),
     ),
+    sliderTheme: SliderThemeData(
+      activeTrackColor: Colors.amber,
+      inactiveTrackColor: Colors.grey,
+      thumbColor: AppColors.primaryColor,
+      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 18),
+      overlayColor: Colors.indigo.withOpacity(0.18),
+      overlayShape: RoundSliderOverlayShape(overlayRadius: 20),
+      activeTickMarkColor: AppColors.primaryColor,
+      inactiveTickMarkColor: Colors.white,
+      trackHeight: 11,
+      valueIndicatorColor: AppColors.primaryColor,
+      valueIndicatorTextStyle: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold
+      )
+
+    )
   );
 
   static BorderRadiusGeometry radius = BorderRadius.only(

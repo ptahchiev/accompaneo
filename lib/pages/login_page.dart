@@ -1,6 +1,7 @@
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import '../utils/helpers/snackbar_helper.dart';
 import '../values/app_regex.dart';
 import 'dart:convert' as convert;
@@ -21,6 +22,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  
   final _formKey = GlobalKey<FormState>();
 
   final ValueNotifier<bool> passwordNotifier = ValueNotifier(true);
@@ -56,9 +58,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    initializeControllers();
     super.initState();
-  }
+    initializeControllers();
+ }
 
   @override
   void dispose() {
@@ -193,7 +195,17 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {NavigationHelper.pushReplacementNamed(AppRoutes.home);},
+                          onPressed: () async {
+                            // authProvider.handleGoogleSignIn().then((result) {
+                            //   if (result) {
+                            //     emailController.clear();
+                            //     passwordController.clear();
+                            //     NavigationHelper.pushReplacementNamed(AppRoutes.home);
+                            //   } else {
+                            //     SnackbarHelper.showSnackBar('Failed to login!', isError: true);
+                            //   }
+                            // });
+                          },
                           icon: SvgPicture.asset(Vectors.google, width: 14),
                           label: const Text(
                             AppStrings.google,
@@ -204,7 +216,17 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(width: 20),
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () {NavigationHelper.pushReplacementNamed(AppRoutes.home);},
+                          onPressed: () async {
+                            // authProvider.handleFacebookLogin().then((result) {
+                            //   // if (result) {
+                            //   //   emailController.clear();
+                            //   //   passwordController.clear();
+                            //   //   NavigationHelper.pushReplacementNamed(AppRoutes.home);
+                            //   // } else {
+                            //   //   SnackbarHelper.showSnackBar('Failed to login!', isError: true);
+                            //   // }
+                            // });
+                          },
                           icon: SvgPicture.asset(Vectors.facebook, width: 14),
                           label: const Text(
                             AppStrings.facebook,

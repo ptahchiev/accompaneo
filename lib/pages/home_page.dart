@@ -36,22 +36,25 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.hasData) {
             return Consumer<PlaylistsModel>(
               builder: (context, playlists, child) {
-                return ListView(children: [
-                  Section(playlist: SimplePlaylist(code: '', name: 'Genres'), sectionData: snapshot.data?.genres),
-                  Section(playlist: SimplePlaylist(code: '', name: 'Artists'), sectionData: snapshot.data?.artists),
-                  Section(playlist: SimplePlaylist(code: '', name: 'Most Popular', url: '/mostPopular'), sectionData: snapshot.data?.mostPopular),
-                  Section(playlist: SimplePlaylist(code: '', name: 'Latest', url: '/latestAdded'), sectionData: snapshot.data?.latestAdded),
-                  Consumer<PlaylistsModel>(
-                      builder: (context, playlists, child) {
-                        return Section(playlist: SimplePlaylist(code: '', name: 'Jump back in', url: '/latestPlayed', favourites: false, latestPlayed: true), sectionData: playlists.getLatestPlayedPlaylistSongs());
-                      }
-                  ),
-                  Consumer<PlaylistsModel>(
-                      builder: (context, playlists, child) {
-                        return Section(playlist: SimplePlaylist(code: '', name: 'Your favourites', url: '/favourites', favourites: true, latestPlayed: false), sectionData: playlists.getFavouritesPlaylist().firstPageSongs.content);
-                      }
-                  )
-                ]);
+                return ListView(
+                  controller: ScrollController(),
+                  children: [
+                    Section(playlist: SimplePlaylist(code: '', name: 'Genres'), sectionData: snapshot.data?.genres),
+                    Section(playlist: SimplePlaylist(code: '', name: 'Artists'), sectionData: snapshot.data?.artists),
+                    Section(playlist: SimplePlaylist(code: '', name: 'Most Popular', url: '/mostPopular'), sectionData: snapshot.data?.mostPopular),
+                    Section(playlist: SimplePlaylist(code: '', name: 'Latest', url: '/latestAdded'), sectionData: snapshot.data?.latestAdded),
+                    Consumer<PlaylistsModel>(
+                        builder: (context, playlists, child) {
+                          return Section(playlist: SimplePlaylist(code: '', name: 'Jump back in', url: '/latestPlayed', favourites: false, latestPlayed: true), sectionData: playlists.getLatestPlayedPlaylistSongs());
+                        }
+                    ),
+                    Consumer<PlaylistsModel>(
+                        builder: (context, playlists, child) {
+                          return Section(playlist: SimplePlaylist(code: '', name: 'Your favourites', url: '/favourites', favourites: true, latestPlayed: false), sectionData: playlists.getFavouritesPlaylist() != null ? playlists.getFavouritesPlaylist()!.firstPageSongs.content : []);
+                        }
+                    )
+                ]
+              );
               }
             );
           } else if (snapshot.hasError) {

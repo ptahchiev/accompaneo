@@ -36,6 +36,18 @@ class AppStrings {
   static const String pleaseReEnterPassword = 'Please, Re-Enter Password';
   static const String passwordNotMatched = 'Password not matched!';
 
+  static const String language = 'Language';
+  static const String selectLanguage = 'Select Language';
+  static const String invalidLanguage = 'Invalid Language';
+
+  static const String color = 'Color';
+  static const String specifyColor = 'Specify Color';
+  static const String invalidColor = 'Invalid color';
+
+  static const String instrument = 'Instrument';
+  static const String selectInstrument = 'Select Instrument';
+  static const String invalidInstrument = 'Invalid Instrument';
+
   static const String newPlaylist = 'New Playlist';
   static const String playlistName = 'Playlist Name';
   static const String pleaseEnterPlaylistName = 'Please, Enter Playlist Name';
@@ -46,4 +58,6 @@ class AppStrings {
   static const String playlistDeleted = 'Playlist deleted successfully';
 
   static const String updateYourProfile = 'Update your profile';
+  static const String settings = 'Settings';
+  static const String cancelSubscription = 'Cancel Subscription';
 }

@@ -9,6 +9,16 @@ class SliderFacetDto extends FacetDto {
   double userSelectionMax;
   String unit;
 
+  static SliderFacetDto missing = SliderFacetDto(
+    code: '', 
+    name: '', 
+    initialMinValue: -1, 
+    initialMaxValue: -1, 
+    userSelectionMin: -1, 
+    userSelectionMax: -1, 
+    unit: ''
+  );
+
   SliderFacetDto({
     required super.code,
     required super.name,
