@@ -145,28 +145,25 @@ class _PlaylistPageState extends State<PlaylistPage> {
     _timeouts[target] = timer;
   }
 
-  void _handleSearch(String? input) {
-    // setState(() {
-    //   isLoading = true;
-    // });
-    if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
-      ApiService.getPlaylistByUrl(widget.playlist.url!).then((val) {
-        setState(() {
-          futurePage = val;
-          // isLoading = false;
-          tempoRangeValues = val.getTempoRangeValues();
+  void _handleSearch(String input) {
+    if (input.isEmpty || input.length > 3) {
+      if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
+        ApiService.getPlaylistByUrl(widget.playlist.url!).then((val) {
+          setState(() {
+            futurePage = val;
+            tempoRangeValues = val.getTempoRangeValues();
+          });
         });
-      });
-    } else {
-      ApiService.search(queryTerm: input).then((val) {
-        setState(() {
-          queryTerm = input;
-          futurePage = val;
-          // isLoading = false;
-          tempoRangeValues = val.getTempoRangeValues();
+      } else {
+        ApiService.search(queryTerm: input).then((val) {
+          setState(() {
+            queryTerm = input;
+            futurePage = val;
+            tempoRangeValues = val.getTempoRangeValues();
+          });
+          _pagingController.refresh();        
         });
-        _pagingController.refresh();        
-      });
+    }
     }
   }
 
@@ -281,7 +278,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       icon: const Icon(Icons.clear),
                       onPressed: () {
                         searchController.clear();
-                        _handleSearch(widget.queryTerm);
+                        _handleSearch(widget.queryTerm ?? "");
                       }
                     ) : null,
                     border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
