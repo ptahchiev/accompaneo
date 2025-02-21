@@ -10,7 +10,7 @@ class UrlHelper {
     return uri.replace(
       queryParameters: {
         ...uri.queryParameters,
-        ...queryParams!,
+        ...queryParams,
       },
     );
 
