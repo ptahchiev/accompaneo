@@ -7,14 +7,14 @@ class Registration {
   Registration({required this.name, required this.username, required this.password, required this.repeatPassword});
   factory Registration.fromJson(Map<String, dynamic> json) {
     return Registration(
-      name: json['name'],
+      name: json['firstName'],
       username: json['username'],
       password: json['password'],
       repeatPassword: json['repeatPassword'],
     );
   }
   Map<String, dynamic> toJson() => {
-    'name': name,
+    'firstName': name,
     'username': username,
     'password': password,
     'repeatPassword': repeatPassword,
