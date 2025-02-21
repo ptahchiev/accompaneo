@@ -42,6 +42,7 @@ dependencies:
   flutter_native_splash: ^2.4.4
   flutter_svg: ^2.0.5
   spider: ^4.2.2
+  wakelock_plus: ^1.2.10
   audio_video_progress_bar: ^2.0.3
   audioplayers: ^6.1.0
   just_audio: ^0.9.43

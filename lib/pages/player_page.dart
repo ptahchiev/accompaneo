@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_guitar_chord/flutter_guitar_chord.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../utils/helpers/chords_helper.dart';
 import 'package:just_audio/just_audio.dart';
 import 'dart:math';
@@ -56,6 +57,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     _segmentedButtonSelection = {PracticeType.values.firstWhere((e) => e.toString() == 'PracticeType.${song.audioStreamUrls!.keys.toList()[0]}')};
     ambiguate(WidgetsBinding.instance)!.addObserver(this);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    WakelockPlus.enable();
     _init();
   }
 
@@ -97,6 +99,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   void dispose() {
     ambiguate(WidgetsBinding.instance)!.removeObserver(this);
     _player.dispose();
+    WakelockPlus.disable();
     super.dispose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
   }
