@@ -227,7 +227,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             ? () {
                                 final result = ApiService.register(Registration(name: nameController.text, username: emailController.text, password: passwordController.text, repeatPassword: confirmPasswordController.text));
                                 result.then((response) {
-                                  var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
                                   if (response.statusCode == 200) {
                                     nameController.clear();
                                     emailController.clear();
@@ -238,6 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     );
                                     SnackbarHelper.showSnackBar('Registered');
                                   } else {
+                                    var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
                                     if (jsonResponse['message'] != null) {
                                       SnackbarHelper.showSnackBar(jsonResponse['message'], isError: true);
                                     } else {
