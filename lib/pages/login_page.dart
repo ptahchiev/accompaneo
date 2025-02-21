@@ -1,7 +1,6 @@
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 import '../utils/helpers/snackbar_helper.dart';
 import '../values/app_regex.dart';
 import 'dart:convert' as convert;
