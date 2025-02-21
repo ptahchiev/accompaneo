@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 flutter_native_splash:
-  color: "#42a5f5"
+  color: "#BAE162"
 
 environment:
   sdk: ^3.6.0
