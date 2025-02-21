@@ -61,8 +61,31 @@ class ApiService {
       } else {
         throw Exception('Failed to fetch playlists: ${response.statusCode}');
       }
-
   }
+
+  static Future<Map<String, dynamic>> getUserProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      var url = UrlHelper.buildUrlWithQueryParams('$baseUrl/profile');
+
+      final response = await http.get(url, headers: {AppConstants.nemesisTokenHeader : prefs.getString('token')!});
+      if (response.statusCode == 401) {
+        prefs.remove(AppConstants.nemesisTokenHeader).then((b){
+          NavigationHelper.pushNamed(AppRoutes.login);
+        });
+        return Future.value({});
+      }
+
+      var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200) {
+        return jsonResponse;
+      } else {
+        throw Exception('Failed to fetch profile: ${response.statusCode}');
+      }
+  }
+
+
 
   static Future<List<Playlist>> getPlaylistsForCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

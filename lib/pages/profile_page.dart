@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../utils/helpers/snackbar_helper.dart';
 
@@ -68,6 +69,10 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     initializeControllers();
+    ApiService.getUserProfile().then((result) {
+      emailController.value = TextEditingValue(text: result['email'] ?? '');
+      nameController.value = TextEditingValue(text: result['name'] ?? '');
+    });
     super.initState();
   }
 
@@ -76,7 +81,6 @@ class _ProfilePageState extends State<ProfilePage> {
     disposeControllers();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
