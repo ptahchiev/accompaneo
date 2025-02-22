@@ -334,15 +334,27 @@ class _PageResultsState extends State<PageResults> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: FittedBox(
-            fit: BoxFit.fitWidth,
+          child: Flexible(
+            fit: FlexFit.tight,
             child: Text(
               widget.playlist.name,
+              softWrap: false,
+              overflow: TextOverflow.fade,
               style: AppTheme.sectionTitle,
             ),
-          ),
+          )
+    
+    
+    
+          // child: FittedBox(
+          //   fit: BoxFit.fitWidth,
+          //   child: Text(
+          //     widget.playlist.name,
+          //     style: AppTheme.sectionTitle,
+          //   ),
+          // ),
         ),
-        Expanded(child: Divider(color: Colors.grey.shade500)),
+        Expanded( flex: 1, child: Divider(color: Colors.grey.shade500)),
         Align(
           alignment: Alignment.centerRight,
           child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${pageProvider.page.totalElements} songs', overflow: TextOverflow.clip)),

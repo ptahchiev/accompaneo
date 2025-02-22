@@ -19,6 +19,7 @@ class AppStrings {
 
   static const String loggedIn = 'Logged In!';
   static const String registrationComplete = 'Registration Complete!';
+  static const String profileUpdated = 'Profile Updated!';
 
   static const String name = 'Name';
   static const String pleaseEnterName = 'Please, Enter Name';

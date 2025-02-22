@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class AppTextFormField extends StatelessWidget {
   const AppTextFormField({
@@ -14,6 +15,7 @@ class AppTextFormField extends StatelessWidget {
     this.onEditingComplete,
     this.autofocus,
     this.focusNode,
+    this.readOnly,
   });
 
   final void Function(String)? onChanged;
@@ -25,6 +27,7 @@ class AppTextFormField extends StatelessWidget {
   final Widget? suffixIcon;
   final String labelText;
   final bool? autofocus;
+  final bool? readOnly;
   final FocusNode? focusNode;
   final void Function()? onEditingComplete;
 
@@ -40,6 +43,7 @@ class AppTextFormField extends StatelessWidget {
         onChanged: onChanged,
         autofocus: autofocus ?? false,
         validator: validator,
+        readOnly: readOnly ?? false,
         obscureText: obscureText ?? false,
         obscuringCharacter: '*',
         onEditingComplete: onEditingComplete,

@@ -85,6 +85,19 @@ class ApiService {
       }
   }
 
+  static Future<Response> updateUserProfile(Map<String, dynamic> params) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Response response = await http.post(UrlHelper.buildUrlWithQueryParams('$baseUrl/profile'), body: jsonEncode(params), headers: {'Content-Type': 'application/json; charset=UTF-8', AppConstants.nemesisTokenHeader : prefs.getString('token')!});
+    if (response.statusCode == 401) {
+      prefs.remove(AppConstants.nemesisTokenHeader).then((b){
+        NavigationHelper.pushNamed(AppRoutes.login);
+      });
+      return Future.value(response);
+    }
+    return response;
+
+  }
+
 
 
   static Future<List<Playlist>> getPlaylistsForCurrentUser() async {

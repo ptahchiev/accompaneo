@@ -27,26 +27,20 @@ class _ProfilePageState extends State<ProfilePage> {
   late final TextEditingController nameController;
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
-  late final TextEditingController confirmPasswordController;
 
   final ValueNotifier<bool> passwordNotifier = ValueNotifier(true);
-  final ValueNotifier<bool> confirmPasswordNotifier = ValueNotifier(true);
   final ValueNotifier<bool> fieldValidNotifier = ValueNotifier(false);
 
   void initializeControllers() {
     nameController = TextEditingController()..addListener(controllerListener);
     emailController = TextEditingController()..addListener(controllerListener);
-    passwordController = TextEditingController()
-      ..addListener(controllerListener);
-    confirmPasswordController = TextEditingController()
-      ..addListener(controllerListener);
+    passwordController = TextEditingController()..addListener(controllerListener);
   }
 
   void disposeControllers() {
     nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
-    confirmPasswordController.dispose();
   }
 
   void controllerListener() {
@@ -58,8 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
         email.isEmpty &&
         password.isEmpty) return;
 
-    if (AppRegex.emailRegex.hasMatch(email) &&
-        AppRegex.passwordRegex.hasMatch(password)) {
+    if (name.isNotEmpty && name.length >=2 && AppRegex.emailRegex.hasMatch(email) && (password.isEmpty || AppRegex.passwordRegex.hasMatch(password))) {
       fieldValidNotifier.value = true;
     } else {
       fieldValidNotifier.value = false;
@@ -106,6 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   AppTextFormField(
+                    readOnly: true,
                     labelText: AppStrings.email,
                     controller: emailController,
                     textInputAction: TextInputAction.next,
@@ -128,7 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     validator: (value) {
                       return value!.isEmpty
                           ? AppStrings.pleaseEnterName
-                          : value.length < 4
+                          : value.length < 2
                               ? AppStrings.invalidName
                               : null;
                     },
@@ -145,9 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         keyboardType: TextInputType.visiblePassword,
                         onChanged: (_) => _formKey.currentState?.validate(),
                         validator: (value) {
-                          return value!.isEmpty
-                              ? AppStrings.pleaseEnterPassword
-                              : AppConstants.passwordRegex.hasMatch(value)
+                          return value!.isEmpty || AppConstants.passwordRegex.hasMatch(value)
                                   ? null
                                   : AppStrings.invalidPassword;
                         },
@@ -184,13 +176,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       return FilledButton(
                         onPressed: isValid
                             ? () {
-                                SnackbarHelper.showSnackBar(
-                                  AppStrings.registrationComplete,
-                                );
-                                nameController.clear();
-                                emailController.clear();
-                                passwordController.clear();
-                                confirmPasswordController.clear();
+                                ApiService.updateUserProfile({'name' : nameController.text, 'password' : passwordController.text}).then((result) {
+                                  SnackbarHelper.showSnackBar(
+                                    AppStrings.profileUpdated,
+                                  );
+                                });
                               }
                             : null,
                         child: const Text(AppStrings.submit),
