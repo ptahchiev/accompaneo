@@ -5,9 +5,9 @@ class AppConstants {
 
   static const String nemesisTokenHeader = 'X-Nemesis-Token';
 
-  static const String urlEndpoint = 'http://localhost:8111/storefront/facade';
+  //static const String urlEndpoint = 'http://localhost:8111/storefront/facade';
 
-  //static const String urlEndpoint = 'http://192.168.0.104:8111/storefront/facade';
+  static const String urlEndpoint = 'http://192.168.0.104:8111/storefront/facade';
 
   static final navigationKey = GlobalKey<NavigatorState>();
 

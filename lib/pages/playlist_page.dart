@@ -38,29 +38,6 @@ class PlaylistPage extends StatefulWidget {
   State<PlaylistPage> createState() => _PlaylistPageState(queryTerm: queryTerm);
 }
 
-class PageProvider extends InheritedWidget {
-  const PageProvider({
-    Key? key,
-    required this.page,
-    required this.search,
-    required this.loadMore,
-    required Widget child,
-  }) : super(key: key, child: child);
-
-  final PageDto page;
-  final VoidCallback search;
-  final VoidCallback loadMore;
-
-  static PageProvider? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<PageProvider>();
-  }
-
-  @override
-  bool updateShouldNotify(PageProvider oldWidget) {
-    return oldWidget.page != page;
-  }
-}
-
 class _PlaylistPageState extends State<PlaylistPage> {
 
   StreamController<Song?> songController = StreamController<Song?>.broadcast();
@@ -71,38 +48,42 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   String? queryTerm = "";
   int page = 0;
-  int _selectedFacetTile = -1; 
   bool isLoading = true;
 
-  late RangeValues tempoRangeValues;
+  late RangeValues tempoRangeValues = RangeValues(0, 100);
 
-  final TextEditingController searchController = TextEditingController();
   final PanelController pc = PanelController();
-  late PageDto futurePage;
+  PageDto futurePage = PageDto(totalPages: -1, totalElements: 0, size: 0, number: 0, content: [], first: false, last: false);
 
   List<Song> filteredItems = [];
 
-  final Map<Function, Timer> _timeouts = {};
-
-  void debounce(Duration timeout, Function target, [List arguments = const []]) {
-    if (_timeouts.containsKey(target)) {
-      _timeouts[target]!.cancel();
-    }
-
-    Timer timer = Timer(timeout, () {
-      Function.apply(target, arguments);
-    });
-
-    _timeouts[target] = timer;
+  Future<void> _filtersDialogBuilder(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context1) {
+        return PageProvider(
+          pagingController: _pagingController, 
+          isLoading: isLoading, 
+          queryTerm: queryTerm, 
+          page: futurePage,
+          tempoRangeValues: tempoRangeValues,
+          search: _handleSearch, 
+          loadMore: _fetchPage, 
+          child: PageFilters()
+        );
+      }
+    );
   }
 
   void _handleSearch(String input) {
     if (input.isEmpty || input.length > 3) {
+      isLoading = true;
       if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
         ApiService.getPlaylistByUrl(widget.playlist.url!).then((val) {
           setState(() {
             futurePage = val;
             tempoRangeValues = val.getTempoRangeValues();
+            isLoading = false;
           });
         });
       } else {
@@ -112,15 +93,17 @@ class _PlaylistPageState extends State<PlaylistPage> {
             futurePage = val;
             tempoRangeValues = val.getTempoRangeValues();
           });
-          _pagingController.refresh();        
+          _pagingController.refresh();
+          isLoading = false;
         });
-    }
+      }
     }
   }
 
   @override
   void initState() {
     super.initState();
+
     _pagingController.addPageRequestListener((pageKey) {
       _fetchPage(pageKey);
     });
@@ -149,23 +132,41 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      ApiService.search(page: (pageKey).toInt(), queryTerm: queryTerm ?? '').then((newPage) {
-        final isLastPage = newPage.last;
-        if (isLastPage) {
-          _pagingController.appendLastPage(newPage.content);
-        } else {
-          final nextPageKey = pageKey+1;
-          _pagingController.appendPage(newPage.content, nextPageKey);
-        }
-        if (pageKey == 0) {
-          setState(() {
-            futurePage = newPage;
-            isLoading = false;
-            tempoRangeValues = newPage.getTempoRangeValues();
-          });
-        }
-
-      });
+      if (widget.playlist.url != null && widget.playlist.url!.isNotEmpty) {
+        ApiService.getPlaylistByUrl(widget.playlist.url!).then((newPage) {
+          final isLastPage = newPage.last;
+          if (isLastPage) {
+            _pagingController.appendLastPage(newPage.content);
+          } else {
+            final nextPageKey = pageKey+1;
+            _pagingController.appendPage(newPage.content, nextPageKey);
+          }
+          if (pageKey == 0) {
+            setState(() {
+              futurePage = newPage;
+              isLoading = false;
+              tempoRangeValues = newPage.getTempoRangeValues();
+            });
+          }
+        });
+      } else {
+        ApiService.search(page: (pageKey).toInt(), queryTerm: queryTerm ?? '').then((newPage) {
+          final isLastPage = newPage.last;
+          if (isLastPage) {
+            _pagingController.appendLastPage(newPage.content);
+          } else {
+            final nextPageKey = pageKey+1;
+            _pagingController.appendPage(newPage.content, nextPageKey);
+          }
+          if (pageKey == 0) {
+            setState(() {
+              futurePage = newPage;
+              isLoading = false;
+              tempoRangeValues = newPage.getTempoRangeValues();
+            });
+          }
+        });
+      }
     } catch (error) {
       _pagingController.error = error;
     }
@@ -180,288 +181,155 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   @override
   Widget build(BuildContext context) {
+    return PageProvider(
+      pagingController: _pagingController, 
+      isLoading: isLoading, 
+      queryTerm: queryTerm, 
+      tempoRangeValues: tempoRangeValues, 
+      page: futurePage, 
+      search: _handleSearch, 
+      loadMore: _fetchPage, 
+      child: PageResults(playlist: widget.playlist, buildDialog: _filtersDialogBuilder));
+  }
+}
 
-    BorderRadiusGeometry radius = BorderRadius.only(
-      topLeft: Radius.circular(24.0),
-      topRight: Radius.circular(24.0),
-    );
+class PageProvider extends InheritedWidget {
+  PageProvider({
+    Key? key,
+    required this.pagingController,
+    required this.isLoading,
+    required this.queryTerm,
+    required this.page,
+    required this.tempoRangeValues,
+    required this.search,
+    required this.loadMore,
+    required Widget child,
+  }) : super(key: key, child: child);
 
-    return Scaffold(
-      resizeToAvoidBottomInset:false,
-      body: NestedScrollView(
-        floatHeaderSlivers: true,
-        headerSliverBuilder: (context, isScrolled) {
-          return [
-            SliverAppBar(
-              snap: true,
-              floating:true,
-              centerTitle: true,
-              backgroundColor: Colors.transparent,
-              title: widget.playlist.searchable ?
-                TextField(
-                  controller: searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search for songs, artists...',
-                    hintStyle: const TextStyle(color: Colors.grey),
-                    contentPadding: const EdgeInsets.all(15),
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: searchController.text.isNotEmpty ? IconButton(    
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        searchController.clear();
-                        _handleSearch(widget.queryTerm ?? "");
-                      }
-                    ) : null,
-                    border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
-                  ),
-                  onChanged: (val) => debounce(const Duration(milliseconds: 300), _handleSearch, [val]),
-                )
-                :
-                Container(),
-              actions: [
-                Visibility(
-                  visible: widget.playlist.code.isNotEmpty,
-                  child: IconButton(onPressed: () { _playlistDialogBuilder(context, widget.playlist.code);}, icon: Icon(Icons.more_vert))
-                ),
-                Visibility(
-                  visible: widget.playlist.searchable,
-                  child: isLoading ?
-                      Padding(padding: EdgeInsets.only(right: 25), child: Icon(Icons.tune_rounded))
-                    : 
-                      Padding(padding: EdgeInsets.only(right: 25), child: IconButton(onPressed: () { _filtersDialogBuilder(context);}, icon: Icon(Icons.tune_rounded)))
-                )
-              ],
-            )
-          ];
-        }, 
-        body: SlidingUpPanel(
-          backdropEnabled: true, 
-          body: _refreshIndicator(), 
-          controller: pc, 
-          borderRadius: radius,
-          maxHeight: MediaQuery.of(context).size.height - 300,
-          minHeight: 0,
-          panel: StreamBuilder(
-            stream: songController.stream,
-            builder: (context, snapshot) {
-              if (snapshot.data == null) return const SizedBox.shrink();
-              return SelectPlaylistWidget(addSongToPlaylist: () {pc.close();}, song: snapshot.data!);
-            },
-          )
-                            
-        ),
-      ),
-    );
+  
+  final PagingController<int, Song> pagingController;
+  final bool isLoading;
+  final String? queryTerm;
+  final RangeValues tempoRangeValues;
+  final PageDto page;
+  final void Function(String) search;
+  final void Function(int) loadMore;
+
+  static PageProvider? of(BuildContext context) {
+    final result =
+        context.dependOnInheritedWidgetOfExactType<PageProvider>();
+    assert(result != null, 'No PageProvider found in context');
+    return result!;
   }
 
-  Future<void> _songDialogBuilder(BuildContext context, Song song) {
+  @override
+  bool updateShouldNotify(PageProvider oldWidget) {
+    return oldWidget.page != page;
+  }
+}
+
+class PageResults extends StatefulWidget {
+
+  final SimplePlaylist playlist;
+
+  final Function buildDialog;
+
+  const PageResults({super.key, required this.playlist, required this.buildDialog});
+
+  @override
+  State<PageResults> createState() => _PageResultsState();
+}
+
+class _PageResultsState extends State<PageResults> {
+
+  StreamController<Song?> songController = StreamController<Song?>.broadcast();
+
+  _PageResultsState();
+
+
+  final PanelController pc = PanelController();
+
+  List<Song> filteredItems = [];
+
+  final TextEditingController searchController = TextEditingController();
+
+  final Map<Function, Timer> _timeouts = {};
+
+  void debounce(Duration timeout, Function target, [List arguments = const []]) {
+    if (_timeouts.containsKey(target)) {
+      _timeouts[target]!.cancel();
+    }
+
+    Timer timer = Timer(timeout, () {
+      Function.apply(target, arguments);
+    });
+
+    _timeouts[target] = timer;
+  }
+
+  Future<void> _playlistDialogBuilder(BuildContext context, String playlistCode) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
           children: [
-            Visibility(
-              visible: widget.playlist.code.isNotEmpty,
-              child: ListTile(
-                title: Text('Remove from playlist'),
-                leading: Icon(Icons.remove, color: Colors.black, size: 28),
-                onTap: () {
-                  Navigator.pop(context, true);
-                  final result = ApiService.removeSongFromPlaylist(song.code, widget.playlist.code);
-                  result.then((response) {
-                    if (response.statusCode == 200) {
-                      Provider.of<PlaylistsModel>(context, listen: false).removeSongFromPlaylist(widget.playlist.code, song);
-                      SnackbarHelper.showSnackBar('Song removed from playlist');
-                    } else {
-                      var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
-                      if (jsonResponse['message'] != null) {
-                        SnackbarHelper.showSnackBar(jsonResponse['message'], isError: true);
-                      } else {
-                        SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true);
-                      }
-                    }
-                  });
-                }
-              ),
-            ),                  
             ListTile(
-              title: Text('Add to playlist'),
+              title: Text('Delete playlist'),
               leading: Icon(Icons.add, color: Colors.black, size: 28),
               onTap: () {
-                Navigator.pop(context, true);
-                pc.open();
-                songController.sink.add(song);
+                final result = ApiService.deletePlaylist(playlistCode);
+                result.then((response) {
+                  if (response.statusCode == 200) {
+                    Navigator.pop(context, true);
+                    NavigationHelper.pushNamed(AppRoutes.playlists);
+                    Provider.of<PlaylistsModel>(context, listen: false).removePlaylist(playlistCode);
+                    
+                    //widget.onPlaylistDelete();
+                    SnackbarHelper.showSnackBar(
+                      AppStrings.playlistDeleted,
+                    );                        
+                  } else {
+                    SnackbarHelper.showSnackBar('Failed to create a playlist: ${response.statusCode}', isError: true);
+                  }
+                });
               }
-            ),
-            Divider(),
-            ListTile(
-              title: Text('View All Songs By Artist'),
-              leading: Icon(Icons.search, color: Colors.black, size: 28),
-              onTap: () {
-                Navigator.pop(context, true);
-                NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlist': SimplePlaylist(code: '', name: 'Songs by ${song.artist.name}', searchable: true), 'queryTerm' : ':artistCode:${song.artist.code}'});
-              }
-            ),
-          ],
+            )
+          ]
         );
       },
     );
   }
 
-  List<Widget> _getGenreChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
-    return facetValues.where((fv) => fv.code != '001').map((fv) {
-      return GenreChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
-        setDialogState(() {
-          _handleSearch(fv.currentQueryUrl);
-        });
-      });
-    }).toList();
-  }
+  /// Returns a `RefreshIndicator` wrapping our results `ListView`
+  Widget _refreshIndicator(PageProvider pageProvider) => RefreshIndicator(
+    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+    triggerMode: RefreshIndicatorTriggerMode.anywhere,
+    color: AppColors.primaryColor,
+    onRefresh: () => _pullRefresh(pageProvider),
+    child: _listView(pageProvider)
+  );  
 
-  List<Widget> _getChordsChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
-    return facetValues.map((fv) {
-      return ChordChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
-        _handleSearch(fv.currentQueryUrl);
-      });
-    }).toList();
-  }
-
-  List<Widget> _getPracticeTypeChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState) {
-    return facetValues.map((fv) {
-      return PracticeTypesChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, showCheckmark: false, onSelected: (bool selected) {
-        _handleSearch(fv.currentQueryUrl);
-      });
-    }).toList();
-  }
-
-  List<Widget> _getTempoSlider(SliderFacetDto sliderFacet, Function setDialogState) {
-    return [
-      Padding(
-        padding: EdgeInsets.only(bottom: 30),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.primaryColor,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text('${tempoRangeValues.start.ceilToDouble()} - ${tempoRangeValues.end.ceilToDouble()}', style: AppTheme.titleMedium)),
-              )
-          ]
-        ),
-      ),
-      tempoRangeValues.start != -1 && tempoRangeValues.end != -1 ?
-        RangeSlider(
-          values: tempoRangeValues,
-          min: sliderFacet.initialMinValue.ceilToDouble(),
-          max: sliderFacet.initialMaxValue.ceilToDouble(),
-          labels: RangeLabels(
-            tempoRangeValues.start.ceilToDouble().toString(),
-            tempoRangeValues.end.ceilToDouble().toString(),
+  Widget _listView(PageProvider pageProvider) {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: pageProvider.isLoading ? PlaylistHeaderPlaceholder() : playlistHeader(pageProvider)),
+        SliverToBoxAdapter(child: pageProvider.isLoading ? AppliedFacetsPlaceholder() : appliedFacetsWidget(pageProvider)),
+        PagedSliverList<int, Song>(
+          //shrinkWrap: true,
+          pagingController: pageProvider.pagingController,
+          builderDelegate: PagedChildBuilderDelegate<Song>(
+            itemBuilder: (context, item, index) => playlistSong(item)
           ),
-          onChanged: (RangeValues values) {
-            setDialogState(() {
-              //setState(() {
-                tempoRangeValues = values;
-              //});
-            });
-          },
-          onChangeEnd: (RangeValues values) {
-            String query = '${queryTerm ?? ''}:tempo:[${values.start.ceilToDouble()}-${values.end.ceilToDouble()}][${sliderFacet.initialMinValue.ceilToDouble()}-${sliderFacet.initialMaxValue.ceilToDouble()}]';
-            _handleSearch(query);
-          },
-        ) : Container()
-    ];
-  }
-
-  Future<void> _filtersDialogBuilder(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (dialogContext, setDialogState) {
-            
-            // if (isLoading) {
-            //   return Center(child: CircularProgressIndicator()); // Show loading state
-            // }
-            PageDto page = futurePage;
-            List<Widget> widgets = [];
-            widgets.insert(0, Center(child: Text('Filter by:', style: AppTheme.titleMedium.copyWith(color: Colors.black))));
-            widgets.insert(1, Container(
-              width: MediaQuery.of(dialogContext).size.width - 200,
-              //height: MediaQuery.of(context).size.height -  500,
-              padding: EdgeInsets.all(20),
-              child: ExpansionPanelList(
-                dividerColor: Colors.grey.shade500,
-                elevation: 0,
-                expandedHeaderPadding: EdgeInsets.all(0),
-                animationDuration: Duration(seconds: 1),
-                //expandedHeaderPadding: EdgeInsets.all(32),
-                children: page.facets!.map<ExpansionPanel>((f) {
-                  return ExpansionPanel(
-                    canTapOnHeader: true,
-                    isExpanded: _selectedFacetTile == page.facets!.indexOf(f),
-                    backgroundColor: Colors.transparent,
-                    headerBuilder: (dialogContext, isOpen) {
-                      return Text(f.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, height: 2.5));
-                    }, 
-                    body: 
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [ 
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              spacing: 10.0,
-                              runSpacing: 10.0,
-                              children: [
-                                if (f.code == 'allCategories') ..._getGenreChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState),
-                                if (f.code == 'chords') ..._getChordsChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState),
-                                if (f.code == 'practiceTypes') ..._getPracticeTypeChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState),
-                                if (f.code == 'tempo') ..._getTempoSlider(f as SliderFacetDto, setDialogState)
-                              ]
-                            )
-                          ]
-                        ),
-                      )
-                  );
-                }).toList(),
-
-                expansionCallback: (panelIndex, isExpanded) => {
-                  if (isExpanded) {
-                    setDialogState(() {
-                      setState(() {
-                        _selectedFacetTile = panelIndex;
-                      });
-                    }),
-
-                  } else {
-                    setDialogState(() {
-                      setState(() {
-                        _selectedFacetTile = -1;
-                      });
-                    }),                    
-
-                  }
-                },
-              
-              ),
-            ));
-            return SimpleDialog(insetPadding: EdgeInsets.all(10), children: widgets);
-          }
-        );
-      }
+        )
+      ],
     );
   }
 
-  Future<void> _pullRefresh() async {
-    _pagingController.refresh();
+  Future<void> _pullRefresh(PageProvider pageProvider) async {
+    pageProvider.pagingController.refresh();
   }
 
-  Widget playlistHeader() {
+  Widget playlistHeader(PageProvider pageProvider) {
     return Row(
       children: [
         Padding(
@@ -477,13 +345,13 @@ class _PlaylistPageState extends State<PlaylistPage> {
         Expanded(child: Divider(color: Colors.grey.shade500)),
         Align(
           alignment: Alignment.centerRight,
-          child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${futurePage.totalElements} songs', overflow: TextOverflow.clip)),
+          child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text('${pageProvider.page.totalElements} songs', overflow: TextOverflow.clip)),
         )
       ],
     );
   }
 
-  Widget appliedFacetsWidget() {
+  Widget appliedFacetsWidget(PageProvider pageProvider) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Expanded(
@@ -497,26 +365,26 @@ class _PlaylistPageState extends State<PlaylistPage> {
               spacing: 10.0,
               runSpacing: 10.0,
               children: [
-                ...futurePage.appliedFacets!.map((af) {
+                ...pageProvider.page.appliedFacets!.map((af) {
                   switch(af.facetCode) {
                     case 'allCategories': {
                       return GenreChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: true, onDeleted: () {
-                        _handleSearch(af.removeQueryUrl);
+                        pageProvider.search(af.removeQueryUrl);
                       });
                     }
                     case 'chords': {
                       return ChordChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: false, onDeleted: () {
-                        _handleSearch(af.removeQueryUrl);
+                        pageProvider.search(af.removeQueryUrl);
                       });
                     }
                     case 'practiceTypes': {
                       return PracticeTypesChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: false, onDeleted: () {
-                        _handleSearch(af.removeQueryUrl);
+                        pageProvider.search(af.removeQueryUrl);
                       });
                     }
                     case 'tempo': {
                       return RangeChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: false, onDeleted: () {
-                        _handleSearch(af.removeQueryUrl);
+                        pageProvider.search(af.removeQueryUrl);
                       });
                     }
                   }
@@ -529,79 +397,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
       ),
     );
   }
-
-  /// Returns a `RefreshIndicator` wrapping our results `ListView`
-  Widget _refreshIndicator() => RefreshIndicator(
-    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-    triggerMode: RefreshIndicatorTriggerMode.anywhere,
-    color: AppColors.primaryColor,
-    onRefresh: _pullRefresh,
-    child: _listView()
-    
-    // ListView (
-    //   //controller: _scrollController,
-    //   children: [
-    //     playlistHeader(),
-    //     appliedFacetsWidget(),
-    //     _listView()
-    //   ],
-    // )    
-  );
-
-  Widget getLoadingWidget() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      loop: 0,
-      enabled: true,
-      child: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
-        child:
-          Column(
-            children: [
-              PlaylistHeaderPlaceholder(),
-              AppliedFacetsPlaceholder(),
-              ListView.builder(
-                itemCount: 50,
-                shrinkWrap: true,
-                physics: ClampingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return PlaylistElementPlaceholder();
-                }
-              ),
-            ]
-          )
-      )
-    );
-  }
-
-  Widget _listView() {
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(child: isLoading ? PlaylistHeaderPlaceholder() : playlistHeader()),
-        SliverToBoxAdapter(child: isLoading ? AppliedFacetsPlaceholder() : appliedFacetsWidget()),
-        PagedSliverList<int, Song>(
-          //shrinkWrap: true,
-          pagingController: _pagingController,
-          builderDelegate: PagedChildBuilderDelegate<Song>(
-            itemBuilder: (context, item, index) => playlistSong(item)
-          ),
-        )
-      ],
-    );
-  }
-  
-  /// Returns a `Widget` informing of "No Data Fetched"
-  Widget _noDataView(String message) => Center(
-    child: Text(
-      message,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w800,
-      ),
-    ),
-  );
-
 
   Widget playlistSong(Song song) {
     return ListTile(
@@ -662,37 +457,320 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
-  Future<void> _playlistDialogBuilder(BuildContext context, String playlistCode) {
+  Widget getLoadingWidget() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      loop: 0,
+      enabled: true,
+      child: SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
+        child:
+          Column(
+            children: [
+              PlaylistHeaderPlaceholder(),
+              AppliedFacetsPlaceholder(),
+              ListView.builder(
+                itemCount: 50,
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return PlaylistElementPlaceholder();
+                }
+              ),
+            ]
+          )
+      )
+    );
+  }
+
+  Future<void> _songDialogBuilder(BuildContext context, Song song) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
           children: [
+            Visibility(
+              visible: widget.playlist.code.isNotEmpty,
+              child: ListTile(
+                title: Text('Remove from playlist'),
+                leading: Icon(Icons.remove, color: Colors.black, size: 28),
+                onTap: () {
+                  Navigator.pop(context, true);
+                  final result = ApiService.removeSongFromPlaylist(song.code, widget.playlist.code);
+                  result.then((response) {
+                    if (response.statusCode == 200) {
+                      Provider.of<PlaylistsModel>(context, listen: false).removeSongFromPlaylist(widget.playlist.code, song);
+                      SnackbarHelper.showSnackBar('Song removed from playlist');
+                    } else {
+                      var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+                      if (jsonResponse['message'] != null) {
+                        SnackbarHelper.showSnackBar(jsonResponse['message'], isError: true);
+                      } else {
+                        SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true);
+                      }
+                    }
+                  });
+                }
+              ),
+            ),                  
             ListTile(
-              title: Text('Delete playlist'),
+              title: Text('Add to playlist'),
               leading: Icon(Icons.add, color: Colors.black, size: 28),
               onTap: () {
-                final result = ApiService.deletePlaylist(playlistCode);
-                result.then((response) {
-                  if (response.statusCode == 200) {
-                    Navigator.pop(context, true);
-                    NavigationHelper.pushNamed(AppRoutes.playlists);
-                    Provider.of<PlaylistsModel>(context, listen: false).removePlaylist(playlistCode);
-                    
-                    //widget.onPlaylistDelete();
-                    SnackbarHelper.showSnackBar(
-                      AppStrings.playlistDeleted,
-                    );                        
-                  } else {
-                    SnackbarHelper.showSnackBar('Failed to create a playlist: ${response.statusCode}', isError: true);
-                  }
-                });
+                Navigator.pop(context, true);
+                pc.open();
+                songController.sink.add(song);
               }
-            )
-          ]
+            ),
+            Divider(),
+            ListTile(
+              title: Text('View All Songs By Artist'),
+              leading: Icon(Icons.search, color: Colors.black, size: 28),
+              onTap: () {
+                Navigator.pop(context, true);
+                NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlist': SimplePlaylist(code: '', name: 'Songs by ${song.artist.name}', searchable: true), 'queryTerm' : ':artistCode:${song.artist.code}'});
+              }
+            ),
+          ],
         );
       },
     );
   }
 
+  @override
+  Widget build(BuildContext context) {
+    PageProvider pageProvider = PageProvider.of(context)!;
+
+    BorderRadiusGeometry radius = BorderRadius.only(
+      topLeft: Radius.circular(24.0),
+      topRight: Radius.circular(24.0),
+    );
+
+    return Scaffold(
+      resizeToAvoidBottomInset:false,
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (context, isScrolled) {
+          return [
+            SliverAppBar(
+              snap: true,
+              floating:true,
+              centerTitle: true,
+              backgroundColor: Colors.transparent,
+              title: widget.playlist.searchable ?
+                TextField(
+                  controller: searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search for songs, artists...',
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    contentPadding: const EdgeInsets.all(15),
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: searchController.text.isNotEmpty ? IconButton(    
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        searchController.clear();
+                        pageProvider.search("");
+                      }
+                    ) : null,
+                    border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey, width:12)),
+                  ),
+                  onChanged: (val) => debounce(const Duration(milliseconds: 300), pageProvider.search, [val]),
+                )
+                :
+                Container(),
+              actions: [
+                Visibility(
+                  visible: widget.playlist.code.isNotEmpty,
+                  child: IconButton(onPressed: () { _playlistDialogBuilder(context, widget.playlist.code);}, icon: Icon(Icons.more_vert))
+                ),
+                Visibility(
+                  visible: widget.playlist.searchable,
+                  child: pageProvider.isLoading ?
+                      Padding(padding: EdgeInsets.only(right: 25), child: Icon(Icons.tune_rounded))
+                    : 
+                      Padding(
+                        padding: EdgeInsets.only(right: 25), 
+                        child: IconButton(onPressed: () {widget.buildDialog(context);}, 
+                          icon: Icon(Icons.tune_rounded)
+                        )
+                      )
+                )
+              ],
+            )
+          ];
+        }, 
+        body: SlidingUpPanel(
+          backdropEnabled: true, 
+          body: _refreshIndicator(pageProvider), 
+          controller: pc, 
+          borderRadius: radius,
+          maxHeight: MediaQuery.of(context).size.height - 300,
+          minHeight: 0,
+          panel: StreamBuilder(
+            stream: songController.stream,
+            builder: (context, snapshot) {
+              if (snapshot.data == null) return const SizedBox.shrink();
+              return SelectPlaylistWidget(song: snapshot.data!, panelController: pc);
+            },
+          )
+                            
+        ),
+      ),
+    );
+  }
+}
+
+class PageFilters extends StatefulWidget {
+
+  const PageFilters({super.key});
+
+  @override
+  State<PageFilters> createState() => _PageFiltersState();
+}
+
+class _PageFiltersState extends State<PageFilters> {
+
+  int selectedFacetTile = -1; 
+
+  List<Widget> _getGenreChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState, PageProvider pageProvider) {
+    return facetValues.where((fv) => fv.code != '001').map((fv) {
+      return GenreChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
+        setDialogState(() {
+          pageProvider.search(fv.currentQueryUrl);
+        });
+      });
+    }).toList();
+  }
+
+  List<Widget> _getChordsChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState, PageProvider pageProvider) {
+    return facetValues.map((fv) {
+      return ChordChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, onSelected: (bool selected) {
+        pageProvider.search(fv.currentQueryUrl);
+      });
+    }).toList();
+  }
+
+  List<Widget> _getPracticeTypeChips(String facetCode, List<FacetValueDto> facetValues, Function isApplied, Function setDialogState, PageProvider pageProvider) {
+    return facetValues.map((fv) {
+      return PracticeTypesChip(selected: isApplied(fv), facetValueCode: fv.code, facetValueName: fv.name, facetValueCount: fv.count, showCheckmark: false, onSelected: (bool selected) {
+        pageProvider.search(fv.currentQueryUrl);
+      });
+    }).toList();
+  }
+
+  List<Widget> _getTempoSlider(SliderFacetDto sliderFacet, Function setDialogState, PageProvider pageProvider) {
+    RangeValues tempoRangeValues = pageProvider.tempoRangeValues;
+    return [
+      Padding(
+        padding: EdgeInsets.only(bottom: 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text('${tempoRangeValues.start.ceilToDouble()} - ${tempoRangeValues.end.ceilToDouble()}', style: AppTheme.titleMedium)),
+              )
+          ]
+        ),
+      ),
+      tempoRangeValues.start != -1 && tempoRangeValues.end != -1 ?
+        RangeSlider(
+          values: tempoRangeValues,
+          min: sliderFacet.initialMinValue.ceilToDouble(),
+          max: sliderFacet.initialMaxValue.ceilToDouble(),
+          labels: RangeLabels(
+            tempoRangeValues.start.ceilToDouble().toString(),
+            tempoRangeValues.end.ceilToDouble().toString(),
+          ),
+          onChanged: (RangeValues values) {
+            setDialogState(() {
+              setState(() {
+                tempoRangeValues = values;
+              });
+            });
+          },
+          onChangeEnd: (RangeValues values) {
+            String query = '${pageProvider.queryTerm ?? ''}:tempo:[${values.start.ceilToDouble()}-${values.end.ceilToDouble()}][${sliderFacet.initialMinValue.ceilToDouble()}-${sliderFacet.initialMaxValue.ceilToDouble()}]';
+            pageProvider.search(query);
+          },
+        ) : Container()
+    ];
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    PageProvider pageProvider = PageProvider.of(context)!;
+
+    return StatefulBuilder(
+      builder: (dialogContext, setDialogState) {
+        PageDto page = pageProvider.page;
+        List<Widget> widgets = [];
+        widgets.insert(0, Center(child: Text('Filter by:', style: AppTheme.titleMedium.copyWith(color: Colors.black))));
+        widgets.insert(1, Container(
+          width: MediaQuery.of(dialogContext).size.width - 200,
+          //height: MediaQuery.of(context).size.height -  500,
+          padding: EdgeInsets.all(20),
+          child: ExpansionPanelList(
+            dividerColor: Colors.grey.shade500,
+            elevation: 0,
+            expandedHeaderPadding: EdgeInsets.all(0),
+            animationDuration: Duration(seconds: 1),
+            //expandedHeaderPadding: EdgeInsets.all(32),
+            children: page.facets!.map<ExpansionPanel>((f) {
+              return ExpansionPanel(
+                canTapOnHeader: true,
+                isExpanded: selectedFacetTile == page.facets!.indexOf(f),
+                backgroundColor: Colors.transparent,
+                headerBuilder: (dialogContext, isOpen) {
+                  return Text(f.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, height: 2.5));
+                }, 
+                body: 
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [ 
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 10.0,
+                          runSpacing: 10.0,
+                          children: [
+                            if (f.code == 'allCategories') ..._getGenreChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState, pageProvider),
+                            if (f.code == 'chords') ..._getChordsChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState, pageProvider),
+                            if (f.code == 'practiceTypes') ..._getPracticeTypeChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState, pageProvider),
+                            if (f.code == 'tempo') ..._getTempoSlider(f as SliderFacetDto, setDialogState, pageProvider)
+                          ]
+                        )
+                      ]
+                    ),
+                  )
+              );
+            }).toList(),
+
+            expansionCallback: (panelIndex, isExpanded) {
+              if (isExpanded) {
+                setState(() {
+                  selectedFacetTile = panelIndex;
+                });
+                
+              } else {
+                setState(() {
+                  selectedFacetTile = -1;
+                });
+              }
+            },
+          
+          ),
+        ));
+        return SimpleDialog(insetPadding: EdgeInsets.all(10), children: widgets);
+      }
+    );    
+  }
 }

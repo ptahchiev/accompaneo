@@ -13,9 +13,11 @@ import '../values/app_theme.dart';
 
 class NewPlaylistWidget extends StatefulWidget {
 
+  final Function createCallback;
+
   final PanelController panelController;
 
-  const NewPlaylistWidget({super.key, required this.panelController});
+  const NewPlaylistWidget({super.key, required this.panelController, required this.createCallback});
 
   @override
   _NewPlaylistWidgetState createState() => _NewPlaylistWidgetState();
@@ -109,11 +111,14 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                                   result.then((response) {
                                     var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
                                     if (response.statusCode == 200) {
-                                      Provider.of<PlaylistsModel>(context, listen: false).add(Playlist.fromJson(jsonResponse));
+                                      Playlist playlist = Playlist.fromJson(jsonResponse);
+                                      Provider.of<PlaylistsModel>(context, listen: false).add(playlist);
                                       SnackbarHelper.showSnackBar(
                                         AppStrings.playlistCreated,
                                       );
                                       
+                                      widget.createCallback(playlist);
+
                                       nameController.clear();
                                       widget.panelController.close();
                                     } else {

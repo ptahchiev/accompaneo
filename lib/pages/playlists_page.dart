@@ -90,7 +90,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
       body: SlidingUpPanel(backdropEnabled: true, 
                            body: createPlaylist(), 
                            controller: pc, 
-                           panel: NewPlaylistWidget(panelController : pc),
+                           panel: NewPlaylistWidget(panelController : pc, createCallback: (){}),
                            borderRadius: radius,
                            maxHeight: MediaQuery.of(context).size.height - 300,
                            minHeight: 0
