@@ -95,10 +95,7 @@ class ApiService {
       return Future.value(response);
     }
     return response;
-
   }
-
-
 
   static Future<List<Playlist>> getPlaylistsForCurrentUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -225,7 +222,7 @@ class ApiService {
 
   static Future<SearchPage> search({int page = 0, int size = 24, String sort = '_score,DESC', String? queryTerm = '', String queryName = 'default'}) async {
     
-    //await Future.delayed(const Duration(seconds: 4));
+    //await Future.delayed(const Duration(seconds: 2));
     
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var url = UrlHelper.buildUrlWithQueryParams('$baseUrl/search', queryParams: {'size': size.toString(), 'page': page.toString(), 'q': queryTerm ?? '', 'sort': sort, 'projection': 'io.accompaneo.backend.module.search.dto.SongFacetSearchPageDtoDefinition', 'queryName': queryName, 'type' : 'song'});

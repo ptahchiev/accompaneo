@@ -307,18 +307,29 @@ class _PageResultsState extends State<PageResults> {
     color: AppColors.primaryColor,
     onRefresh: () => _pullRefresh(pageProvider),
     child: _listView(pageProvider)
-  );  
-
+  );
+  
   Widget _listView(PageProvider pageProvider) {
     return CustomScrollView(
       slivers: [
-        SliverToBoxAdapter(child: pageProvider.isLoading ? PlaylistHeaderPlaceholder() : playlistHeader(pageProvider)),
-        SliverToBoxAdapter(child: pageProvider.isLoading ? AppliedFacetsPlaceholder() : appliedFacetsWidget(pageProvider)),
+        SliverToBoxAdapter(child: playlistHeader(pageProvider)),
+        SliverToBoxAdapter(child: appliedFacetsWidget(pageProvider)),
         PagedSliverList<int, Song>(
-          //shrinkWrap: true,
           pagingController: pageProvider.pagingController,
           builderDelegate: PagedChildBuilderDelegate<Song>(
-            itemBuilder: (context, item, index) => playlistSong(item)
+            itemBuilder: (context, item, index) => playlistSong(item),
+            // firstPageErrorIndicatorBuilder: (_) => FirstPageErrorIndicator(
+            //   error: _pagingController.error,
+            //   onTryAgain: () => _pagingController.refresh(),
+            // ),
+            // newPageErrorIndicatorBuilder: (_) => NewPageErrorIndicator(
+            //   error: _pagingController.error,
+            //   onTryAgain: () => _pagingController.retryLastFailedRequest(),
+            // ),
+            firstPageProgressIndicatorBuilder: (_) => getLoadingWidget(),
+            // newPageProgressIndicatorBuilder: (_) => NewPageProgressIndicator(),
+            noItemsFoundIndicatorBuilder: (_) => _noDataView("No Results Found"),
+            //noMoreItemsIndicatorBuilder: (_) => NoMoreItemsIndicator(),
           ),
         )
       ],
@@ -328,6 +339,17 @@ class _PageResultsState extends State<PageResults> {
   Future<void> _pullRefresh(PageProvider pageProvider) async {
     pageProvider.pagingController.refresh();
   }
+
+  Widget _noDataView(String message) => Center(
+    child: Text(
+      message,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w800,
+      ),
+    ),
+  );
+
 
   Widget playlistHeader(PageProvider pageProvider) {
     return Row(
@@ -475,23 +497,26 @@ class _PageResultsState extends State<PageResults> {
       highlightColor: Colors.grey.shade100,
       loop: 0,
       enabled: true,
-      child: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
-        child:
-          Column(
-            children: [
-              PlaylistHeaderPlaceholder(),
-              AppliedFacetsPlaceholder(),
-              ListView.builder(
-                itemCount: 50,
-                shrinkWrap: true,
-                physics: ClampingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return PlaylistElementPlaceholder();
-                }
-              ),
-            ]
-          )
+      child: SizedBox(
+        height: 300 * .7, // 70% height
+        width: 400 * .9,
+        child: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child:
+            Column(
+              children: [
+                AppliedFacetsPlaceholder(),
+                ListView.builder(
+                  itemCount: 50,
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return PlaylistElementPlaceholder();
+                  }
+                ),
+              ]
+            )
+        )
       )
     );
   }
