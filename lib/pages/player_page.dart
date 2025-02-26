@@ -379,74 +379,76 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
           return Stack(
               alignment: AlignmentDirectional.bottomStart,
               children: <Widget>[
-                Scaffold(
-                  backgroundColor: Colors.white,
-                  body: GestureDetector(
-                    onTap: () { 
-                      if (_player.playing) {
-                        _player.pause();
-                      }
-                    },
-                    child: 
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
-                        child: Column(
-                          //crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 65,
-                              child: Container(
-                                  decoration: BoxDecoration(borderRadius: radius, color: AppColors.primaryColor),
+                ScaffoldMessenger(
+                  child: Scaffold(
+                    backgroundColor: Colors.white,
+                    body: GestureDetector(
+                      onTap: () { 
+                        if (_player.playing) {
+                          _player.pause();
+                        }
+                      },
+                      child: 
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
+                          child: Column(
+                            //crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
+                            children: <Widget>[
+                              Expanded(
+                                flex: 65,
+                                child: Container(
+                                    decoration: BoxDecoration(borderRadius: radius, color: AppColors.primaryColor),
+                                  ),
                                 ),
-                              ),
-                            Expanded(
-                              flex: 35,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
-                                child: Column(
-                                  children: [
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 20),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children: 
-                                          [
-                                            Text('Next', style: AppTheme.titleMedium.copyWith(color: Colors.black)),
-                                            CircleAvatar(backgroundColor: ChordsHelper.chordTypeColors[chord],
-                                              child: Text(chord.name, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
-                                          ]
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Flexible(
-                                          child: FlutterGuitarChord(
-                                            baseFret: position.baseFret,
-                                            chordName: chord.name,
-                                            fingers: position.fingers,
-                                            frets: position.frets,
-                                            totalString: instrument.stringCount,
-                                            stringStroke: 0.4,
-                                            //differentStringStrokes: _useStringThickness,
-                                            // stringColor: Colors.red,
-                                            // labelColor: Colors.teal,
-                                            // tabForegroundColor: Colors.white,
-                                            // tabBackgroundColor: Colors.deepOrange,
-                                            firstFrameStroke: 10,
-                                            barStroke: 0.5,
-                                            //firstFrameColor: Colors.red,
-                                            barColor: Colors.grey,
-                                            // labelOpenStrings: true,                          
+                              Expanded(
+                                flex: 35,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
+                                  child: Column(
+                                    children: [
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 20),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: 
+                                            [
+                                              Text('Next', style: AppTheme.titleMedium.copyWith(color: Colors.black)),
+                                              CircleAvatar(backgroundColor: ChordsHelper.chordTypeColors[chord],
+                                                child: Text(chord.name, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
+                                            ]
                                           ),
                                         ),
-                                      )
-                                  ]
+                                        Expanded(
+                                          child: Flexible(
+                                            child: FlutterGuitarChord(
+                                              baseFret: position.baseFret,
+                                              chordName: chord.name,
+                                              fingers: position.fingers,
+                                              frets: position.frets,
+                                              totalString: instrument.stringCount,
+                                              stringStroke: 0.4,
+                                              //differentStringStrokes: _useStringThickness,
+                                              // stringColor: Colors.red,
+                                              // labelColor: Colors.teal,
+                                              // tabForegroundColor: Colors.white,
+                                              // tabBackgroundColor: Colors.deepOrange,
+                                              firstFrameStroke: 10,
+                                              barStroke: 0.5,
+                                              //firstFrameColor: Colors.red,
+                                              barColor: Colors.grey,
+                                              // labelOpenStrings: true,                          
+                                            ),
+                                          ),
+                                        )
+                                    ]
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                  )
+                    )
+                  ),
                 ),
                 _overlayPanel()
                 ]);
