@@ -416,6 +416,16 @@ class _PageResultsState extends State<PageResults> {
                         pageProvider.search(af.removeQueryUrl);
                       });
                     }
+                    case 'musicKey': {
+                      return ChordChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: false, onDeleted: () {
+                        pageProvider.search(af.removeQueryUrl);
+                      });
+                    }
+                    case 'timeSignature': {
+                      return GenreChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: true, onDeleted: () {
+                        pageProvider.search(af.removeQueryUrl);
+                      });
+                    }                                        
                     case 'tempo': {
                       return RangeChip(selected: true, facetValueCode: af.facetValueCode, facetValueName: af.facetValueName, showCheckmark: false, onDeleted: () {
                         pageProvider.search(af.removeQueryUrl);
@@ -628,9 +638,7 @@ class _PageResultsState extends State<PageResults> {
                     : 
                       Padding(
                         padding: EdgeInsets.only(right: 25), 
-                        child: IconButton(onPressed: () {widget.buildDialog(context);}, 
-                          icon: Icon(Icons.tune_rounded)
-                        )
+                        child: IconButton(onPressed: () {widget.buildDialog(context);}, icon: Icon(Icons.tune_rounded))
                       )
                 )
               ],
@@ -782,6 +790,8 @@ class _PageFiltersState extends State<PageFilters> {
                             if (f.code == 'allCategories') ..._getGenreChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState, pageProvider),
                             if (f.code == 'chords') ..._getChordsChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState, pageProvider),
                             if (f.code == 'practiceTypes') ..._getPracticeTypeChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState, pageProvider),
+                            if (f.code == 'musicKey') ..._getChordsChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState, pageProvider),
+                            if (f.code == 'timeSignature') ..._getGenreChips(f.code, f.values, (FacetValueDto fv) {return page.isFacetValueApplied(fv);}, setDialogState, pageProvider),
                             if (f.code == 'tempo') ..._getTempoSlider(f as SliderFacetDto, setDialogState, pageProvider)
                           ]
                         )
