@@ -8,6 +8,10 @@ class AppColors {
   static const Color darkerBlue = Color(0xff152534);
   static const Color darkestBlue = Color(0xff0C1C2E);
 
+  static const Color blueGradientEnd = Color(0xFF161F3C);
+  static const Color blueGradientStart = Color(0xFF223556);
+  static const double mediumMargin = 15;  
+
   static const List<Color> defaultGradient = [
     darkBlue,
     darkerBlue,

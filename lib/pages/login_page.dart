@@ -1,5 +1,6 @@
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import '../utils/helpers/snackbar_helper.dart';
 import '../values/app_regex.dart';
@@ -66,6 +67,21 @@ class _LoginPageState extends State<LoginPage> {
     disposeControllers();
     super.dispose();
   }
+
+
+  // Future<void> signInWithGoogle() async {
+  //   await ApiService.loginWithGoogle();
+  // }
+
+  Future<void> signInWithFacebook() async {
+    // final LoginResult loginResult = await FacebookAuth.instance.login();
+    // print(loginResult);
+
+
+
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +211,9 @@ class _LoginPageState extends State<LoginPage> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () async {
+                            ApiService.loginWithGoogle().then((result) {
+                              print(result);
+                            });
                             // authProvider.handleGoogleSignIn().then((result) {
                             //   if (result) {
                             //     emailController.clear();
@@ -216,6 +235,9 @@ class _LoginPageState extends State<LoginPage> {
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: () async {
+                            signInWithFacebook();
+
+
                             // authProvider.handleFacebookLogin().then((result) {
                             //   // if (result) {
                             //   //   emailController.clear();

@@ -97,6 +97,7 @@ class _PlaylistsPageState extends State<PlaylistsPage> {
       ),
       floatingActionButton: Visibility(visible: true, child:FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.primary,
+          heroTag: "addPlaylist",
           shape: const CircleBorder(),
           onPressed: () {
             pc.isPanelOpen ? pc.close() : pc.open();

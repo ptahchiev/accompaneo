@@ -160,7 +160,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
 
 class Accompaneo extends StatelessWidget {
 
-  String? token;
+  final String? token;
 
   Accompaneo({required this.token});
 

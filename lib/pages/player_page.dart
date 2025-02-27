@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:accompaneo/models/music_data.dart';
 import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/position_data.dart';
 import 'package:accompaneo/services/api_service.dart';
+import 'package:accompaneo/widgets/music_player_screen.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:audio_session/audio_session.dart';
@@ -42,14 +44,12 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   Set<PracticeType> _segmentedButtonSelection = {};
 
-
   _PlayerPageState({required this.song});
   
-  //late AudioPlayerManager audioPlayerManager;
   final _player = AudioPlayer();
   final _metronomePlayer = AudioPlayer(handleAudioSessionActivation : false);
 
-  //String _audioUrl = '';
+  MusicPlayerScreen musicPlayerScreen;
 
   @override
   void initState() {
@@ -93,6 +93,14 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
 
     setAudioSource(song.audioStreamUrls!.values.toList()[0]);
+
+    ApiService.getSongStructure(song.structureUrl).then((res) {
+      setState(() {
+        musicPlayerScreen = MusicPlayerScreen(musicData: res!);
+        //_audioUrl = song.audioStreamUrls![newSelection.first.name];
+      });
+    });
+
   }
 
   @override
@@ -327,7 +335,10 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
             icon: const Icon(Icons.play_arrow_outlined),
             iconSize: 150,
             color: Colors.white,
-            onPressed: () => _player.play(),
+            onPressed: () { 
+              _player.play();
+              musicPlayerScreen._startSegmentTimer();
+            }
           );
         } else if (processingState != ProcessingState.completed) {
           return IconButton(
@@ -388,65 +399,65 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                           _player.pause();
                         }
                       },
-                      child: 
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
-                          child: Column(
-                            //crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
-                            children: <Widget>[
-                              Expanded(
-                                flex: 65,
-                                child: Container(
-                                    decoration: BoxDecoration(borderRadius: radius, color: AppColors.primaryColor),
-                                  ),
-                                ),
-                              Expanded(
-                                flex: 35,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
-                                  child: Column(
-                                    children: [
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(vertical: 20),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: 
-                                            [
-                                              Text('Next', style: AppTheme.titleMedium.copyWith(color: Colors.black)),
-                                              CircleAvatar(backgroundColor: ChordsHelper.chordTypeColors[chord],
-                                                child: Text(chord.name, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
-                                            ]
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Flexible(
-                                            child: FlutterGuitarChord(
-                                              baseFret: position.baseFret,
-                                              chordName: chord.name,
-                                              fingers: position.fingers,
-                                              frets: position.frets,
-                                              totalString: instrument.stringCount,
-                                              stringStroke: 0.4,
-                                              //differentStringStrokes: _useStringThickness,
-                                              // stringColor: Colors.red,
-                                              // labelColor: Colors.teal,
-                                              // tabForegroundColor: Colors.white,
-                                              // tabBackgroundColor: Colors.deepOrange,
-                                              firstFrameStroke: 10,
-                                              barStroke: 0.5,
-                                              //firstFrameColor: Colors.red,
-                                              barColor: Colors.grey,
-                                              // labelOpenStrings: true,                          
-                                            ),
-                                          ),
-                                        )
-                                    ]
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      child: musicData != null ? musicPlayerScreen : Container()
+                        // Padding(
+                        //   padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
+                        //   child: Column(
+                        //     //crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
+                        //     children: <Widget>[
+                        //       Expanded(
+                        //         flex: 65,
+                        //         child: Container(
+                        //             decoration: BoxDecoration(borderRadius: radius, color: AppColors.primaryColor),
+                        //           ),
+                        //         ),
+                        //       Expanded(
+                        //         flex: 35,
+                        //         child: Padding(
+                        //           padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
+                        //           child: Column(
+                        //             children: [
+                        //                 Padding(
+                        //                   padding: EdgeInsets.symmetric(vertical: 20),
+                        //                   child: Row(
+                        //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        //                     children: 
+                        //                     [
+                        //                       Text('Next', style: AppTheme.titleMedium.copyWith(color: Colors.black)),
+                        //                       CircleAvatar(backgroundColor: ChordsHelper.chordTypeColors[chord],
+                        //                         child: Text(chord.name, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
+                        //                     ]
+                        //                   ),
+                        //                 ),
+                        //                 Expanded(
+                        //                   child: Flexible(
+                        //                     child: FlutterGuitarChord(
+                        //                       baseFret: position.baseFret,
+                        //                       chordName: chord.name,
+                        //                       fingers: position.fingers,
+                        //                       frets: position.frets,
+                        //                       totalString: instrument.stringCount,
+                        //                       stringStroke: 0.4,
+                        //                       //differentStringStrokes: _useStringThickness,
+                        //                       // stringColor: Colors.red,
+                        //                       // labelColor: Colors.teal,
+                        //                       // tabForegroundColor: Colors.white,
+                        //                       // tabBackgroundColor: Colors.deepOrange,
+                        //                       firstFrameStroke: 10,
+                        //                       barStroke: 0.5,
+                        //                       //firstFrameColor: Colors.red,
+                        //                       barColor: Colors.grey,
+                        //                       // labelOpenStrings: true,                          
+                        //                     ),
+                        //                   ),
+                        //                 )
+                        //             ]
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                     )
                   ),
                 ),

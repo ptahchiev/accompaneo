@@ -20,6 +20,8 @@ android {
     }
 
     defaultConfig {
+        //minSdkVersion 21
+        //targetSdkVersion 33
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.accompaneo"
         // You can update the following values to match your application needs.

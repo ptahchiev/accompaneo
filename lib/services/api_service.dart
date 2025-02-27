@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:accompaneo/models/homepage_sections.dart';
+import 'package:accompaneo/models/music_data.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/search_page.dart';
@@ -9,6 +10,7 @@ import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/utils/helpers/url_helpers.dart';
 import 'package:accompaneo/values/app_constants.dart';
 import 'package:accompaneo/values/app_routes.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -17,6 +19,12 @@ import 'dart:convert' as convert;
 class ApiService {
 
   static const String baseUrl = AppConstants.urlEndpoint;
+
+  static final _googleSignIn = GoogleSignIn();
+
+  static Future<GoogleSignInAccount?> loginWithGoogle() => _googleSignIn.signIn();
+
+  static Future<GoogleSignInAccount?> logoutWithGoogle() => _googleSignIn.signOut();
 
   static Future<Response> login(String username, String password) async {
     final response = await http.get(UrlHelper.buildUrlWithQueryParams('$baseUrl/auth'), headers: {'X-Nemesis-Username' : username, 'X-Nemesis-Password' : password});
@@ -190,8 +198,7 @@ class ApiService {
   static Future<Response> addSongToFavouritesPlaylist(String songCode) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Response response = await http.post(UrlHelper.buildUrlWithQueryParams('$baseUrl/playlist/favourites/add/$songCode'), headers: {'Content-Type': 'application/json; charset=UTF-8', AppConstants.nemesisTokenHeader : prefs.getString('token')!});
-    if (response.statusCode == 401) {
-      prefs.remove(AppConstants.nemesisTokenHeader).then((b){
+    if (response.statusCode == 401) {      prefs.remove(AppConstants.nemesisTokenHeader).then((b){
         NavigationHelper.pushNamed(AppRoutes.login);
       });
     }
@@ -243,13 +250,14 @@ class ApiService {
     }
   }
 
-  // static Future<Post> authenticate(int postId) async {
-  //   final dio = Dio();
-  //   final response = await dio.get('$baseUrl/posts/$postId');
-  //   if (response.statusCode == 200) {
-  //     return Post.fromJson(response.data);
-  //   } else {
-  //     throw Exception('Failed to fetch post: ${response.statusCode}');
-  //   }
-  // }
+  static Future<MusicData> getSongStructure(String? structureUrl) async {
+    Response response = await http.get(UrlHelper.buildUrlWithQueryParams(structureUrl!));
+    var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode == 200) {
+      return MusicData.fromJson(jsonResponse);
+    } else {
+      throw Exception('Failed to fetch playlist: ${response.statusCode}');
+    }
+  }
 }
