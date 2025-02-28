@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:accompaneo/models/song/audio_stream.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/position_data.dart';
 import 'package:accompaneo/services/api_service.dart';
@@ -8,6 +9,7 @@ import 'package:accompaneo/values/app_theme.dart';
 import 'package:accompaneo/widgets/music_player_screen.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:guitar_chord_library/guitar_chord_library.dart';
@@ -51,7 +53,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     _segmentedButtonSelection = {
       PracticeType.values.firstWhere((e) =>
           e.toString() ==
-          'PracticeType.${song.audioStreamUrls!.keys.toList()[0]}')
+          'PracticeType.${song.audioStreams![0].type}')
     };
     ambiguate(WidgetsBinding.instance)!.addObserver(this);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
@@ -59,14 +61,14 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     _init();
   }
 
-  Future<void> setAudioSource(String audioSource) async {
+  Future<void> setAudioSource(String audioSource, double margin) async {
     try {
       print("position: ${_player.position}");
 
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
               initialIndex: 0,
-              initialPosition: Duration(seconds: 4),
+              initialPosition: Duration(milliseconds: (margin * 10000).round()),
               preload: true)
           .then((dur) {
         _player.pause();
@@ -97,7 +99,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       }
     });
 
-    await setAudioSource(song.audioStreamUrls!.values.toList()[0]);
+    await setAudioSource(song.audioStreams![0].url, song.audioStreams![0].margin);
 
     ApiService.getSongStructure(song.structureUrl).then((res) {
       setState(() {
@@ -267,12 +269,10 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                     (Set<PracticeType> newSelection) {
                                   //SystemSound.play(SystemSoundType.click);
                                   final String clickUrl = '';
-                                  setAudioSource(newSelection.first ==
-                                              PracticeType.Click
-                                          ? clickUrl
-                                          : song.audioStreamUrls![
-                                              newSelection.first.name])
-                                      .then((v) {
+
+                                  AudioStream as = song.audioStreams!.firstWhere((as) => as.type == newSelection.first.name);
+
+                                  setAudioSource(newSelection.first == PracticeType.Click ? clickUrl : as.url, as.margin).then((v) {
                                     setState(() {
                                       _segmentedButtonSelection = newSelection;
                                       //_audioUrl = song.audioStreamUrls![newSelection.first.name];
@@ -285,18 +285,15 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                   ButtonSegment<PracticeType>(
                                       label: Text('Practice'),
                                       value: PracticeType.PracticeFull,
-                                      enabled: song.audioStreamUrls!.keys
-                                          .contains('PracticeFull')),
+                                      enabled: song.audioStreams!.firstWhereOrNull((as)=> as.type == 'PracticeFull') != null),
                                   ButtonSegment<PracticeType>(
                                       label: Text('Band'),
                                       value: PracticeType.BandNoVocals,
-                                      enabled: song.audioStreamUrls!.keys
-                                          .contains('BandNoVocals')),
+                                      enabled: song.audioStreams!.firstWhereOrNull((as)=> as.type == 'BandNoVocals') != null),
                                   ButtonSegment<PracticeType>(
                                       label: Text('+Vocals'),
                                       value: PracticeType.BandFull,
-                                      enabled: song.audioStreamUrls!.keys
-                                          .contains('BandFull')),
+                                      enabled: song.audioStreams!.firstWhereOrNull((as)=> as.type == 'BandFull') != null),
                                   ButtonSegment<PracticeType>(
                                       label: Text('Click'),
                                       value: PracticeType.Click),

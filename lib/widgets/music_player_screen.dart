@@ -98,7 +98,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         previousSegmentDuration =
         widget.musicData.clock[_currentSegmentIndex - 1] as double;
       }
-      segmentDuration = segmentDuration - previousSegmentDuration;
+      segmentDuration = segmentDuration - previousSegmentDuration + 0.6;
     }
 
     _controller.duration = Duration(
@@ -196,28 +196,19 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   }
 
   Widget _nextChordWidget(Bar bar) {
-    List<Event> chords =
-    bar.events.where((e) => e.type == EventType.chord).toList();
-    Event? nextChord =
-    chords.firstWhereOrNull((t) => (t.position) >= _segmentProgress);
+    List<Event> chords = bar.events.where((e) => e.type == EventType.chord).toList();
+    Event? nextChord = chords.firstWhereOrNull((t) => (t.position) >= _segmentProgress);
 
     if (nextChord == null) {
-      List<Event> nextChords = widget.musicData.bars
-          .safeIndex(_currentSegmentIndex + 1)
-          ?.events
-          .where((e) => e.type == EventType.chord)
-          .toList() ??
-          [];
+      List<Event> nextChords = widget.musicData.bars.safeIndex(_currentSegmentIndex + 1)?.events.where((e) => e.type == EventType.chord).toList() ?? [];
       nextChord = nextChords.isNotEmpty ? nextChords.first : null;
     }
     var instrument = GuitarChordLibrary.instrument(InstrumentType.guitar);
-    ChordType chord = ChordsHelper.stringToChord(nextChord!.name!);
-    FlutterGuitarChord position =
-        ChordsHelper.chordTypeOptions[chord] ?? ChordsHelper.UNKNOWN;
+    ChordType chord = nextChord != null ? ChordsHelper.stringToChord(nextChord!.name!) : ChordType.UNKNOWN;
+    FlutterGuitarChord position = ChordsHelper.chordTypeOptions[chord] ?? ChordsHelper.UNKNOWN;
 
     return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: MediaQuery.of(context).size.height / 10),
+      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
       child: Column(children: [
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           const Text(
@@ -256,8 +247,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             //differentStringStrokes: _useStringThickness,
             // stringColor: Colors.red,
             // labelColor: Colors.teal,
-            // tabForegroundColor: Colors.white,
-            // tabBackgroundColor: Colors.deepOrange,
+            tabForegroundColor: Colors.white,
+            tabBackgroundColor: ChordsHelper.chordTypeColors[chord] ?? Colors.black,
             firstFrameStroke: 10,
             barStroke: 0.5,
             //firstFrameColor: Colors.red,
@@ -444,15 +435,15 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     required double padding,
   }) {
     return Positioned.fill(
-      top: -80,
+      top: 0,
       left: padding,
       right: padding,
       child: Stack(
         clipBehavior: Clip.none,
         children: chords.map((event) {
           return Positioned(
-            left: event.position * segmentWidth,
-            top: 0,
+            left: (event.position * segmentWidth) - 47,
+            top: -115,
             child: PulsatingWidget(
               title: event.name ?? '',
               isActive: segmentProgress >= (event.position),

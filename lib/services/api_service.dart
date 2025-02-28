@@ -252,9 +252,8 @@ class ApiService {
 
   static Future<MusicData> getSongStructure(String? structureUrl) async {
     Response response = await http.get(UrlHelper.buildUrlWithQueryParams(structureUrl!));
-    var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
-
     if (response.statusCode == 200) {
+      var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
       return MusicData.fromJson(jsonResponse);
     } else {
       throw Exception('Failed to fetch playlist: ${response.statusCode}');
