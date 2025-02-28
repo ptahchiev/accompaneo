@@ -1,4 +1,5 @@
 import 'package:accompaneo/models/music_data.dart';
+import 'package:accompaneo/utils/helpers/chords_helper.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
@@ -57,13 +58,13 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
 
   @override
   Widget build(BuildContext context) {
-    GuitarChord? chord = stringToChord(widget.title);
+    ChordType chord = ChordsHelper.stringToChord(widget.title);
     return ScaleTransition(
       scale: _controller,
       child: Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: chord?.getChordColor ?? Colors.red,
+          color: ChordsHelper.chordTypeColors[chord],
           border: Border.all(color: Colors.white, width: 2),
         ),
         width: 50,

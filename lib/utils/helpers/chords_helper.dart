@@ -13,6 +13,14 @@ enum ChordType {
 class ChordsHelper {
   const ChordsHelper._();
 
+  static ChordType stringToChord(String chordName) {
+    try {
+      return ChordType.values.firstWhere((e) => e.toString() == 'ChordType.$chordName');
+    } catch (e) {
+      return ChordType.UNKNOWN;
+    }
+  }
+
   static const Map<ChordType, Color> chordTypeColors = {
     ChordType.A: Colors.blueGrey,
     ChordType.B: Colors.purple,
@@ -73,7 +81,10 @@ class ChordsHelper {
     ChordType.D7: D7,
     ChordType.E7: E7,
     ChordType.F7: F7,
-    //ChordType.G7: G7,  
+    //ChordType.G7: G7,
+
+    ChordType.UNKNOWN: UNKNOWN,
+
   };
 
   static const FlutterGuitarChord MISSING = FlutterGuitarChord(         
@@ -413,5 +424,18 @@ class ChordsHelper {
     tabForegroundColor: Colors.white,
     tabBackgroundColor: Colors.red,
   );
+
+  static const FlutterGuitarChord UNKNOWN = FlutterGuitarChord(         
+    baseFret: 4,
+    chordName: 'C#m',
+    fingers: '0 0 0 0 0 0',
+    frets:  '0 0 0 0 0 0',
+    totalString: 6,
+    
+    labelColor: AppColors.primaryColor,
+    showLabel: false,
+    tabForegroundColor: Colors.white,
+    tabBackgroundColor: Colors.red,
+  );  
   
 }

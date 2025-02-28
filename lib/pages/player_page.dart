@@ -49,7 +49,9 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   final _player = AudioPlayer();
   final _metronomePlayer = AudioPlayer(handleAudioSessionActivation : false);
 
-  MusicPlayerScreen musicPlayerScreen;
+  // AnimationController animationController;
+
+  MusicPlayerScreen? musicPlayerScreen;
 
   @override
   void initState() {
@@ -64,9 +66,10 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   Future<void> setAudioSource(String audioSource) async {
     try {
       print("position: ${_player.position}");
-      _player.setAudioSource(AudioSource.uri(Uri.parse(audioSource)), initialPosition: _player.position, preload: true).then((dur) {
+      _player.setAudioSource(AudioSource.uri(Uri.parse(audioSource)), initialIndex: 0, initialPosition: Duration(seconds: 4), preload: true).then((dur) {
         //_player.pause();
       });
+      //_player.setClip(start: Duration(milliseconds: 5120));
     } on PlayerException catch (e) {
       print("Error loading audio source: $audioSource $e");
     }
@@ -96,9 +99,26 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
     ApiService.getSongStructure(song.structureUrl).then((res) {
       setState(() {
-        musicPlayerScreen = MusicPlayerScreen(musicData: res!);
+        musicPlayerScreen = MusicPlayerScreen(musicData: res);
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
+
+    // animationController = AnimationController(
+    //   vsync: this,
+    //   lowerBound: -0.2,
+    //   upperBound: 1.2,
+    //   duration: const Duration(seconds: 0),
+    // );
+    // animationController.addListener(() {
+    //   setState(() {
+    //     _segmentProgress = animationController.value;
+    //     if (animationController.status == AnimationStatus.completed) {
+    //       _segmentProgress = 1.0;
+    //       _nextSegment();
+    //     }
+    //   });
+    // });
+
     });
 
   }
@@ -337,7 +357,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
             color: Colors.white,
             onPressed: () { 
               _player.play();
-              musicPlayerScreen._startSegmentTimer();
+              //musicPlayerScreen._startSegmentTimer();
             }
           );
         } else if (processingState != ProcessingState.completed) {
@@ -353,7 +373,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
             iconSize: 150,
             color: Colors.white,
             onPressed: () =>
-                _player.seek(Duration.zero),
+              _player.seek(Duration.zero),
           );
         }
   }
@@ -397,9 +417,10 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                       onTap: () { 
                         if (_player.playing) {
                           _player.pause();
+                          //musicPlayerScreen.pause();
                         }
                       },
-                      child: musicData != null ? musicPlayerScreen : Container()
+                      child: musicPlayerScreen ?? Container()
                         // Padding(
                         //   padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
                         //   child: Column(
