@@ -40,6 +40,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   final _player = AudioPlayer();
   final _metronomePlayer = AudioPlayer(handleAudioSessionActivation: false);
   final PublishSubject<bool> _playerPlaySubject = PublishSubject<bool>();
+  final PublishSubject<int> _playSeekSubject = PublishSubject<int>();
 
   // AnimationController animationController;
 
@@ -48,11 +49,13 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _segmentedButtonSelection = {
-      PracticeType.values.firstWhere((e) =>
-          e.toString() ==
-          'PracticeType.${song.audioStreamUrls!.keys.toList()[0]}')
-    };
+
+    // _segmentedButtonSelection = {
+    //   PracticeType.values.firstWhere((e) =>
+    //       e.toString() ==
+    //       'PracticeType.${song.audioStreamUrls!.keys.toList()[0]}')
+    // };
+    _segmentedButtonSelection = {PracticeType.BandFull};
     ambiguate(WidgetsBinding.instance)!.addObserver(this);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     WakelockPlus.enable();
@@ -66,7 +69,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
               initialIndex: 0,
-              initialPosition: Duration(seconds: 4),
+              initialPosition: Duration(seconds: 0),
               preload: true)
           .then((dur) {
         _player.pause();
@@ -104,6 +107,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         musicPlayerScreen = MusicPlayerScreen(
           musicData: res,
           playStream: _playerPlaySubject.stream,
+          playSeekStream: _playSeekSubject,
         );
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
@@ -354,7 +358,16 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                         onSeek: _player.seek,
                                         onDragUpdate: (details) {
                                           debugPrint(
-                                              '${details.timeStamp}, ${details.localPosition}');
+                                              '_player.bfi: ${_player.duration?.inSeconds}');
+                                          debugPrint(
+                                              '_player.currentIndex: ${_player.position.inSeconds}');
+                                          debugPrint(
+                                              'details.timeStamp: ${details.timeStamp.inSeconds}');
+                                          _playSeekSubject
+                                              .add(details.timeStamp.inSeconds);
+
+                                          // debugPrint(
+                                          //     '${details.timeStamp}, ${details.localPosition}');
                                         },
                                         thumbColor: AppColors.primaryColor,
                                         baseBarColor: Colors.white,
