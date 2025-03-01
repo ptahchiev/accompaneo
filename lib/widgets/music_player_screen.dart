@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:accompaneo/models/music_data.dart';
+import 'package:accompaneo/models/song/time_signature.dart';
 import 'package:accompaneo/utils/helpers/chords_helper.dart';
 import 'package:accompaneo/values/app_dimensions.dart';
 import 'package:accompaneo/widgets/pulsating_widget.dart';
@@ -31,7 +32,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     with TickerProviderStateMixin {
   int _currentSegmentIndex = 0;
   double _segmentProgress = -0.2;
-  String _timeSignature = '1/1';
+  TimeSignature _timeSignature = TimeSignature.empty();
   double _circleSize = 30;
   double? _pausedAnimationValue;
   late AnimationController _controller;
@@ -40,6 +41,14 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   StreamSubscription? _playSeekSubscription;
   double _wholeSongTime = 0;
   bool _songPlaying = false;
+  
+  Map<String, TimeSignature> timeSignatures = {
+    '2/4' : TimeSignature(name: '2/4', numberOfBeats: 2, numberOfSubBeats: 2, isBeat: (index) => (index + 1) % 2 == 1),
+    '3/4' : TimeSignature(name: '3/4', numberOfBeats: 3, numberOfSubBeats: 3, isBeat: (index) => (index + 1) % 2 == 1),
+    '4/4' : TimeSignature(name: '4/4', numberOfBeats: 4, numberOfSubBeats: 4, isBeat: (index) => (index + 1) % 2 == 1),
+    '6/8' : TimeSignature(name: '6/8', numberOfBeats: 2, numberOfSubBeats: 4, isBeat: (index) => (index + 1) % 3 == 1),
+    '12/8' : TimeSignature(name: '12/8', numberOfBeats: 4, numberOfSubBeats: 8, isBeat: (index) => (index + 1) % 3 == 1),
+  };
 
   @override
   void initState() {
@@ -110,7 +119,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       bar.events.where((t) => t.type == EventType.meta).forEach((metaEvent) {
         if (metaEvent.content != null) {
           if (metaEvent.content!.type == 'timeSignature') {
-            _timeSignature = metaEvent.content!.meter ?? '1/1';
+            _timeSignature = timeSignatures[metaEvent.content!.meter] ?? TimeSignature.empty();
           }
         }
       });
@@ -663,10 +672,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     required double segmentWidth,
     required double padding,
   }) {
-    int mainChordsCount = int.tryParse(_timeSignature.split('/').first) ?? 0;
-    int secondaryChordsCount =
-        int.tryParse(_timeSignature.split('/').last) ?? 0;
-    int totalChords = mainChordsCount + secondaryChordsCount;
+    // int mainChordsCount = int.tryParse(_timeSignature.split('/').first) ?? 0;
+    // int secondaryChordsCount = int.tryParse(_timeSignature.split('/').last) ?? 0;
+    int totalChords = _timeSignature.numberOfBeats + _timeSignature.numberOfSubBeats;
 
     double startPosition = (segmentWidth - _circleSize) / (totalChords - 1);
     return Positioned.fill(
@@ -683,10 +691,10 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               width: _circleSize,
               child: Center(
                 child: Container(
-                  height: index.isEven
+                  height: _timeSignature.isBeat(index)
                       ? Dimensions.bigChordSize
                       : Dimensions.smallChordSize,
-                  width: index.isEven
+                  width: _timeSignature.isBeat(index)
                       ? Dimensions.bigChordSize
                       : Dimensions.smallChordSize,
                   decoration: BoxDecoration(

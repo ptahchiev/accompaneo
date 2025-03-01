@@ -14,4 +14,8 @@ class TimeSignature {
     required this.numberOfSubBeats,
     required this.isBeat
   });
+
+  static TimeSignature empty() {
+    return TimeSignature(name: '1/1', numberOfBeats: 1, numberOfSubBeats: 1, isBeat: (index) => false);
+  }
 }
