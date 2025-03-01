@@ -42,7 +42,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   double _wholeSongTime = 0;
   bool _songPlaying = false;
   double _margin = 0;
-  double _segmentDuration = 0;
 
   Map<String, TimeSignature> timeSignatures = {
     '2/4': TimeSignature(
@@ -136,34 +135,11 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   void _startSegmentTimer() {
     if (_currentSegmentIndex >= widget.musicData.clock.length) return;
 
-    print('_margin: ${_margin}');
-    double segmentDuration = 0;
-
-    double previousSegmentDuration = 0;
-    if (widget.musicData.clock[_currentSegmentIndex] is int) {
-      segmentDuration =
-          (widget.musicData.clock[_currentSegmentIndex] as int).toDouble();
-    } else if (widget.musicData.clock[_currentSegmentIndex] is double) {
-      segmentDuration = widget.musicData.clock[_currentSegmentIndex] as double;
-    }
-
-    if (_currentSegmentIndex > 0) {
-      if (widget.musicData.clock[_currentSegmentIndex - 1] is int) {
-        previousSegmentDuration =
-            (widget.musicData.clock[_currentSegmentIndex - 1] as int)
-                .toDouble();
-      } else if (widget.musicData.clock[_currentSegmentIndex - 1] is double) {
-        previousSegmentDuration =
-            widget.musicData.clock[_currentSegmentIndex - 1] as double;
-      }
-      segmentDuration = segmentDuration - previousSegmentDuration + 0.6;
-    }
-    _segmentDuration = segmentDuration;
     if (_pausedAnimationValue != null) {
       _wholeSongController.forward(from: _pausedAnimationValue);
 
       _pausedAnimationValue = null;
-    } else {}
+    }
   }
 
   void _songFinished() {
@@ -226,7 +202,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
-                        'SD:\n ${_segmentDuration}',
+                        'SD:\n ${widget.musicData.clock[_currentSegmentIndex]}',
                       ),
                       Text(
                         'M:\n ${_margin}',
