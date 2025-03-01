@@ -6,7 +6,9 @@ enum ChordType {
   A, B, C, D, E, F, G,
   Am, Bm, Cm, Dm, Em, Fm, Gm,
   Ab, Bb, Cb, Db, Eb, Fb, Gb,
+  A5, B5, C5, D5, E5, F5, G5,
   A7, B7, C7, D7, E7, F7, G7,
+  Amaj7, Bmaj7, Cmaj7, Dmaj7, Emaj7, Fmaj7, Gmaj7,
   UNKNOWN
 }
 
@@ -143,7 +145,7 @@ class ChordsHelper {
     baseFret: 1,
     chordName: 'D',
     fingers: '0 0 0 1 3 2',
-    frets: '-1 -1 0 2 3 ',
+    frets: '-1 -1 0 2 3 2',
     totalString: 6,
     
     labelColor: AppColors.primaryColor,
@@ -427,7 +429,7 @@ class ChordsHelper {
 
   static const FlutterGuitarChord UNKNOWN = FlutterGuitarChord(         
     baseFret: 4,
-    chordName: 'C#m',
+    chordName: '',
     fingers: '0 0 0 0 0 0',
     frets:  '0 0 0 0 0 0',
     totalString: 6,
