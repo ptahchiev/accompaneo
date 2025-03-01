@@ -39,6 +39,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   _PlayerPageState({required this.song});
 
+  int audioMargin = 0;
   final _player = AudioPlayer();
   final _metronomePlayer = AudioPlayer(handleAudioSessionActivation: false);
   final PublishSubject<bool> _playerPlaySubject = PublishSubject<bool>();
@@ -61,14 +62,14 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     _init();
   }
 
-  Future<void> setAudioSource(String audioSource, double margin) async {
+  Future<void> setAudioSource(String audioSource) async {
     try {
       print("position: ${_player.position}");
 
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
               initialIndex: 0,
-              initialPosition: Duration(milliseconds: (margin * 10000).round()),
+              initialPosition: Duration(milliseconds: audioMargin),
               preload: true)
           .then((dur) {
         _player.pause();
@@ -99,16 +100,19 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       }
     });
 
-    await setAudioSource(song.audioStreams![0].url, song.audioStreams![0].margin);
-
-    ApiService.getSongStructure(song.structureUrl).then((res) {
+    ApiService.getSongStructure(song.structureUrl).then((res) async {
       setState(() {
         musicPlayerScreen = MusicPlayerScreen(
           musicData: res,
           playStream: _playerPlaySubject.stream,
         );
+
+        audioMargin = (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000).round();
+
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
+
+      await setAudioSource(song.audioStreams![0].url);
 
       // animationController = AnimationController(
       //   vsync: this,
@@ -272,7 +276,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
                                   AudioStream as = song.audioStreams!.firstWhere((as) => as.type == newSelection.first.name);
 
-                                  setAudioSource(newSelection.first == PracticeType.Click ? clickUrl : as.url, as.margin).then((v) {
+                                  setAudioSource(newSelection.first == PracticeType.Click ? clickUrl : as.url).then((v) {
                                     setState(() {
                                       _segmentedButtonSelection = newSelection;
                                       //_audioUrl = song.audioStreamUrls![newSelection.first.name];

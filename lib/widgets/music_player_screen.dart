@@ -251,6 +251,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             tabBackgroundColor: ChordsHelper.chordTypeColors[chord] ?? Colors.black,
             firstFrameStroke: 10,
             barStroke: 0.5,
+            showLabel: false,
             //firstFrameColor: Colors.red,
             barColor: Colors.grey,
             // labelOpenStrings: true,
