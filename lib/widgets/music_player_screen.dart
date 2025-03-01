@@ -17,11 +17,13 @@ class MusicPlayerScreen extends StatefulWidget {
     required this.musicData,
     required this.playStream,
     required this.playSeekStream,
+    required this.audioMargin,
   });
 
   final MusicData musicData;
   final Stream<bool> playStream;
   final Stream<int> playSeekStream;
+  final double audioMargin;
 
   @override
   _MusicPlayerScreenState createState() => _MusicPlayerScreenState();
@@ -40,12 +42,13 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   StreamSubscription? _playSeekSubscription;
   double _wholeSongTime = 0;
   bool _songPlaying = false;
+  double _margin = 0;
+  double _segmentDuration = 0;
 
   @override
   void initState() {
     super.initState();
 
-    widget.musicData.clock.first.toDouble();
     _computeTimeSignature();
 
     _controller = AnimationController(
@@ -63,7 +66,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     );
     _wholeSongController.addListener(() {
       setState(() {
-        _wholeSongTime = _wholeSongController.value;
+        _wholeSongTime = _margin + _wholeSongController.value;
       });
     });
     _controller.addListener(() {
@@ -98,7 +101,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     _playSubscription = widget.playSeekStream.listen((playSeek) {
       if (mounted) {
         setState(() {
-          _wholeSongTime = playSeek.toDouble();
+          _wholeSongTime = _margin + playSeek.toDouble();
           _pausedAnimationValue = playSeek.toDouble();
         });
       }
@@ -119,8 +122,10 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
   void _startSegmentTimer() {
     if (_currentSegmentIndex >= widget.musicData.clock.length) return;
-
+    _margin = (widget.musicData.clock[_currentSegmentIndex] as int).toDouble();
+    print('_margin: ${_margin}');
     double segmentDuration = 0;
+
     double previousSegmentDuration = 0;
     if (widget.musicData.clock[_currentSegmentIndex] is int) {
       segmentDuration =
@@ -128,6 +133,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     } else if (widget.musicData.clock[_currentSegmentIndex] is double) {
       segmentDuration = widget.musicData.clock[_currentSegmentIndex] as double;
     }
+    _segmentDuration = segmentDuration;
     if (_currentSegmentIndex > 0) {
       if (widget.musicData.clock[_currentSegmentIndex - 1] is int) {
         previousSegmentDuration =
@@ -204,6 +210,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         }
       }
     });
+    if (result == 0) {
+      // return 1;
+    }
     return result;
   }
 
@@ -598,6 +607,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         child: Stack(
           clipBehavior: Clip.none,
           children: [
+            Text(
+              _segmentDuration.toString() ?? '',
+            ),
             Positioned(
               left: 0,
               right: 0,
