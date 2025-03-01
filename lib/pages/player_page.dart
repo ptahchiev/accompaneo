@@ -111,25 +111,21 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         // res.bars.removeAt(1);
         // res.clock.removeAt(0);
 
-<<<<<<< HEAD
         audioMargin =
             (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000)
                 .round();
+
+        audioMargin = 500;
         musicPlayerScreen = MusicPlayerScreen(
           musicData: res,
           playStream: _playerPlaySubject.stream,
           playSeekStream: _playSeekSubject,
-          audioMargin: res
-              .clock[(song.audioStreams![0].margin * 10).round() - 1]
-              .toDouble(),
         );
 
         print(
             '(song.audioStreams![0].margin * 10).round() - 1: ${(song.audioStreams![0].margin * 10).round() - 1}');
         // audioMargin = 0;
-=======
-        audioMargin = (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000).round();
->>>>>>> main
+
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
 
@@ -421,7 +417,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     AsyncSnapshot<PositionData> snapshot, {
     required bool portrait,
   }) {
-    double iconSize = portrait ? 150 : 100;
+    double iconSize = portrait ? 150 : 90;
     final playerState = snapshot.data;
     final processingState = playerState?.playerState.processingState;
     final playing = playerState?.playerState.playing;

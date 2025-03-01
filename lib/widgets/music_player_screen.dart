@@ -18,13 +18,11 @@ class MusicPlayerScreen extends StatefulWidget {
     required this.musicData,
     required this.playStream,
     required this.playSeekStream,
-    required this.audioMargin,
   });
 
   final MusicData musicData;
   final Stream<bool> playStream;
   final Stream<int> playSeekStream;
-  final double audioMargin;
 
   @override
   _MusicPlayerScreenState createState() => _MusicPlayerScreenState();
@@ -37,7 +35,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   TimeSignature _timeSignature = TimeSignature.empty();
   double _circleSize = 30;
   double? _pausedAnimationValue;
-  late AnimationController _controller;
+
   late AnimationController _wholeSongController;
   StreamSubscription? _playSubscription;
   StreamSubscription? _playSeekSubscription;
@@ -45,13 +43,33 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   bool _songPlaying = false;
   double _margin = 0;
   double _segmentDuration = 0;
-  
+
   Map<String, TimeSignature> timeSignatures = {
-    '2/4' : TimeSignature(name: '2/4', numberOfBeats: 2, numberOfSubBeats: 2, isBeat: (index) => (index + 1) % 2 == 1),
-    '3/4' : TimeSignature(name: '3/4', numberOfBeats: 3, numberOfSubBeats: 3, isBeat: (index) => (index + 1) % 2 == 1),
-    '4/4' : TimeSignature(name: '4/4', numberOfBeats: 4, numberOfSubBeats: 4, isBeat: (index) => (index + 1) % 2 == 1),
-    '6/8' : TimeSignature(name: '6/8', numberOfBeats: 2, numberOfSubBeats: 4, isBeat: (index) => (index + 1) % 3 == 1),
-    '12/8' : TimeSignature(name: '12/8', numberOfBeats: 4, numberOfSubBeats: 8, isBeat: (index) => (index + 1) % 3 == 1),
+    '2/4': TimeSignature(
+        name: '2/4',
+        numberOfBeats: 2,
+        numberOfSubBeats: 2,
+        isBeat: (index) => (index + 1) % 2 == 1),
+    '3/4': TimeSignature(
+        name: '3/4',
+        numberOfBeats: 3,
+        numberOfSubBeats: 3,
+        isBeat: (index) => (index + 1) % 2 == 1),
+    '4/4': TimeSignature(
+        name: '4/4',
+        numberOfBeats: 4,
+        numberOfSubBeats: 4,
+        isBeat: (index) => (index + 1) % 2 == 1),
+    '6/8': TimeSignature(
+        name: '6/8',
+        numberOfBeats: 2,
+        numberOfSubBeats: 4,
+        isBeat: (index) => (index + 1) % 3 == 1),
+    '12/8': TimeSignature(
+        name: '12/8',
+        numberOfBeats: 4,
+        numberOfSubBeats: 8,
+        isBeat: (index) => (index + 1) % 3 == 1),
   };
 
   @override
@@ -60,12 +78,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
     _computeTimeSignature();
 
-    _controller = AnimationController(
-      vsync: this,
-      lowerBound: -0.8,
-      upperBound: 1.2,
-      duration: const Duration(seconds: 0),
-    );
     _wholeSongController = AnimationController(
       vsync: this,
       lowerBound: 0,
@@ -78,16 +90,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         _wholeSongTime = _margin + _wholeSongController.value;
       });
     });
-    _controller.addListener(() {
-      // setState(() {
-      //   _segmentProgress = _controller.value;
-      //   if (_controller.status == AnimationStatus.completed) {
-      //     _segmentProgress = 1.0;
-      //
-      //     // _nextSegment();
-      //   }
-      // });
-    });
+
     _playSubscription = widget.playStream.listen((play) {
       if (mounted) {
         setState(() {
@@ -122,7 +125,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       bar.events.where((t) => t.type == EventType.meta).forEach((metaEvent) {
         if (metaEvent.content != null) {
           if (metaEvent.content!.type == 'timeSignature') {
-            _timeSignature = timeSignatures[metaEvent.content!.meter] ?? TimeSignature.empty();
+            _timeSignature = timeSignatures[metaEvent.content!.meter] ??
+                TimeSignature.empty();
           }
         }
       });
@@ -131,7 +135,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
   void _startSegmentTimer() {
     if (_currentSegmentIndex >= widget.musicData.clock.length) return;
-    _margin = (widget.musicData.clock[_currentSegmentIndex] as int).toDouble();
+
     print('_margin: ${_margin}');
     double segmentDuration = 0;
 
@@ -142,7 +146,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     } else if (widget.musicData.clock[_currentSegmentIndex] is double) {
       segmentDuration = widget.musicData.clock[_currentSegmentIndex] as double;
     }
-    _segmentDuration = segmentDuration;
+
     if (_currentSegmentIndex > 0) {
       if (widget.musicData.clock[_currentSegmentIndex - 1] is int) {
         previousSegmentDuration =
@@ -154,35 +158,12 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       }
       segmentDuration = segmentDuration - previousSegmentDuration + 0.6;
     }
-
-    _controller.duration = Duration(
-      milliseconds:
-          segmentDuration == 0 ? 100 : (segmentDuration * 1000).toInt(),
-    );
-
+    _segmentDuration = segmentDuration;
     if (_pausedAnimationValue != null) {
-      _controller.forward(from: _pausedAnimationValue);
       _wholeSongController.forward(from: _pausedAnimationValue);
 
       _pausedAnimationValue = null;
-    } else {
-      _controller.forward(from: 0);
-    }
-  }
-
-  void _nextSegment() {
-    if (_currentSegmentIndex < widget.musicData.clock.length - 1) {
-      setState(() {
-        // _currentSegmentIndex++;
-        if (_currentSegmentIndex == widget.musicData.bars.length) {
-          _songFinished();
-        }
-        // _segmentProgress = -0.8;
-      });
-      if (_songPlaying) {
-        _startSegmentTimer();
-      }
-    }
+    } else {}
   }
 
   void _songFinished() {
@@ -194,13 +175,10 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   void _stopSong() {
     _songPlaying = false;
     _wholeSongController.stop();
-
-    _controller.stop();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     _playSubscription?.cancel();
     _playSeekSubscription?.cancel();
 
@@ -227,6 +205,10 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
   @override
   Widget build(BuildContext context) {
+    // _margin = (widget.musicData.clock[1] as double).toDouble();
+    _margin = 0;
+    print(
+        'widget.musicData.clock[1]: ${widget.musicData.clock[1]} ${widget.musicData.clock[0]}');
     _currentSegmentIndex = _currentSegmentIndexBasedOnElapsedTime();
     if (_currentSegmentIndex >= widget.musicData.bars.length) {
       return Container();
@@ -240,13 +222,30 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             if (orientation == Orientation.portrait) {
               return Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        'SD:\n ${_segmentDuration}',
+                      ),
+                      Text(
+                        'M:\n ${_margin}',
+                      ),
+                      Text(
+                        'WST:\n ${_wholeSongTime.toStringAsFixed(2)}',
+                      ),
+                      Text(
+                        'Segment:\n ${_currentSegmentIndex}',
+                      ),
+                    ],
+                  ),
                   _songMainContent(
                     portrait: true,
                   ),
-                  _nextChordWidget(
-                    bar,
-                    portrait: true,
-                  ),
+                  // _nextChordWidget(
+                  //   bar,
+                  //   portrait: true,
+                  // ),
                 ],
               );
             }
@@ -466,19 +465,20 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         segmentProgress,
         0,
         1,
-        _songPlaying ? 0.1 : 0,
+        // _songPlaying ? 0.2 : 0,
+        _songPlaying ? 0.0 : 0,
         1.2,
       );
 
       _segmentProgress = segmentProgress;
     } else if (!lastSegment && _segmentProgress >= 0.8) {
-      segmentProgress = interpolate(
-        _segmentProgress,
-        0.8,
-        1.2,
-        0,
-        0.1,
-      );
+      // segmentProgress = interpolate(
+      //   _segmentProgress,
+      //   0.8,
+      //   1.2,
+      //   0,
+      //   0.2,
+      // );
     }
 
     List<Event> lyrics =
@@ -612,13 +612,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   }) {
     return Center(
       child: Container(
-        color: Colors.red,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            Text(
-              _segmentDuration.toString() ?? '',
-            ),
             Positioned(
               left: 0,
               right: 0,
@@ -686,7 +682,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   }) {
     // int mainChordsCount = int.tryParse(_timeSignature.split('/').first) ?? 0;
     // int secondaryChordsCount = int.tryParse(_timeSignature.split('/').last) ?? 0;
-    int totalChords = _timeSignature.numberOfBeats + _timeSignature.numberOfSubBeats;
+    int totalChords =
+        _timeSignature.numberOfBeats + _timeSignature.numberOfSubBeats;
 
     double startPosition = (segmentWidth - _circleSize) / (totalChords - 1);
     return Positioned.fill(
@@ -791,20 +788,23 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
           return Positioned(
             left: overlap ? previousEndX + dashSpace : currentStartX,
             top: 0,
-            child: Text(
-              wordSplit ? '${event.text} -' : event.text ?? '',
-              style: TextStyle(
-                fontSize: 14,
-                fontFeatures: [const FontFeature.tabularFigures()],
-                fontWeight: segmentProgress >= (event.start)
-                    ? FontWeight.bold
-                    : FontWeight.normal,
-                color: segmentProgress >= (event.start)
-                    ? Colors.black
-                    : Colors.grey,
+            child: Container(
+              // color: index.isEven ? Colors.red : Colors.green,
+              child: Text(
+                wordSplit ? '${event.text} -' : event.text ?? '',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontFeatures: [const FontFeature.tabularFigures()],
+                  fontWeight: segmentProgress >= (event.start)
+                      ? FontWeight.bold
+                      : FontWeight.normal,
+                  color: segmentProgress >= (event.start)
+                      ? Colors.black
+                      : Colors.grey,
+                ),
+                textAlign: TextAlign.left,
+                maxLines: 1,
               ),
-              textAlign: TextAlign.left,
-              maxLines: 1,
             ),
           );
         }).toList(),
