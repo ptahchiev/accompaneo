@@ -1,6 +1,6 @@
-import 'package:accompaneo/models/music_data.dart';
 import 'package:accompaneo/utils/helpers/chords_helper.dart';
 import 'package:accompaneo/values/app_colors.dart';
+import 'package:accompaneo/values/app_dimensions.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
@@ -82,16 +82,18 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
             child: Container(
               width: 50 * 2.5,
               height: 50 * 2.5,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: AppColors.primaryColor),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle, color: AppColors.primaryColor),
             ),
           ),
         ),
         Center(
           child: Container(
+            padding: EdgeInsets.all(Dimensions.smallMargin),
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: ChordsHelper.chordTypeColors[chord],
+              color: ChordsHelper.chordTypeColors[chord] ?? Colors.black,
               border: Border.all(color: Colors.white, width: 2),
+              borderRadius: BorderRadius.all(Radius.circular(100)),
             ),
             width: 50,
             height: 50,
@@ -110,7 +112,7 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
             ),
           ),
         ),
-      ]
+      ],
     );
   }
 }
