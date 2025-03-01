@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:accompaneo/models/music_data.dart';
 import 'package:accompaneo/utils/helpers/chords_helper.dart';
-import 'package:accompaneo/values/app_colors.dart';
 import 'package:accompaneo/values/app_dimensions.dart';
 import 'package:accompaneo/widgets/pulsating_widget.dart';
 import 'package:collection/collection.dart';
@@ -10,59 +10,98 @@ import 'package:flutter/material.dart';
 import 'package:flutter_guitar_chord/flutter_guitar_chord.dart';
 import 'package:guitar_chord_library/guitar_chord_library.dart';
 
+import '../values/app_colors.dart';
+
 class MusicPlayerScreen extends StatefulWidget {
   MusicPlayerScreen({
     required this.musicData,
     required this.playStream,
+    required this.playSeekStream,
   });
 
   final MusicData musicData;
   final Stream<bool> playStream;
+  final Stream<int> playSeekStream;
 
   @override
   _MusicPlayerScreenState createState() => _MusicPlayerScreenState();
 }
 
 class _MusicPlayerScreenState extends State<MusicPlayerScreen>
-    with SingleTickerProviderStateMixin {
-  int _currentSegmentIndex = 1;
+    with TickerProviderStateMixin {
+  int _currentSegmentIndex = 0;
   double _segmentProgress = -0.2;
   String _timeSignature = '1/1';
   double _circleSize = 30;
   double? _pausedAnimationValue;
   late AnimationController _controller;
+  late AnimationController _wholeSongController;
+  StreamSubscription? _playSubscription;
+  StreamSubscription? _playSeekSubscription;
+  double _wholeSongTime = 0;
   bool _songPlaying = false;
 
   @override
   void initState() {
     super.initState();
+
+    widget.musicData.clock.first.toDouble();
     _computeTimeSignature();
+
     _controller = AnimationController(
       vsync: this,
-      lowerBound: -0.2,
+      lowerBound: -0.8,
       upperBound: 1.2,
       duration: const Duration(seconds: 0),
     );
-    _controller.addListener(() {
+    _wholeSongController = AnimationController(
+      vsync: this,
+      lowerBound: 0,
+      upperBound: widget.musicData.clock.last.toDouble(),
+      duration:
+          Duration(milliseconds: (widget.musicData.clock.last * 1000).toInt()),
+    );
+    _wholeSongController.addListener(() {
       setState(() {
-        _segmentProgress = _controller.value;
-        if (_controller.status == AnimationStatus.completed) {
-          _segmentProgress = 1.0;
-
-          _nextSegment();
-        }
+        _wholeSongTime = _wholeSongController.value;
       });
     });
-    widget.playStream.listen((play) {
-      setState(() {
-        if (play) {
-          _songPlaying = true;
-          _startSegmentTimer();
-        } else {
-          _pausedAnimationValue = _controller.value;
-          _stopSong();
-        }
-      });
+    _controller.addListener(() {
+      // setState(() {
+      //   _segmentProgress = _controller.value;
+      //   if (_controller.status == AnimationStatus.completed) {
+      //     _segmentProgress = 1.0;
+      //
+      //     // _nextSegment();
+      //   }
+      // });
+    });
+    _playSubscription = widget.playStream.listen((play) {
+      if (mounted) {
+        setState(() {
+          if (play) {
+            if (_pausedAnimationValue != null) {
+              _wholeSongController.forward(from: _pausedAnimationValue);
+              _pausedAnimationValue = null;
+            } else {
+              _wholeSongController.forward(from: 0);
+            }
+            _songPlaying = true;
+            _startSegmentTimer();
+          } else {
+            _pausedAnimationValue = _wholeSongController.value;
+            _stopSong();
+          }
+        });
+      }
+    });
+    _playSubscription = widget.playSeekStream.listen((playSeek) {
+      if (mounted) {
+        setState(() {
+          _wholeSongTime = playSeek.toDouble();
+          _pausedAnimationValue = playSeek.toDouble();
+        });
+      }
     });
   }
 
@@ -96,17 +135,20 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                 .toDouble();
       } else if (widget.musicData.clock[_currentSegmentIndex - 1] is double) {
         previousSegmentDuration =
-        widget.musicData.clock[_currentSegmentIndex - 1] as double;
+            widget.musicData.clock[_currentSegmentIndex - 1] as double;
       }
       segmentDuration = segmentDuration - previousSegmentDuration + 0.6;
     }
 
     _controller.duration = Duration(
       milliseconds:
-      segmentDuration == 0 ? 100 : (segmentDuration * 1000).toInt(),
+          segmentDuration == 0 ? 100 : (segmentDuration * 1000).toInt(),
     );
+
     if (_pausedAnimationValue != null) {
       _controller.forward(from: _pausedAnimationValue);
+      _wholeSongController.forward(from: _pausedAnimationValue);
+
       _pausedAnimationValue = null;
     } else {
       _controller.forward(from: 0);
@@ -116,11 +158,11 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   void _nextSegment() {
     if (_currentSegmentIndex < widget.musicData.clock.length - 1) {
       setState(() {
-        _currentSegmentIndex++;
+        // _currentSegmentIndex++;
         if (_currentSegmentIndex == widget.musicData.bars.length) {
           _songFinished();
         }
-        _segmentProgress = -0.2;
+        // _segmentProgress = -0.8;
       });
       if (_songPlaying) {
         _startSegmentTimer();
@@ -136,17 +178,38 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
   void _stopSong() {
     _songPlaying = false;
+    _wholeSongController.stop();
+
     _controller.stop();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _playSubscription?.cancel();
+    _playSeekSubscription?.cancel();
+
+    _wholeSongController.dispose();
     super.dispose();
+  }
+
+  int _currentSegmentIndexBasedOnElapsedTime() {
+    int result = 0;
+    widget.musicData.clock.forEachIndexed((index, c) {
+      if (index > 0 && _wholeSongTime != 0) {
+        if (c <= _wholeSongTime &&
+            (widget.musicData.clock.safeIndex(index + 1) ?? 0) >=
+                _wholeSongTime) {
+          result = index;
+        }
+      }
+    });
+    return result;
   }
 
   @override
   Widget build(BuildContext context) {
+    _currentSegmentIndex = _currentSegmentIndexBasedOnElapsedTime();
     if (_currentSegmentIndex >= widget.musicData.bars.length) {
       return Container();
     }
@@ -159,13 +222,13 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             if (orientation == Orientation.portrait) {
               return Column(
                 children: [
-                  Expanded(
-                    flex: 65,
-                    child: _songMainContent(
-                      portrait: true,
-                    ),
+                  _songMainContent(
+                    portrait: true,
                   ),
-                  Expanded(flex: 35, child: _nextChordWidget(bar)),
+                  _nextChordWidget(
+                    bar,
+                    portrait: true,
+                  ),
                 ],
               );
             }
@@ -180,11 +243,12 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                     _songMainContent(
                       portrait: false,
                     ),
-                    Column(
-                      children: [
-                        _nextChordWidget(bar),
-                      ],
-                    ),
+                    Expanded(
+                        flex: 2,
+                        child: _nextChordWidget(
+                          bar,
+                          portrait: false,
+                        )),
                   ],
                 ),
               ],
@@ -195,83 +259,101 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     );
   }
 
-  Widget _nextChordWidget(Bar bar) {
-    List<Event> chords = bar.events.where((e) => e.type == EventType.chord).toList();
-    Event? nextChord = chords.firstWhereOrNull((t) => (t.position) >= _segmentProgress);
+  Widget _nextChordWidget(Bar bar, {required bool portrait}) {
+    List<Event> chords =
+        bar.events.where((e) => e.type == EventType.chord).toList();
+    Event? nextChord =
+        chords.firstWhereOrNull((t) => (t.position) >= _segmentProgress);
 
     if (nextChord == null) {
-      List<Event> nextChords = widget.musicData.bars.safeIndex(_currentSegmentIndex + 1)?.events.where((e) => e.type == EventType.chord).toList() ?? [];
+      List<Event> nextChords = widget.musicData.bars
+              .safeIndex(_currentSegmentIndex + 1)
+              ?.events
+              .where((e) => e.type == EventType.chord)
+              .toList() ??
+          [];
       nextChord = nextChords.isNotEmpty ? nextChords.first : null;
     }
     var instrument = GuitarChordLibrary.instrument(InstrumentType.guitar);
-    ChordType chord = nextChord != null ? ChordsHelper.stringToChord(nextChord!.name!) : ChordType.UNKNOWN;
-    FlutterGuitarChord position = ChordsHelper.chordTypeOptions[chord] ?? ChordsHelper.UNKNOWN;
+    ChordType chord = nextChord != null
+        ? ChordsHelper.stringToChord(nextChord!.name!)
+        : ChordType.UNKNOWN;
+    FlutterGuitarChord position =
+        ChordsHelper.chordTypeOptions[chord] ?? ChordsHelper.UNKNOWN;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
-      child: Column(children: [
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Text(
-            'Next: ',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          if (nextChord != null)
-            Container(
-              padding: const EdgeInsets.all(Dimensions.smallMargin),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: ChordsHelper.chordTypeColors[chord],
-                border: Border.all(color: Colors.white),
-              ),
-              child: Text(
-                '${nextChord.name}',
-                style: const TextStyle(
+    return Container(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Next: ',
+                style: TextStyle(
                   fontSize: 18,
-                  color: Colors.white,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-        ]),
-        Expanded(
-          child: FlutterGuitarChord(
-            baseFret: position.baseFret,
-            chordName: chord.name,
-            fingers: position.fingers,
-            frets: position.frets,
-            totalString: instrument.stringCount,
-            stringStroke: 0.4,
-            //differentStringStrokes: _useStringThickness,
-            // stringColor: Colors.red,
-            // labelColor: Colors.teal,
-            tabForegroundColor: Colors.white,
-            tabBackgroundColor: ChordsHelper.chordTypeColors[chord] ?? Colors.black,
-            firstFrameStroke: 10,
-            barStroke: 0.5,
-            showLabel: false,
-            //firstFrameColor: Colors.red,
-            barColor: Colors.grey,
-            // labelOpenStrings: true,
+              if (nextChord != null)
+                Container(
+                  padding: const EdgeInsets.all(Dimensions.smallMargin),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: ChordsHelper.chordTypeColors[chord],
+                    border: Border.all(color: Colors.white),
+                  ),
+                  child: Text(
+                    '${nextChord.name}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+            ],
           ),
-        ),
-      ]),
+          Container(
+            height: 200,
+            padding: EdgeInsets.symmetric(
+              horizontal:
+                  portrait ? MediaQuery.of(context).size.height / 10 : 0,
+            ),
+            child: FlutterGuitarChord(
+              baseFret: position.baseFret,
+              chordName: chord.name,
+              fingers: position.fingers,
+              frets: position.frets,
+              totalString: instrument.stringCount,
+              stringStroke: 0.4,
+              //differentStringStrokes: _useStringThickness,
+              // stringColor: Colors.red,
+              // labelColor: Colors.teal,
+              tabForegroundColor: Colors.white,
+              tabBackgroundColor:
+                  ChordsHelper.chordTypeColors[chord] ?? Colors.black,
+              firstFrameStroke: 10,
+              barStroke: 0.5,
+              showLabel: false,
+              //firstFrameColor: Colors.red,
+              barColor: Colors.grey,
+              // labelOpenStrings: true,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _songMainContent({required bool portrait}) {
     final Bar bar = widget.musicData.bars[_currentSegmentIndex];
-    Bar? previousBar =
-    widget.musicData.bars.safeIndex(_currentSegmentIndex - 1);
 
     Bar? nextBar = widget.musicData.bars.safeIndex(_currentSegmentIndex + 1);
 
     Bar? nextNextBar =
-    widget.musicData.bars.safeIndex(_currentSegmentIndex + 2);
+        widget.musicData.bars.safeIndex(_currentSegmentIndex + 2);
     return Container(
-      height: (portrait ? 60 : 90) / 100 * MediaQuery.of(context).size.height,
+      height: (portrait ? 60 : 80) / 100 * MediaQuery.of(context).size.height,
       width: portrait
           ? double.infinity
           : (portrait ? 90 : 70) / 100 * MediaQuery.of(context).size.width,
@@ -279,51 +361,48 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
           horizontal: Dimensions.padding, vertical: Dimensions.padding),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return Stack(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.darkerBlue,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(80),
-                    bottomLeft: Radius.circular(80),
+          return ClipRRect(
+            clipBehavior: Clip.antiAlias,
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(80),
+              bottomLeft: Radius.circular(80),
+            ),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.darkerBlue,
+              ),
+              child: Stack(
+                children: [
+                  _segmentWidget(
+                    segmentIndex: _currentSegmentIndex,
+                    key: Key(_currentSegmentIndex.toString()),
+                    bar: bar,
+                    mainSegment: true,
+                    portrait: portrait,
+                    constraints: constraints,
                   ),
-                ),
+                  if (nextBar != null)
+                    _segmentWidget(
+                      segmentIndex: _currentSegmentIndex + 1,
+                      key: Key((_currentSegmentIndex + 1).toString()),
+                      bar: nextBar,
+                      mainSegment: false,
+                      portrait: portrait,
+                      constraints: constraints,
+                    ),
+                  if (nextNextBar != null)
+                    _segmentWidget(
+                      segmentIndex: _currentSegmentIndex + 2,
+                      key: Key((_currentSegmentIndex + 2).toString()),
+                      bar: nextNextBar,
+                      mainSegment: false,
+                      lastSegment: true,
+                      portrait: portrait,
+                      constraints: constraints,
+                    ),
+                ],
               ),
-              if (previousBar != null)
-                _segmentWidget(
-                  key: Key((_currentSegmentIndex - 1).toString()),
-                  bar: previousBar,
-                  mainSegment: false,
-                  previousSegment: true,
-                  portrait: portrait,
-                  constraints: constraints,
-                ),
-              _segmentWidget(
-                key: Key(_currentSegmentIndex.toString()),
-                bar: bar,
-                mainSegment: true,
-                portrait: portrait,
-                constraints: constraints,
-              ),
-              if (nextBar != null)
-                _segmentWidget(
-                  key: Key((_currentSegmentIndex + 1).toString()),
-                  bar: nextBar,
-                  mainSegment: false,
-                  portrait: portrait,
-                  constraints: constraints,
-                ),
-              if (nextNextBar != null)
-                _segmentWidget(
-                  key: Key((_currentSegmentIndex + 2).toString()),
-                  bar: nextNextBar,
-                  mainSegment: false,
-                  lastSegment: true,
-                  portrait: portrait,
-                  constraints: constraints,
-                ),
-            ],
+            ),
           );
         },
       ),
@@ -331,51 +410,81 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   }
 
   Widget _segmentWidget({
+    required int segmentIndex,
     required Bar bar,
     required bool mainSegment,
     required Key key,
     required BoxConstraints constraints,
     required bool portrait,
-    bool? lastSegment = false,
-    bool? previousSegment = false,
+    bool lastSegment = false,
   }) {
-    double segmentProgress = mainSegment ? _segmentProgress : -1;
+    double currentSegmentProgress = _wholeSongTime -
+        (widget.musicData.clock.safeIndex(_currentSegmentIndex)?.toDouble() ??
+            0);
+    double fullSegmentTime = (widget.musicData.clock
+                .safeIndex(_currentSegmentIndex + 1)
+                ?.toDouble() ??
+            currentSegmentProgress) -
+        (widget.musicData.clock.safeIndex(_currentSegmentIndex)?.toDouble() ??
+            currentSegmentProgress);
+    double segmentProgress = -1;
+    if (mainSegment) {
+      if (fullSegmentTime == 0) {
+        segmentProgress = 0;
+      } else {
+        segmentProgress = currentSegmentProgress / fullSegmentTime;
+      }
+    }
+
+    if (mainSegment) {
+      _segmentProgress = interpolate(
+        segmentProgress,
+        0,
+        1,
+        -0.2,
+        1.2,
+      );
+      segmentProgress = interpolate(
+        segmentProgress,
+        0,
+        1,
+        _songPlaying ? 0.1 : 0,
+        1.2,
+      );
+
+      _segmentProgress = segmentProgress;
+    } else if (!lastSegment && _segmentProgress >= 0.8) {
+      segmentProgress = interpolate(
+        _segmentProgress,
+        0.8,
+        1.2,
+        0,
+        0.1,
+      );
+    }
 
     List<Event> lyrics =
-    bar.events.where((e) => e.type == EventType.lyric).toList();
+        bar.events.where((e) => e.type == EventType.lyric).toList();
     List<Event> chords =
-    bar.events.where((e) => e.type == EventType.chord).toList();
+        bar.events.where((e) => e.type == EventType.chord).toList();
     double padding = Dimensions.padding;
     double segmentWidth = constraints.maxWidth - 2 * padding;
 
-    double topOffset = 0;
-
-    double threshold = 11;
-    if (mainSegment) {
-      topOffset = segmentProgress >= threshold
-          ? -700
-          : portrait
-          ? 0
-          : -140;
-    } else if (lastSegment == true) {
-      topOffset = _segmentProgress >= threshold ? 300 : 1000;
-    } else if (previousSegment == true) {
-      topOffset =
-      segmentProgress >= 0 && _segmentProgress <= 0.2 ? -1000 : -1000;
-    } else {
-      topOffset = _segmentProgress >= 0 && _segmentProgress >= threshold
-          ? 0
-          : portrait
-          ? 300
-          : 200;
-    }
-    return AnimatedPositioned(
+    double topOffset = _getOffsetForSegment(
+      segmentIndex: segmentIndex,
+      segmentProgress: segmentProgress,
+      bar: bar,
+      mainSegment: mainSegment,
+      lastSegment: lastSegment,
+      portrait: portrait,
+      constraints: constraints,
+    );
+    return Positioned(
       key: key,
       top: topOffset,
       left: 0,
       right: 0,
-      bottom: 0,
-      duration: const Duration(milliseconds: 600),
+      height: (portrait ? 60 : 90) / 100 * MediaQuery.of(context).size.height,
       child: _segmentContentWidget(
         lyrics: lyrics,
         chords: chords,
@@ -386,6 +495,96 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     );
   }
 
+  double mapPercentageToRange(double min, double max, double percentage) {
+    return min + (percentage * (max - min));
+  }
+
+  double interpolate(
+    double value,
+    double fromMin,
+    double fromMax,
+    double toMin,
+    double toMax,
+  ) {
+    return toMin + ((value - fromMin) / (fromMax - fromMin)) * (toMax - toMin);
+  }
+
+  double _getOffsetForSegment({
+    required int segmentIndex,
+    required Bar bar,
+    required bool mainSegment,
+    required BoxConstraints constraints,
+    required bool portrait,
+    required double segmentProgress,
+    bool? lastSegment = false,
+  }) {
+    double topOffset = 0;
+    double threshold = 1;
+    double startOffset = 0;
+    double endOffset = 0;
+    if (mainSegment) {
+      startOffset = portrait ? 0 : -100;
+
+      endOffset = -400;
+    } else if (lastSegment == true) {
+      startOffset = 400;
+      endOffset = portrait ? 150 : 50;
+    } else {
+      startOffset = portrait ? 150 : 50;
+      endOffset = portrait ? 0 : -100;
+    }
+
+    if (mainSegment) {
+      if (_segmentProgress >= threshold) {
+        double segmentProgressPercentage = interpolate(
+          _segmentProgress,
+          threshold,
+          1.2,
+          0,
+          1,
+        );
+
+        topOffset =
+            startOffset - segmentProgressPercentage * (startOffset - endOffset);
+      } else {
+        topOffset = startOffset;
+      }
+    } else if (lastSegment == true) {
+      if (_segmentProgress >= threshold) {
+        double segmentProgressPercentage = interpolate(
+          _segmentProgress,
+          threshold,
+          1.2,
+          0,
+          1,
+        );
+
+        topOffset =
+            startOffset - segmentProgressPercentage * (startOffset - endOffset);
+      } else {
+        topOffset = startOffset;
+      }
+    } else {
+      if (_segmentProgress >= threshold) {
+        double segmentProgressPercentage =
+            (_segmentProgress - threshold) / (1 - threshold) * 100;
+        segmentProgressPercentage = interpolate(
+          _segmentProgress,
+          threshold,
+          1.2,
+          0,
+          1,
+        );
+
+        topOffset =
+            startOffset - segmentProgressPercentage * (startOffset - endOffset);
+      } else {
+        topOffset = startOffset;
+      }
+    }
+    return topOffset;
+  }
+
   Widget _segmentContentWidget({
     required List<Event> lyrics,
     required List<Event> chords,
@@ -394,37 +593,40 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     required double padding,
   }) {
     return Center(
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            left: 0,
-            right: 0,
-            top: -38,
-            height: 44,
-            child: Container(
-              color: Colors.white,
+      child: Container(
+        color: Colors.red,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              left: 0,
+              right: 0,
+              top: -38,
+              height: 44,
+              child: Container(
+                color: Colors.white,
+              ),
             ),
-          ),
-          _lyricsWidget(
-            lyrics: lyrics,
-            segmentProgress: segmentProgress,
-            segmentWidth: segmentWidth,
-            padding: padding,
-          ),
-          _mainSecondaryChordsWidget(
-            segmentProgress: segmentProgress,
-            segmentWidth: segmentWidth,
-            padding: padding,
-          ),
-          _chordsWidgets(
-            chords: chords,
-            segmentProgress: segmentProgress,
-            segmentWidth: segmentWidth,
-            padding: padding,
-          ),
-          _progressIndicator(segmentProgress),
-        ],
+            _lyricsWidget(
+              lyrics: lyrics,
+              segmentProgress: segmentProgress,
+              segmentWidth: segmentWidth,
+              padding: padding,
+            ),
+            _mainSecondaryChordsWidget(
+              segmentProgress: segmentProgress,
+              segmentWidth: segmentWidth,
+              padding: padding,
+            ),
+            _chordsWidgets(
+              chords: chords,
+              segmentProgress: segmentProgress,
+              segmentWidth: segmentWidth,
+              padding: padding,
+            ),
+            _progressIndicator(segmentProgress),
+          ],
+        ),
       ),
     );
   }
@@ -435,10 +637,11 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     required double segmentWidth,
     required double padding,
   }) {
-    return Positioned.fill(
+    return Positioned(
       top: 0,
       left: padding,
       right: padding,
+      height: 50,
       child: Stack(
         clipBehavior: Clip.none,
         children: chords.map((event) {
@@ -489,9 +692,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color:
-                    segmentProgress >= index * startPosition / segmentWidth
-                        ? Colors.white
-                        : Colors.grey,
+                        segmentProgress >= index * startPosition / segmentWidth
+                            ? Colors.white
+                            : Colors.grey,
                   ),
                 ),
               ),
@@ -519,7 +722,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
           double dashSpace = 10;
           Event? nextLyric = lyrics.safeIndex(index + 1);
           Bar? nextBar =
-          widget.musicData.bars.safeIndex(_currentSegmentIndex + 1);
+              widget.musicData.bars.safeIndex(_currentSegmentIndex + 1);
           if (nextLyric == null && nextBar != null) {
             nextLyric = nextBar.events
                 .where((e) => e.type == EventType.lyric)
@@ -568,22 +771,20 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
           return Positioned(
             left: overlap ? previousEndX + dashSpace : currentStartX,
             top: 0,
-            child: Container(
-              child: Text(
-                wordSplit ? '${event.text} -' : event.text ?? '',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontFeatures: [const FontFeature.tabularFigures()],
-                  fontWeight: segmentProgress >= (event.start)
-                      ? FontWeight.bold
-                      : FontWeight.normal,
-                  color: segmentProgress >= (event.start)
-                      ? Colors.black
-                      : Colors.grey,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
+            child: Text(
+              wordSplit ? '${event.text} -' : event.text ?? '',
+              style: TextStyle(
+                fontSize: 14,
+                fontFeatures: [const FontFeature.tabularFigures()],
+                fontWeight: segmentProgress >= (event.start)
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+                color: segmentProgress >= (event.start)
+                    ? Colors.black
+                    : Colors.grey,
               ),
+              textAlign: TextAlign.left,
+              maxLines: 1,
             ),
           );
         }).toList(),
@@ -601,18 +802,13 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   }
 
   Widget _progressIndicator(double segmentProgress) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return LinearProgressIndicator(
-          value: segmentProgress,
-          color: Colors.orange,
-          backgroundColor: Colors.transparent,
-          valueColor: const AlwaysStoppedAnimation<Color>(
-            Colors.orange,
-          ),
-        );
-      },
+    return LinearProgressIndicator(
+      value: segmentProgress,
+      color: Colors.orange,
+      backgroundColor: Colors.transparent,
+      valueColor: const AlwaysStoppedAnimation<Color>(
+        Colors.orange,
+      ),
     );
   }
 }

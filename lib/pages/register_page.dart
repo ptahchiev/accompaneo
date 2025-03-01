@@ -1,17 +1,18 @@
 import 'dart:convert' as convert;
+
 import 'package:accompaneo/models/user/registration.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
-import '../utils/helpers/snackbar_helper.dart';
 
-import '../widgets/app_text_form_field.dart';
-import '../widgets/gradient_background.dart';
 import '../utils/helpers/navigation_helper.dart';
+import '../utils/helpers/snackbar_helper.dart';
 import '../values/app_constants.dart';
 import '../values/app_regex.dart';
 import '../values/app_routes.dart';
 import '../values/app_strings.dart';
 import '../values/app_theme.dart';
+import '../widgets/app_text_form_field.dart';
+import '../widgets/gradient_background.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -35,8 +36,10 @@ class _RegisterPageState extends State<RegisterPage> {
   void initializeControllers() {
     nameController = TextEditingController()..addListener(controllerListener);
     emailController = TextEditingController()..addListener(controllerListener);
-    passwordController = TextEditingController()..addListener(controllerListener);
-    confirmPasswordController = TextEditingController()..addListener(controllerListener);
+    passwordController = TextEditingController()
+      ..addListener(controllerListener);
+    confirmPasswordController = TextEditingController()
+      ..addListener(controllerListener);
   }
 
   void disposeControllers() {
@@ -59,7 +62,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (AppRegex.emailRegex.hasMatch(email) &&
         AppRegex.passwordRegex.hasMatch(password) &&
-        AppRegex.passwordRegex.hasMatch(confirmPassword) && password ==  confirmPassword) {
+        AppRegex.passwordRegex.hasMatch(confirmPassword) &&
+        password == confirmPassword) {
       fieldValidNotifier.value = true;
     } else {
       fieldValidNotifier.value = false;
@@ -99,7 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   AppTextFormField(
-                    autofocus: true,
+                    autofocus: false,
                     labelText: AppStrings.name,
                     keyboardType: TextInputType.name,
                     textInputAction: TextInputAction.next,
@@ -222,33 +226,43 @@ class _RegisterPageState extends State<RegisterPage> {
                     valueListenable: fieldValidNotifier,
                     builder: (_, isValid, __) {
                       return FilledButton(
-                        onPressed: 
-                          isValid
-                            ? () {
-                                final result = ApiService.register(Registration(name: nameController.text, username: emailController.text, password: passwordController.text, repeatPassword: confirmPasswordController.text));
-                                result.then((response) {
-                                  if (response.statusCode == 200) {
-                                    nameController.clear();
-                                    emailController.clear();
-                                    passwordController.clear();
-                                    confirmPasswordController.clear();
-                                    NavigationHelper.pushReplacementNamed(
-                                      AppRoutes.login,
-                                    );
-                                    SnackbarHelper.showSnackBar('Registered');
-                                  } else {
-                                    var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
-                                    if (jsonResponse['message'] != null) {
-                                      SnackbarHelper.showSnackBar(jsonResponse['message'], isError: true);
+                          onPressed: isValid
+                              ? () {
+                                  final result = ApiService.register(
+                                      Registration(
+                                          name: nameController.text,
+                                          username: emailController.text,
+                                          password: passwordController.text,
+                                          repeatPassword:
+                                              confirmPasswordController.text));
+                                  result.then((response) {
+                                    if (response.statusCode == 200) {
+                                      nameController.clear();
+                                      emailController.clear();
+                                      passwordController.clear();
+                                      confirmPasswordController.clear();
+                                      NavigationHelper.pushReplacementNamed(
+                                        AppRoutes.login,
+                                      );
+                                      SnackbarHelper.showSnackBar('Registered');
                                     } else {
-                                      SnackbarHelper.showSnackBar('Failed to fetch post: ${response.statusCode}', isError: true);
+                                      var jsonResponse =
+                                          convert.jsonDecode(response.body)
+                                              as Map<String, dynamic>;
+                                      if (jsonResponse['message'] != null) {
+                                        SnackbarHelper.showSnackBar(
+                                            jsonResponse['message'],
+                                            isError: true);
+                                      } else {
+                                        SnackbarHelper.showSnackBar(
+                                            'Failed to fetch post: ${response.statusCode}',
+                                            isError: true);
+                                      }
                                     }
-                                  }
-                                });
-                              }
-                            : null,
-                        child: const Text(AppStrings.register)
-                      );
+                                  });
+                                }
+                              : null,
+                          child: const Text(AppStrings.register));
                     },
                   ),
                 ],

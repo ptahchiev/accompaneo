@@ -43,6 +43,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   final _player = AudioPlayer();
   final _metronomePlayer = AudioPlayer(handleAudioSessionActivation: false);
   final PublishSubject<bool> _playerPlaySubject = PublishSubject<bool>();
+  final PublishSubject<int> _playSeekSubject = PublishSubject<int>();
 
   // AnimationController animationController;
 
@@ -51,10 +52,14 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     _segmentedButtonSelection = {
-      PracticeType.values.firstWhere((e) =>
-          e.toString() ==
-          'PracticeType.${song.audioStreams![0].type}')
+      PracticeType.values.firstWhere(
+          (e) => e.toString() == 'PracticeType.${song.audioStreams![0].type}')
     };
     ambiguate(WidgetsBinding.instance)!.addObserver(this);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
@@ -105,10 +110,13 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         musicPlayerScreen = MusicPlayerScreen(
           musicData: res,
           playStream: _playerPlaySubject.stream,
+          playSeekStream: _playSeekSubject,
         );
 
-        audioMargin = (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000).round();
-
+        audioMargin =
+            (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000)
+                .round();
+        audioMargin = 0;
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
 
@@ -137,6 +145,9 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     ambiguate(WidgetsBinding.instance)!.removeObserver(this);
     _player.dispose();
     WakelockPlus.disable();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     super.dispose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: SystemUiOverlay.values);
@@ -184,7 +195,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   //   });
   // }
 
-  StreamBuilder<PositionData> _overlayPanel() {
+  StreamBuilder<PositionData> _overlayPanel({required bool portrait}) {
     return StreamBuilder<PositionData>(
       stream: Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
           _player.positionStream,
@@ -274,9 +285,15 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                   //SystemSound.play(SystemSoundType.click);
                                   final String clickUrl = '';
 
-                                  AudioStream as = song.audioStreams!.firstWhere((as) => as.type == newSelection.first.name);
+                                  AudioStream as = song.audioStreams!
+                                      .firstWhere((as) =>
+                                          as.type == newSelection.first.name);
 
-                                  setAudioSource(newSelection.first == PracticeType.Click ? clickUrl : as.url).then((v) {
+                                  setAudioSource(newSelection.first ==
+                                              PracticeType.Click
+                                          ? clickUrl
+                                          : as.url)
+                                      .then((v) {
                                     setState(() {
                                       _segmentedButtonSelection = newSelection;
                                       //_audioUrl = song.audioStreamUrls![newSelection.first.name];
@@ -289,22 +306,35 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                   ButtonSegment<PracticeType>(
                                       label: Text('Practice'),
                                       value: PracticeType.PracticeFull,
-                                      enabled: song.audioStreams!.firstWhereOrNull((as)=> as.type == 'PracticeFull') != null),
+                                      enabled: song.audioStreams!
+                                              .firstWhereOrNull((as) =>
+                                                  as.type == 'PracticeFull') !=
+                                          null),
                                   ButtonSegment<PracticeType>(
                                       label: Text('Band'),
                                       value: PracticeType.BandNoVocals,
-                                      enabled: song.audioStreams!.firstWhereOrNull((as)=> as.type == 'BandNoVocals') != null),
+                                      enabled: song.audioStreams!
+                                              .firstWhereOrNull((as) =>
+                                                  as.type == 'BandNoVocals') !=
+                                          null),
                                   ButtonSegment<PracticeType>(
                                       label: Text('+Vocals'),
                                       value: PracticeType.BandFull,
-                                      enabled: song.audioStreams!.firstWhereOrNull((as)=> as.type == 'BandFull') != null),
+                                      enabled: song.audioStreams!
+                                              .firstWhereOrNull((as) =>
+                                                  as.type == 'BandFull') !=
+                                          null),
                                   ButtonSegment<PracticeType>(
                                       label: Text('Click'),
                                       value: PracticeType.Click),
                                 ])),
                         Align(
-                            alignment: Alignment.center,
-                            child: _playButton(snapshot)),
+                          alignment: Alignment.center,
+                          child: _playButton(
+                            snapshot,
+                            portrait: portrait,
+                          ),
+                        ),
                         Align(
                             alignment: Alignment.bottomCenter,
                             child: Column(
@@ -338,7 +368,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                                       color: Colors.white))
                                         ]),
                                   ),
-                                  Padding(
+                                  Container(
                                       padding: EdgeInsets.symmetric(
                                           horizontal: MediaQuery.of(context)
                                                   .size
@@ -354,8 +384,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                         total: total,
                                         onSeek: _player.seek,
                                         onDragUpdate: (details) {
-                                          debugPrint(
-                                              '${details.timeStamp}, ${details.localPosition}');
+                                          _playSeekSubject
+                                              .add(details.timeStamp.inSeconds);
                                         },
                                         thumbColor: AppColors.primaryColor,
                                         baseBarColor: Colors.white,
@@ -374,7 +404,11 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _playButton(AsyncSnapshot<PositionData> snapshot) {
+  Widget _playButton(
+    AsyncSnapshot<PositionData> snapshot, {
+    required bool portrait,
+  }) {
+    double iconSize = portrait ? 150 : 100;
     final playerState = snapshot.data;
     final processingState = playerState?.playerState.processingState;
     final playing = playerState?.playerState.playing;
@@ -382,23 +416,25 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         processingState == ProcessingState.buffering) {
       return Container(
         margin: const EdgeInsets.all(8.0),
-        width: 150,
-        height: 150,
+        width: iconSize,
+        height: iconSize,
         child: const CircularProgressIndicator(color: Colors.white),
       );
     } else if (playing != true) {
-      return IconButton(
-          icon: const Icon(Icons.play_arrow_outlined),
-          iconSize: 150,
-          color: Colors.white,
-          onPressed: () {
-            _player.play();
-            _playerPlaySubject.add(true);
-          });
+      return Container(
+        child: IconButton(
+            icon: const Icon(Icons.play_arrow_outlined),
+            iconSize: iconSize,
+            color: Colors.white,
+            onPressed: () {
+              _player.play();
+              _playerPlaySubject.add(true);
+            }),
+      );
     } else if (processingState != ProcessingState.completed) {
       return IconButton(
         icon: const Icon(Icons.pause_outlined),
-        iconSize: 150,
+        iconSize: iconSize,
         color: Colors.white,
         onPressed: () {
           _player.pause();
@@ -408,7 +444,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     } else {
       return IconButton(
         icon: const Icon(Icons.replay_outlined),
-        iconSize: 150,
+        iconSize: iconSize,
         color: Colors.white,
         onPressed: () => _player.seek(Duration.zero),
       );
@@ -442,82 +478,80 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     return DefaultTabController(
         length: 2,
         child: OrientationBuilder(builder: (context, orientation) {
-          return Stack(
-              alignment: AlignmentDirectional.bottomStart,
-              children: <Widget>[
-                ScaffoldMessenger(
-                  child: Scaffold(
-                      backgroundColor: Colors.white,
-                      body: GestureDetector(
-                          onTap: () {
-                            if (_player.playing) {
-                              _player.pause();
-                              _playerPlaySubject.add(false);
-                            }
-                          },
-                          child: musicPlayerScreen ?? Container()
-                          // Padding(
-                          //   padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
-                          //   child: Column(
-                          //     //crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
-                          //     children: <Widget>[
-                          //       Expanded(
-                          //         flex: 65,
-                          //         child: Container(
-                          //             decoration: BoxDecoration(borderRadius: radius, color: AppColors.primaryColor),
-                          //           ),
-                          //         ),
-                          //       Expanded(
-                          //         flex: 35,
-                          //         child: Padding(
-                          //           padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
-                          //           child: Column(
-                          //             children: [
-                          //                 Padding(
-                          //                   padding: EdgeInsets.symmetric(vertical: 20),
-                          //                   child: Row(
-                          //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          //                     children:
-                          //                     [
-                          //                       Text('Next', style: AppTheme.titleMedium.copyWith(color: Colors.black)),
-                          //                       CircleAvatar(backgroundColor: ChordsHelper.chordTypeColors[chord],
-                          //                         child: Text(chord.name, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
-                          //                     ]
-                          //                   ),
-                          //                 ),
-                          //                 Expanded(
-                          //                   child: Flexible(
-                          //                     child: FlutterGuitarChord(
-                          //                       baseFret: position.baseFret,
-                          //                       chordName: chord.name,
-                          //                       fingers: position.fingers,
-                          //                       frets: position.frets,
-                          //                       totalString: instrument.stringCount,
-                          //                       stringStroke: 0.4,
-                          //                       //differentStringStrokes: _useStringThickness,
-                          //                       // stringColor: Colors.red,
-                          //                       // labelColor: Colors.teal,
-                          //                       // tabForegroundColor: Colors.white,
-                          //                       // tabBackgroundColor: Colors.deepOrange,
-                          //                       firstFrameStroke: 10,
-                          //                       barStroke: 0.5,
-                          //                       //firstFrameColor: Colors.red,
-                          //                       barColor: Colors.grey,
-                          //                       // labelOpenStrings: true,
-                          //                     ),
-                          //                   ),
-                          //                 )
-                          //             ]
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ],
-                          //   ),
-                          // ),
-                          )),
-                ),
-                _overlayPanel()
-              ]);
+          return Scaffold(
+              backgroundColor: Colors.white,
+              body: Stack(
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        if (_player.playing) {
+                          _player.pause();
+                          _playerPlaySubject.add(false);
+                        }
+                      },
+                      child: musicPlayerScreen ?? Container()
+                      // Padding(
+                      //   padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
+                      //   child: Column(
+                      //     //crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
+                      //     children: <Widget>[
+                      //       Expanded(
+                      //         flex: 65,
+                      //         child: Container(
+                      //             decoration: BoxDecoration(borderRadius: radius, color: AppColors.primaryColor),
+                      //           ),
+                      //         ),
+                      //       Expanded(
+                      //         flex: 35,
+                      //         child: Padding(
+                      //           padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
+                      //           child: Column(
+                      //             children: [
+                      //                 Padding(
+                      //                   padding: EdgeInsets.symmetric(vertical: 20),
+                      //                   child: Row(
+                      //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      //                     children:
+                      //                     [
+                      //                       Text('Next', style: AppTheme.titleMedium.copyWith(color: Colors.black)),
+                      //                       CircleAvatar(backgroundColor: ChordsHelper.chordTypeColors[chord],
+                      //                         child: Text(chord.name, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
+                      //                     ]
+                      //                   ),
+                      //                 ),
+                      //                 Expanded(
+                      //                   child: Flexible(
+                      //                     child: FlutterGuitarChord(
+                      //                       baseFret: position.baseFret,
+                      //                       chordName: chord.name,
+                      //                       fingers: position.fingers,
+                      //                       frets: position.frets,
+                      //                       totalString: instrument.stringCount,
+                      //                       stringStroke: 0.4,
+                      //                       //differentStringStrokes: _useStringThickness,
+                      //                       // stringColor: Colors.red,
+                      //                       // labelColor: Colors.teal,
+                      //                       // tabForegroundColor: Colors.white,
+                      //                       // tabBackgroundColor: Colors.deepOrange,
+                      //                       firstFrameStroke: 10,
+                      //                       barStroke: 0.5,
+                      //                       //firstFrameColor: Colors.red,
+                      //                       barColor: Colors.grey,
+                      //                       // labelOpenStrings: true,
+                      //                     ),
+                      //                   ),
+                      //                 )
+                      //             ]
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      ),
+                  _overlayPanel(portrait: orientation == Orientation.portrait),
+                ],
+              ));
         }));
   }
 }

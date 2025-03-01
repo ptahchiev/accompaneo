@@ -1,45 +1,45 @@
 import 'package:accompaneo/models/playlists.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'pages/home_page.dart';
+import 'pages/playlists_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/settings_page.dart';
-import 'pages/playlists_page.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'values/app_routes.dart';
-import 'values/app_theme.dart';
-import 'values/app_colors.dart';
+import 'routes.dart';
 import 'utils/helpers/navigation_helper.dart';
 import 'utils/helpers/snackbar_helper.dart';
-import 'routes.dart';
+import 'values/app_colors.dart';
+import 'values/app_routes.dart';
+import 'values/app_theme.dart';
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light),
   );
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
-    (_) => runApp(
-      ChangeNotifierProvider(
-        create: (context) => PlaylistsModel(),
-        child: Accompaneo(token: prefs.getString('token')),
-      ),
-    )
-  );
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]).then((_) => runApp(
+        ChangeNotifierProvider(
+          create: (context) => PlaylistsModel(),
+          child: Accompaneo(token: prefs.getString('token')),
+        ),
+      ));
 
   FlutterNativeSplash.remove();
 }
 
 class _AccompaneoState extends State<AccompaneoApp> {
-
   int selectedIndex;
 
   int _selectedIndex = 0;
@@ -53,102 +53,99 @@ class _AccompaneoState extends State<AccompaneoApp> {
     PlaylistsPage()
   ];
 
-
   @override
   void initState() {
     super.initState();
     _selectedIndex = selectedIndex;
   }
 
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return 
-        GestureDetector(
-          onTap: () {
-            final FocusScopeNode currentScope = FocusScope.of(context);
-            if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
-              currentScope.unfocus();
-            }
-          },
-          child: Scaffold(
-            appBar: AppBar(
-              title: const Text('Accompaneo'),
-              centerTitle: true,
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              actions: <Widget>[
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  tooltip: 'Search',
-                  onPressed: () {
-                    NavigationHelper.pushNamed(AppRoutes.playlistSearch);
-                  },
-                )],
-            ),
-            body: IndexedStack(index: _selectedIndex, children: _pages),
-            drawer: Drawer(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                
-                children: [
-                  const DrawerHeader(
+    return GestureDetector(
+      onTap: () {
+        final FocusScopeNode currentScope = FocusScope.of(context);
+        if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
+          currentScope.unfocus();
+        }
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Accompaneo'),
+            centerTitle: true,
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(Icons.search),
+                tooltip: 'Search',
+                onPressed: () {
+                  NavigationHelper.pushNamed(AppRoutes.playlistSearch);
+                },
+              )
+            ],
+          ),
+          body: IndexedStack(index: _selectedIndex, children: _pages),
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                const DrawerHeader(
                     decoration: BoxDecoration(
                       color: AppColors.darkerBlue,
                     ),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(child: 
-                            Text('Accompaneo', style: AppTheme.titleLarge),
-                          ),
-                          
-                          Text('ver. 1.0',style: AppTheme.bodySmall),
-                          Text('by Petar Tahchiev', style: AppTheme.bodySmall),
-                        ]
-                      ),
-                    )
-                  ),
-                  ListTile(
-                    title: const Text('Logout'),
-                    selected: _selectedIndex == 0,
-                    onTap: () {
-                      Navigator.pop(context);
-                      //logout
-                      //navigate to login screen
-                      NavigationHelper.pushReplacementNamed(AppRoutes.login);                      
-                    },
-                  ),
-                ],
-              ),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text('Accompaneo',
+                                  style: AppTheme.titleLarge),
+                            ),
+                            Text('ver. 1.0', style: AppTheme.bodySmall),
+                            Text('by Petar Tahchiev',
+                                style: AppTheme.bodySmall),
+                          ]),
+                    )),
+                ListTile(
+                  title: const Text('Logout'),
+                  selected: _selectedIndex == 0,
+                  onTap: () {
+                    Navigator.pop(context);
+                    //logout
+                    //navigate to login screen
+                    NavigationHelper.pushReplacementNamed(AppRoutes.login);
+                  },
+                ),
+              ],
             ),
-            bottomNavigationBar: 
-              NavigationBar(
-                elevation: 0,
-                selectedIndex: _selectedIndex,
-                onDestinationSelected: _onItemTapped,
-                destinations: <NavigationDestination>[
-                  NavigationDestination(
-                    icon: Container(padding: EdgeInsets.symmetric(vertical: 10),child: Icon(Icons.home)),
-                    label: 'Home',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.person),
-                    label: 'Profile',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.settings_rounded),
-                    label: 'Settings',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.headphones),
-                    label: 'Playlists',
-                  )
-                ],
-              )),
-        );
+          ),
+          bottomNavigationBar: NavigationBar(
+            elevation: 0,
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: _onItemTapped,
+            destinations: <NavigationDestination>[
+              NavigationDestination(
+                icon: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Icon(Icons.home)),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.settings_rounded),
+                label: 'Settings',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.headphones),
+                label: 'Playlists',
+              )
+            ],
+          )),
+    );
   }
 
   void _onItemTapped(int index) {
@@ -159,7 +156,6 @@ class _AccompaneoState extends State<AccompaneoApp> {
 }
 
 class Accompaneo extends StatelessWidget {
-
   final String? token;
 
   Accompaneo({required this.token});
@@ -180,13 +176,12 @@ class Accompaneo extends StatelessWidget {
   }
 }
 
-
 class AccompaneoApp extends StatefulWidget {
-
   final int selectedIndex;
 
   @override
-  State<AccompaneoApp> createState() => _AccompaneoState(selectedIndex: selectedIndex);
+  State<AccompaneoApp> createState() =>
+      _AccompaneoState(selectedIndex: selectedIndex);
 
   const AccompaneoApp({super.key, required this.selectedIndex});
 }

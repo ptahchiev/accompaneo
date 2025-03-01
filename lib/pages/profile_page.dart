@@ -2,18 +2,16 @@ import 'dart:async';
 
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
-import '../utils/helpers/snackbar_helper.dart';
 
-import '../widgets/app_text_form_field.dart';
+import '../utils/helpers/snackbar_helper.dart';
 import '../values/app_constants.dart';
 import '../values/app_regex.dart';
 import '../values/app_strings.dart';
 import '../values/app_theme.dart';
-
+import '../widgets/app_text_form_field.dart';
 
 // This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
 class ProfilePage extends StatefulWidget {
-
   const ProfilePage({super.key});
 
   @override
@@ -21,7 +19,6 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController nameController;
@@ -34,7 +31,8 @@ class _ProfilePageState extends State<ProfilePage> {
   void initializeControllers() {
     nameController = TextEditingController()..addListener(controllerListener);
     emailController = TextEditingController()..addListener(controllerListener);
-    passwordController = TextEditingController()..addListener(controllerListener);
+    passwordController = TextEditingController()
+      ..addListener(controllerListener);
   }
 
   void disposeControllers() {
@@ -48,11 +46,12 @@ class _ProfilePageState extends State<ProfilePage> {
     final email = emailController.text;
     final password = passwordController.text;
 
-    if (name.isEmpty &&
-        email.isEmpty &&
-        password.isEmpty) return;
+    if (name.isEmpty && email.isEmpty && password.isEmpty) return;
 
-    if (name.isNotEmpty && name.length >=2 && AppRegex.emailRegex.hasMatch(email) && (password.isEmpty || AppRegex.passwordRegex.hasMatch(password))) {
+    if (name.isNotEmpty &&
+        name.length >= 2 &&
+        AppRegex.emailRegex.hasMatch(email) &&
+        (password.isEmpty || AppRegex.passwordRegex.hasMatch(password))) {
       fieldValidNotifier.value = true;
     } else {
       fieldValidNotifier.value = false;
@@ -81,16 +80,16 @@ class _ProfilePageState extends State<ProfilePage> {
       body: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.all(20),
-            child:Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  AppStrings.updateYourProfile,
-                  style: AppTheme.sectionTitle.copyWith(color: Colors.black),
-                )
-              ],
-          )),          
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    AppStrings.updateYourProfile,
+                    style: AppTheme.sectionTitle.copyWith(color: Colors.black),
+                  )
+                ],
+              )),
           Padding(
             padding: const EdgeInsets.all(20),
             child: Form(
@@ -112,9 +111,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               ? null
                               : AppStrings.invalidEmailAddress;
                     },
-                  ),                  
+                  ),
                   AppTextFormField(
-                    autofocus: true,
+                    autofocus: false,
                     labelText: AppStrings.name,
                     keyboardType: TextInputType.name,
                     textInputAction: TextInputAction.next,
@@ -139,9 +138,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         keyboardType: TextInputType.visiblePassword,
                         onChanged: (_) => _formKey.currentState?.validate(),
                         validator: (value) {
-                          return value!.isEmpty || AppConstants.passwordRegex.hasMatch(value)
-                                  ? null
-                                  : AppStrings.invalidPassword;
+                          return value!.isEmpty ||
+                                  AppConstants.passwordRegex.hasMatch(value)
+                              ? null
+                              : AppStrings.invalidPassword;
                         },
                         suffixIcon: Focus(
                           /// If false,
@@ -176,7 +176,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       return FilledButton(
                         onPressed: isValid
                             ? () {
-                                ApiService.updateUserProfile({'name' : nameController.text, 'password' : passwordController.text}).then((result) {
+                                ApiService.updateUserProfile({
+                                  'name': nameController.text,
+                                  'password': passwordController.text
+                                }).then((result) {
                                   SnackbarHelper.showSnackBar(
                                     AppStrings.profileUpdated,
                                   );
