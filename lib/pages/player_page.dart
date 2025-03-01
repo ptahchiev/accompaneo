@@ -111,6 +111,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         // res.bars.removeAt(1);
         // res.clock.removeAt(0);
 
+<<<<<<< HEAD
         audioMargin =
             (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000)
                 .round();
@@ -126,6 +127,9 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         print(
             '(song.audioStreams![0].margin * 10).round() - 1: ${(song.audioStreams![0].margin * 10).round() - 1}');
         // audioMargin = 0;
+=======
+        audioMargin = (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000).round();
+>>>>>>> main
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
 
