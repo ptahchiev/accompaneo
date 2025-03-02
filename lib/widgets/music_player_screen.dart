@@ -10,6 +10,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_guitar_chord/flutter_guitar_chord.dart';
 import 'package:guitar_chord_library/guitar_chord_library.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../values/app_colors.dart';
 
@@ -46,6 +47,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   double animationDuration = 0.5; //milliseconds
   double leftRightPaddingMilliseconds = 0.2; //milliseconds
 
+  late AudioPlayer metronomePlayer = AudioPlayer();
+  
   Map<String, TimeSignature> timeSignatures = {
     '2/4': TimeSignature(
         name: '2/4',
@@ -149,8 +152,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   void dispose() {
     _playSubscription?.cancel();
     _playSeekSubscription?.cancel();
-
     _wholeSongController.dispose();
+    metronomePlayer.dispose();
     super.dispose();
   }
 
@@ -715,8 +718,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     required double padding,
   }) {
     double size = 50;
-    int totalBeats =
-        _timeSignature.numberOfBeats + _timeSignature.numberOfSubBeats;
+    int totalBeats = _timeSignature.numberOfBeats + _timeSignature.numberOfSubBeats;
     double startPosition = (segmentWidth - _circleSize) / (totalBeats - 1);
     return Positioned(
       top: 0,
@@ -724,18 +726,49 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       right: padding,
       height: 50,
       child: Stack(
-          clipBehavior: Clip.none,
-          children: metronomeBeats.map((event) {
-            var numberOfSectionsPerBeat = (_timeSignature.numberOfSubBeats /
-                    _timeSignature.numberOfBeats) +
-                1;
+        clipBehavior: Clip.none,
+        children: metronomeBeats.map((event) {
+          var numberOfSectionsPerBeat = (_timeSignature.numberOfSubBeats / _timeSignature.numberOfBeats) + 1;
 
-            var eventLength = 1 / _timeSignature.numberOfBeats;
+          var eventLength = 1/_timeSignature.numberOfBeats;
 
-            var left = (startPosition *
-                    ((event.position /
-                        (eventLength / numberOfSectionsPerBeat)))) -
-                (size - (size / 20)); //size/20 is 2.5 because our border is 5
+          var left = (startPosition * ((event.position / (eventLength / numberOfSectionsPerBeat )))) - (size - (size / 20)); //size/20 is 2.5 because our border is 5
+          return Positioned(
+            left: left,
+            top: -120,
+            child: PulsatingWidget(
+              title: '${event.name}',
+              isActive: segmentProgress >= event.position,
+              whenActive: () {
+                metronomePlayer.setAsset('assets/effects/metronome.mp3');
+                metronomePlayer.play();
+              },
+            ),
+          );
+        }).toList()
+      ),
+    );
+  }
+
+  Widget _chordsWidgets({
+    required List<Event> chords,
+    required double segmentProgress,
+    required double segmentWidth,
+    required double padding,
+  }) {
+    double size = 50;
+    int totalBeats = _timeSignature.numberOfBeats + _timeSignature.numberOfSubBeats;
+    double startPosition = (segmentWidth - _circleSize) / (totalBeats - 1);
+    return Positioned(
+      top: 0,
+      left: padding,
+      right: padding,
+      height: 50,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          ...chords.map((event) {
+            var left = (startPosition * ((event.position / 0.125))) - (size - (size / 20)); //size/20 is 2.5 because our border is 5
             return Positioned(
               left: left,
               top: -120,

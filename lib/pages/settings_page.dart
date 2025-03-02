@@ -19,6 +19,7 @@ class _SettingsPageState extends State<SettingsPage> {
   late final TextEditingController colorController;
   late final TextEditingController languageController;
   late final TextEditingController instrumentController;
+  late final TextEditingController countInEffectController;
 
 
   final _formKey = GlobalKey<FormState>();
@@ -29,6 +30,11 @@ class _SettingsPageState extends State<SettingsPage> {
     DropdownMenuEntry(value: 'ukulele', label: 'Ukulele'),
   ];
   
+  final List<DropdownMenuEntry> countInEffectEntries = [
+    DropdownMenuEntry(value: 'fingerClick', label: 'Fingerclick'), 
+    DropdownMenuEntry(value: 'metronome', label: 'Metronome')
+  ];
+
   String languageValue = 'English';
   String instrumentValue = 'Piano';
 
@@ -45,12 +51,14 @@ class _SettingsPageState extends State<SettingsPage> {
     colorController = TextEditingController()..addListener(controllerListener);
     languageController = TextEditingController()..addListener(controllerListener);
     instrumentController = TextEditingController()..addListener(controllerListener);
+    countInEffectController = TextEditingController()..addListener(controllerListener);
   }
 
   void disposeControllers() {
     colorController.dispose();
     languageController.dispose();
     instrumentController.dispose();
+    countInEffectController.dispose();
   }
 
   void controllerListener() {
@@ -218,6 +226,23 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                       ),
                     ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom:20),
+                      child: DropdownMenu(
+                        controller: countInEffectController,
+                        expandedInsets: EdgeInsets.zero,
+                        enableSearch: false,
+                        dropdownMenuEntries: countInEffectEntries,
+                        initialSelection: countInEffectEntries.first,
+                        requestFocusOnTap: true,
+                        label: const Text('Count-in effect'),
+                        onSelected: (value) {
+                          setState(() {
+                            
+                          });
+                        },
+                      ),
+                    ),                    
                     Padding(
                       padding: EdgeInsets.only(bottom: 20),
                       child: ValueListenableBuilder(

@@ -5,10 +5,11 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class PulsatingWidget extends StatefulWidget {
-  const PulsatingWidget({required this.isActive, required this.title, Key? key})
+  const PulsatingWidget({required this.isActive, required this.title, this.whenActive, Key? key})
       : super(key: key);
   final bool isActive;
   final String title;
+  final Function? whenActive;
 
   @override
   _PulsatingWidgetState createState() => _PulsatingWidgetState();
@@ -44,6 +45,9 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
       _controller.forward(
         from: 0,
       );
+      if (widget.whenActive != null) {
+        widget.whenActive!();
+      }
     }
   }
 
@@ -54,6 +58,9 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
       _controller.forward(
         from: 0,
       );
+      if (widget.whenActive != null) {
+        widget.whenActive!();
+      }      
     } else {
       if (!widget.isActive) {
         _controller.stop();
