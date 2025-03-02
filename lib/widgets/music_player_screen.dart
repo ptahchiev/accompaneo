@@ -488,6 +488,15 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       portrait: portrait,
       constraints: constraints,
     );
+
+    List<Event> metronomeBeats = [];
+    List<Event> countInEvents = bar.events.where((e) => e.type == EventType.countIn).toList();
+    if (countInEvents.isNotEmpty) {
+      metronomeBeats.addAll(List.generate(4, (index) {
+        return Event(type: EventType.countIn, position: index * (1/_timeSignature.numberOfBeats), start: 0, duration: 0, name: "${index + 1}");
+      }));
+    }
+
     return Positioned(
       key: key,
       top: topOffset,
@@ -495,6 +504,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       right: 0,
       height: (portrait ? 60 : 90) / 100 * MediaQuery.of(context).size.height,
       child: _segmentContentWidget(
+        metronomeBeats: metronomeBeats,
         lyrics: lyrics,
         chords: chords,
         segmentProgress: segmentProgress,
@@ -595,18 +605,32 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   }
 
   Widget _segmentContentWidget({
+    required List<Event> metronomeBeats,
     required List<Event> lyrics,
     required List<Event> chords,
     required double segmentProgress,
     required double segmentWidth,
     required double padding,
   }) {
+    double startPosition = (segmentWidth - _circleSize) / (7);
     return Center(
       child: Container(
         color: Colors.red,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
+            // Column(
+            //   children: [
+            //     Text("SW: $segmentWidth"),
+            //     ...List.generate(4, (index) {
+            //       return Text("DOT: ${index * startPosition}");
+            //     }),
+            //     ...metronomeBeats.map((mb) {
+            //       return Text("CP: ${segmentWidth * mb.position}");
+            //     }),
+            //   ],
+            // ),
+
             Positioned(
               left: 0,
               right: 0,
@@ -627,6 +651,12 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               segmentWidth: segmentWidth,
               padding: padding,
             ),
+            _countInWidget(
+              metronomeBeats: metronomeBeats,
+              segmentProgress: segmentProgress,
+              segmentWidth: segmentWidth,
+              padding: padding,
+            ),            
             _chordsWidgets(
               chords: chords,
               segmentProgress: segmentProgress,
@@ -640,12 +670,15 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     );
   }
 
-  Widget _chordsWidgets({
-    required List<Event> chords,
+  Widget _countInWidget({
+    required List<Event> metronomeBeats,
     required double segmentProgress,
     required double segmentWidth,
     required double padding,
   }) {
+    double size = 50;
+    int totalBeats = _timeSignature.numberOfBeats + _timeSignature.numberOfSubBeats;
+    double startPosition = (segmentWidth - _circleSize) / (totalBeats - 1);
     return Positioned(
       top: 0,
       left: padding,
@@ -653,16 +686,50 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       height: 50,
       child: Stack(
         clipBehavior: Clip.none,
-        children: chords.map((event) {
+        children: metronomeBeats.map((event) {
+          var left = (startPosition * ((event.position / 0.125))) - (size - (size / 20)); //size/20 is 2.5 because our border is 5
           return Positioned(
-            left: (event.position * segmentWidth) - 47,
-            top: -115,
+            left: left,
+            top: -120,
             child: PulsatingWidget(
-              title: event.name ?? '',
-              isActive: segmentProgress >= (event.position),
+              title: '${(event.position / 0.25).round() + 1}',
+              isActive: segmentProgress >= event.position,
             ),
           );
-        }).toList(),
+        }).toList()
+      ),
+    );
+  }
+
+  Widget _chordsWidgets({
+    required List<Event> chords,
+    required double segmentProgress,
+    required double segmentWidth,
+    required double padding,
+  }) {
+    double size = 50;
+    int totalBeats = _timeSignature.numberOfBeats + _timeSignature.numberOfSubBeats;
+    double startPosition = (segmentWidth - _circleSize) / (totalBeats - 1);
+    return Positioned(
+      top: 0,
+      left: padding,
+      right: padding,
+      height: 50,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          ...chords.map((event) {
+            var left = (startPosition * ((event.position / 0.125))) - (size - (size / 20)); //size/20 is 2.5 because our border is 5
+            return Positioned(
+              left: left,
+              top: -120,
+              child: PulsatingWidget(
+                title: event.name ?? '',
+                isActive: segmentProgress >= (event.position),
+              ),
+            );
+          }),
+        ]
       ),
     );
   }
@@ -674,16 +741,16 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   }) {
     // int mainChordsCount = int.tryParse(_timeSignature.split('/').first) ?? 0;
     // int secondaryChordsCount = int.tryParse(_timeSignature.split('/').last) ?? 0;
-    int totalChords = _timeSignature.numberOfBeats + _timeSignature.numberOfSubBeats;
 
-    double startPosition = (segmentWidth - _circleSize) / (totalChords - 1);
+    int totalBeats = _timeSignature.numberOfBeats + _timeSignature.numberOfSubBeats;
+    double startPosition = (segmentWidth - _circleSize) / (totalBeats - 1);
     return Positioned.fill(
       top: -70,
       left: padding,
       right: padding,
       child: Stack(
         clipBehavior: Clip.none,
-        children: List.generate(totalChords, (index) {
+        children: List.generate(totalBeats, (index) {
           return Positioned(
             left: index * startPosition,
             child: Container(
