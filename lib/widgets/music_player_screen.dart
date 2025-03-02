@@ -459,7 +459,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
     //compute offset of the segment based on index
     int differenceIndex = segmentIndex - _currentSegmentIndex;
-    double yOffsetPerSegment = 200;
+    //maybe add the offset based on the player height
+    double yOffsetPerSegment = portrait ? 200 : 180;
 
     endOffset = (differenceIndex - 1) * yOffsetPerSegment;
 
@@ -546,7 +547,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         topOffset = startOffset;
       }
     }
-
+    if (!portrait) {
+      topOffset = topOffset - 70;
+    }
     return topOffset;
   }
 
