@@ -107,23 +107,17 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
     ApiService.getSongStructure(song.structureUrl).then((res) async {
       setState(() {
-        // res.bars.removeAt(0);
-        // res.bars.removeAt(1);
-        // res.clock.removeAt(0);
-
-        audioMargin =
-            (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000)
-                .round();
-
-        audioMargin = 500;
         musicPlayerScreen = MusicPlayerScreen(
           musicData: res,
           playStream: _playerPlaySubject.stream,
           playSeekStream: _playSeekSubject,
         );
 
-        audioMargin = (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000).round();
+        audioMargin =
+            (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000)
+                .round();
         audioMargin = 675;
+
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
 
