@@ -89,7 +89,14 @@ class ChordsHelper {
     ChordType.E7: Colors.brown,
     ChordType.F7: Colors.blue,
     ChordType.G7: Colors.green,
-    ChordType.UNKNOWN: Colors.grey
+    ChordType.Amaj7: Colors.blueGrey,
+    ChordType.Bmaj7: Colors.purple,
+    ChordType.Cmaj7: Colors.red,
+    ChordType.Dmaj7: Colors.orange,
+    ChordType.Emaj7: Colors.brown,
+    ChordType.Fmaj7: Colors.blue,
+    ChordType.Gmaj7: Colors.green,
+   ChordType.UNKNOWN: Colors.grey
   };
 
   static const Map<ChordType, FlutterGuitarChord> chordTypeOptions = {
@@ -121,7 +128,14 @@ class ChordsHelper {
     ChordType.E7: E7,
     ChordType.F7: F7,
     //ChordType.G7: G7,
-
+    //ChordType.A7: A7,
+    ChordType.Amaj7: Amaj7,
+    ChordType.Bmaj7: Bmaj7,
+    ChordType.Cmaj7: Cmaj7,
+    ChordType.Dmaj7: Dmaj7,
+    ChordType.Emaj7: Emaj7,
+    ChordType.Fmaj7: Fmaj7,
+    ChordType.Gmaj7: Gmaj7,
     ChordType.UNKNOWN: UNKNOWN,
   };
 
@@ -412,6 +426,86 @@ class ChordsHelper {
     tabForegroundColor: Colors.white,
     tabBackgroundColor: Colors.blue,
   );
+
+  static const FlutterGuitarChord Amaj7 = FlutterGuitarChord(
+    baseFret: 1,
+    chordName: 'Amaj7',
+    fingers: '0 0 2 1 3 0',
+    frets: '-1 0 2 1 2 0',
+    totalString: 6,
+    labelColor: AppColors.primaryColor,
+    showLabel: false,
+    tabForegroundColor: Colors.white,
+    tabBackgroundColor: Colors.blueGrey,
+  );
+
+  static const FlutterGuitarChord Bmaj7 = FlutterGuitarChord(
+    baseFret: 1,
+    chordName: 'Bmaj7',
+    fingers: '1 3 2 2 1 1',
+    frets: '1 3 2 2 1 1',
+    totalString: 6,
+    labelColor: AppColors.primaryColor,
+    showLabel: false,
+    tabForegroundColor: Colors.white,
+    tabBackgroundColor: Colors.purple,
+  );
+
+  static const FlutterGuitarChord Cmaj7 = FlutterGuitarChord(
+    baseFret: 1,
+    chordName: 'Cmaj7',
+    fingers: '0 2 1 0 0 0',
+    frets: '-1 3 2 0 0 0',
+    totalString: 6,
+    labelColor: AppColors.primaryColor,
+    showLabel: false,
+    tabForegroundColor: Colors.white,
+    tabBackgroundColor: Colors.red,
+  );
+  static const FlutterGuitarChord Dmaj7 = FlutterGuitarChord(
+    baseFret: 1,
+    chordName: 'Dmaj7',
+    fingers: '0 0 0 1 1 1',
+    frets: '-1 -1 0 1 1 1',
+    totalString: 6,
+    labelColor: AppColors.primaryColor,
+    showLabel: false,
+    tabForegroundColor: Colors.white,
+    tabBackgroundColor: Colors.orange,
+  );
+  static const FlutterGuitarChord Emaj7 = FlutterGuitarChord(
+    baseFret: 1,
+    chordName: 'Emaj7',
+    fingers: '0 2 1 1 0 0',
+    frets: '0 2 1 1 0 0',
+    totalString: 6,
+    labelColor: AppColors.primaryColor,
+    showLabel: false,
+    tabForegroundColor: Colors.white,
+    tabBackgroundColor: Colors.brown,
+  );
+  static const FlutterGuitarChord Fmaj7 = FlutterGuitarChord(
+    baseFret: 1,
+    chordName: 'Fmaj7',
+    fingers: '0 0 3 2 1 0',
+    frets: '-1 -1 3 2 1 0',
+    totalString: 6,
+    labelColor: AppColors.primaryColor,
+    showLabel: false,
+    tabForegroundColor: Colors.white,
+    tabBackgroundColor: Colors.blue,
+  );  
+  static const FlutterGuitarChord Gmaj7 = FlutterGuitarChord(
+    baseFret: 1,
+    chordName: 'Gmaj7',
+    fingers: '3 1 0 0 0 2',
+    frets: '3 2 0 0 0 2',
+    totalString: 6,
+    labelColor: AppColors.primaryColor,
+    showLabel: false,
+    tabForegroundColor: Colors.white,
+    tabBackgroundColor: Colors.green,
+  );  
 
   static const FlutterGuitarChord Bbm = FlutterGuitarChord(
     baseFret: 1,
