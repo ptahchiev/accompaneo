@@ -492,7 +492,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     List<Event> metronomeBeats = [];
     List<Event> countInEvents = bar.events.where((e) => e.type == EventType.countIn).toList();
     if (countInEvents.isNotEmpty) {
-      metronomeBeats.addAll(List.generate(4, (index) {
+      metronomeBeats.addAll(List.generate(_timeSignature.numberOfBeats, (index) {
         return Event(type: EventType.countIn, position: index * (1/_timeSignature.numberOfBeats), start: 0, duration: 0, name: "${index + 1}");
       }));
     }
@@ -687,12 +687,16 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       child: Stack(
         clipBehavior: Clip.none,
         children: metronomeBeats.map((event) {
-          var left = (startPosition * ((event.position / 0.125))) - (size - (size / 20)); //size/20 is 2.5 because our border is 5
+          var numberOfSectionsPerBeat = (_timeSignature.numberOfSubBeats / _timeSignature.numberOfBeats) + 1;
+
+          var eventLength = 1/_timeSignature.numberOfBeats;
+
+          var left = (startPosition * ((event.position / (eventLength / numberOfSectionsPerBeat )))) - (size - (size / 20)); //size/20 is 2.5 because our border is 5
           return Positioned(
             left: left,
             top: -120,
             child: PulsatingWidget(
-              title: '${(event.position / 0.25).round() + 1}',
+              title: '${event.name}',
               isActive: segmentProgress >= event.position,
             ),
           );
