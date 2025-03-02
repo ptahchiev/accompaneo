@@ -27,7 +27,7 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 500),
     )..repeat();
 
     _scaleAnimation = Tween<double>(begin: 0, end: 1.2).animate(_controller);
@@ -91,8 +91,8 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
           child: Container(
             padding: EdgeInsets.all(Dimensions.smallMargin),
             decoration: BoxDecoration(
-              color: ChordsHelper.chordTypeColors[chord] ?? Colors.black,
-              border: Border.all(color: Colors.white, width: 2),
+              color: chord == ChordType.UNKNOWN ? Colors.white : ChordsHelper.chordTypeColors[chord],
+              border: Border.all(color: chord == ChordType.UNKNOWN ? Colors.orange : Colors.white, width: 5),
               borderRadius: BorderRadius.all(Radius.circular(100)),
             ),
             width: 50,
@@ -100,11 +100,11 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
             child: Center(
               child: AutoSizeText(
                 widget.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  fontFeatures: [FontFeature.tabularFigures()],
-                  color: Colors.white,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                  color: chord == ChordType.UNKNOWN ? Colors.orange : Colors.white,
                   height: 1,
                 ),
                 textAlign: TextAlign.center,
