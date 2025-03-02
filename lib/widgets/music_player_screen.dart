@@ -10,6 +10,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_guitar_chord/flutter_guitar_chord.dart';
 import 'package:guitar_chord_library/guitar_chord_library.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../values/app_colors.dart';
 
@@ -41,6 +42,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   StreamSubscription? _playSeekSubscription;
   double _wholeSongTime = 0;
   bool _songPlaying = false;
+  late AudioPlayer metronomePlayer = AudioPlayer();
   
   Map<String, TimeSignature> timeSignatures = {
     '2/4' : TimeSignature(name: '2/4', numberOfBeats: 2, numberOfSubBeats: 2, isBeat: (index) => (index + 1) % 2 == 1),
@@ -85,6 +87,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       //   }
       // });
     });
+
     _playSubscription = widget.playStream.listen((play) {
       if (mounted) {
         setState(() {
@@ -197,8 +200,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     _controller.dispose();
     _playSubscription?.cancel();
     _playSeekSubscription?.cancel();
-
     _wholeSongController.dispose();
+    metronomePlayer.dispose();
     super.dispose();
   }
 
@@ -698,6 +701,10 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             child: PulsatingWidget(
               title: '${event.name}',
               isActive: segmentProgress >= event.position,
+              whenActive: () {
+                metronomePlayer.setAsset('assets/effects/metronome.mp3');
+                metronomePlayer.play();
+              },
             ),
           );
         }).toList()
