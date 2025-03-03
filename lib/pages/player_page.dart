@@ -70,7 +70,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   Future<void> setAudioSource(String audioSource) async {
     try {
       print("position: ${_player.position}");
-
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
               initialIndex: 0,
@@ -113,8 +112,11 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
           playSeekStream: _playSeekSubject,
         );
 
-        audioMargin = (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000).round();
+        audioMargin =
+            (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000)
+                .round();
         audioMargin = 675;
+
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
 
@@ -406,7 +408,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     AsyncSnapshot<PositionData> snapshot, {
     required bool portrait,
   }) {
-    double iconSize = portrait ? 150 : 100;
+    double iconSize = portrait ? 150 : 90;
     final playerState = snapshot.data;
     final processingState = playerState?.playerState.processingState;
     final playing = playerState?.playerState.playing;

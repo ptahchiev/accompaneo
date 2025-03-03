@@ -43,7 +43,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
   StreamController<Song?> songController = StreamController<Song?>.broadcast();
 
   final PagingController<int, Song> _pagingController =
-  PagingController(firstPageKey: 0);
+      PagingController(firstPageKey: 0);
 
   _PlaylistPageState({required this.queryTerm});
 
@@ -79,6 +79,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
             tempoRangeValues: tempoRangeValues,
             search: _handleSearch,
             toggleFilters: _toggleFilters,
+            tempRangeValuesChanged: _tempRangeValuesChanged,
             loadMore: _fetchPage,
             child: PageFilters(),
           );
@@ -203,6 +204,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
           search: _handleSearch,
           loadMore: _fetchPage,
           toggleFilters: _toggleFilters,
+          tempRangeValuesChanged: _tempRangeValuesChanged,
           child: PageResults(
             playlist: widget.playlist,
             buildDialog: _filtersDialogBuilder,
@@ -217,6 +219,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
             page: futurePage,
             tempoRangeValues: tempoRangeValues,
             toggleFilters: _toggleFilters,
+            tempRangeValuesChanged: _tempRangeValuesChanged,
             search: _handleSearch,
             loadMore: _fetchPage,
             child: PageFilters(),
@@ -228,6 +231,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
   void _toggleFilters() {
     setState(() {
       _filtersDisplayed = !_filtersDisplayed;
+    });
+  }
+
+  void _tempRangeValuesChanged(RangeValues newValues) {
+    setState(() {
+      tempoRangeValues = newValues;
     });
   }
 }
@@ -243,6 +252,7 @@ class PageProvider extends InheritedWidget {
     required this.search,
     required this.loadMore,
     required this.toggleFilters,
+    required this.tempRangeValuesChanged,
     required Widget child,
   }) : super(key: key, child: child);
 
@@ -253,6 +263,7 @@ class PageProvider extends InheritedWidget {
   final PageDto page;
   final void Function(String) search;
   final void Function(int) loadMore;
+  final void Function(RangeValues) tempRangeValuesChanged;
   final VoidCallback toggleFilters;
 
   static PageProvider? of(BuildContext context) {
@@ -384,46 +395,105 @@ class _PageResultsState extends State<PageResults> {
   }
 
   Widget _noDataView(String message) => Center(
-    child: Text(
-      message,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w800,
-      ),
-    ),
-  );
+        child: Text(
+          message,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      );
 
   Widget playlistHeader(PageProvider pageProvider) {
     return Row(
       children: [
-        Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Flexible(
-              fit: FlexFit.tight,
-              child: Text(
-                widget.playlist.name,
-                softWrap: false,
-                overflow: TextOverflow.fade,
+        Expanded(
+          child: LayoutBuilder(builder: (context, constraints) {
+            String playlistName = widget.playlist.name;
+            final textPainter = TextPainter(
+              text: TextSpan(
+                text: playlistName,
                 style: AppTheme.sectionTitle,
               ),
-            )
+              maxLines: 1,
+              textDirection: TextDirection.ltr,
+            )..layout(maxWidth: constraints.maxWidth);
 
-          // child: FittedBox(
-          //   fit: BoxFit.fitWidth,
-          //   child: Text(
-          //     widget.playlist.name,
-          //     style: AppTheme.sectionTitle,
-          //   ),
-          // ),
-        ),
-        Expanded(flex: 1, child: Divider(color: Colors.grey.shade500)),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Padding(
+            double textWidth = textPainter.width;
+            double remainingWidth = constraints.maxWidth - textWidth - 20;
+
+            Widget textWidget = Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text('${pageProvider.page.totalElements} songs',
-                  overflow: TextOverflow.clip)),
-        )
+              child: Text(
+                playlistName,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                style: AppTheme.sectionTitle,
+                maxLines: 1,
+              ),
+            );
+            Widget dividerWidget = Container(
+              color: Colors.grey.shade500,
+              height: 1,
+              constraints: BoxConstraints(
+                minWidth: 10,
+              ),
+            );
+            if (remainingWidth > 20) {
+              dividerWidget = Expanded(child: dividerWidget);
+            } else {
+              textWidget = Expanded(child: textWidget);
+            }
+            return Row(
+              children: [
+                textWidget,
+                dividerWidget,
+              ],
+            );
+          }),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text('${pageProvider.page.totalElements} songs',
+              overflow: TextOverflow.clip),
+        ),
+      ],
+    );
+
+    return Row(
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  'adasdsa adasd aaa sd asdsd',
+                  // widget.playlist.name + widget.playlist.name,
+                  // widget.playlist.name,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTheme.sectionTitle,
+                  maxLines: 1,
+                ),
+              ),
+              Flexible(
+                fit: FlexFit.loose,
+                child: Container(
+                  constraints: BoxConstraints(minWidth: 10),
+                  child: Divider(
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text('${pageProvider.page.totalElements} songs',
+              overflow: TextOverflow.clip),
+        ),
       ],
     );
   }
@@ -541,17 +611,17 @@ class _PageResultsState extends State<PageResults> {
                 fontWeight: FontWeight.bold,
                 color: Colors.black)),
         subtitle:
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(song.artist.name),
           Wrap(
             spacing: 10,
             children: song.chords!
                 .map<Widget>((ch) => Container(
-                padding: EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(ch)))
+                    padding: EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Text(ch)))
                 .toList(),
           )
         ]),
@@ -638,7 +708,7 @@ class _PageResultsState extends State<PageResults> {
                             'Song removed from playlist');
                       } else {
                         var jsonResponse = convert.jsonDecode(response.body)
-                        as Map<String, dynamic>;
+                            as Map<String, dynamic>;
                         if (jsonResponse['message'] != null) {
                           SnackbarHelper.showSnackBar(jsonResponse['message'],
                               isError: true);
@@ -701,29 +771,29 @@ class _PageResultsState extends State<PageResults> {
               backgroundColor: Colors.transparent,
               title: widget.playlist.searchable
                   ? TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search for songs, artists...',
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  contentPadding: const EdgeInsets.all(15),
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: searchController.text.isNotEmpty
-                      ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        searchController.clear();
-                        pageProvider.search("");
-                      })
-                      : null,
-                  border: const UnderlineInputBorder(
-                      borderSide:
-                      BorderSide(color: Colors.grey, width: 12)),
-                ),
-                onChanged: (val) => debounce(
-                    const Duration(milliseconds: 300),
-                    pageProvider.search,
-                    [val]),
-              )
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search for songs, artists...',
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        contentPadding: const EdgeInsets.all(15),
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: searchController.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  searchController.clear();
+                                  pageProvider.search("");
+                                })
+                            : null,
+                        border: const UnderlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 12)),
+                      ),
+                      onChanged: (val) => debounce(
+                          const Duration(milliseconds: 300),
+                          pageProvider.search,
+                          [val]),
+                    )
                   : Container(),
               actions: [
                 Visibility(
@@ -737,16 +807,16 @@ class _PageResultsState extends State<PageResults> {
                     visible: widget.playlist.searchable,
                     child: pageProvider.isLoading
                         ? Padding(
-                        padding: EdgeInsets.only(right: 25),
-                        child: Icon(Icons.tune_rounded))
+                            padding: EdgeInsets.only(right: 25),
+                            child: Icon(Icons.tune_rounded))
                         : Padding(
-                        padding: EdgeInsets.only(right: 25),
-                        child: IconButton(
-                            onPressed: () {
-                              widget.toggleFilters();
-                              // widget.buildDialog(context);
-                            },
-                            icon: Icon(Icons.tune_rounded))))
+                            padding: EdgeInsets.only(right: 25),
+                            child: IconButton(
+                                onPressed: () {
+                                  widget.toggleFilters();
+                                  // widget.buildDialog(context);
+                                },
+                                icon: Icon(Icons.tune_rounded))))
               ],
             )
           ];
@@ -839,6 +909,7 @@ class _PageFiltersState extends State<PageFilters> {
   List<Widget> _getTempoSlider(SliderFacetDto sliderFacet,
       Function setDialogState, PageProvider pageProvider) {
     RangeValues tempoRangeValues = pageProvider.tempoRangeValues;
+
     return [
       Padding(
         padding: EdgeInsets.only(bottom: 30),
@@ -858,27 +929,32 @@ class _PageFiltersState extends State<PageFilters> {
       ),
       tempoRangeValues.start != -1 && tempoRangeValues.end != -1
           ? RangeSlider(
-        values: tempoRangeValues,
-        min: sliderFacet.initialMinValue.ceilToDouble(),
-        max: sliderFacet.initialMaxValue.ceilToDouble(),
-        labels: RangeLabels(
-          tempoRangeValues.start.ceilToDouble().toString(),
-          tempoRangeValues.end.ceilToDouble().toString(),
-        ),
-        onChanged: (RangeValues values) {
-          setDialogState(() {
-            setState(() {
-              tempoRangeValues = values;
-            });
-          });
-        },
-        onChangeEnd: (RangeValues values) {
-          String query =
-              '${pageProvider.queryTerm ?? ''}:tempo:[${values.start.ceilToDouble()}-${values.end.ceilToDouble()}][${sliderFacet.initialMinValue.ceilToDouble()}-${sliderFacet.initialMaxValue.ceilToDouble()}]';
+              values: tempoRangeValues,
+              min: sliderFacet.initialMinValue.ceilToDouble(),
+              max: sliderFacet.initialMaxValue.ceilToDouble(),
+              labels: RangeLabels(
+                tempoRangeValues.start.ceilToDouble().toString(),
+                tempoRangeValues.end.ceilToDouble().toString(),
+              ),
+              onChanged: (RangeValues values) {
+                setDialogState(() {
+                  setState(() {
+                    pageProvider.tempRangeValuesChanged(values);
+                  });
+                });
+              },
+              onChangeEnd: (RangeValues values) {
+                pageProvider.tempRangeValuesChanged(values);
+                String currentQueryTerm = pageProvider.queryTerm ?? '';
+                String cleanedCurrentQueryTerm = currentQueryTerm.replaceAll(
+                    RegExp(r':tempo:\[[^\]]*\]\[[^\]]*\]'), '');
 
-          pageProvider.search(query);
-        },
-      )
+                String query =
+                    '${cleanedCurrentQueryTerm ?? ''}:tempo:[${values.start.ceilToDouble()}-${values.end.ceilToDouble()}][${sliderFacet.initialMinValue.ceilToDouble()}-${sliderFacet.initialMaxValue.ceilToDouble()}]';
+
+                pageProvider.search(query);
+              },
+            )
           : Container()
     ];
   }
@@ -933,32 +1009,35 @@ class _PageFiltersState extends State<PageFilters> {
                                 children: [
                                   if (f.code == 'allCategories')
                                     ..._getGenreChips(f.code, f.values,
-                                            (FacetValueDto fv) {
-                                          return page.isFacetValueApplied(fv);
-                                        }, setDialogState, pageProvider),
+                                        (FacetValueDto fv) {
+                                      return page.isFacetValueApplied(fv);
+                                    }, setDialogState, pageProvider),
                                   if (f.code == 'chords')
                                     ..._getChordsChips(f.code, f.values,
-                                            (FacetValueDto fv) {
-                                          return page.isFacetValueApplied(fv);
-                                        }, setDialogState, pageProvider),
+                                        (FacetValueDto fv) {
+                                      return page.isFacetValueApplied(fv);
+                                    }, setDialogState, pageProvider),
                                   if (f.code == 'practiceTypes')
                                     ..._getPracticeTypeChips(f.code, f.values,
-                                            (FacetValueDto fv) {
-                                          return page.isFacetValueApplied(fv);
-                                        }, setDialogState, pageProvider),
+                                        (FacetValueDto fv) {
+                                      return page.isFacetValueApplied(fv);
+                                    }, setDialogState, pageProvider),
                                   if (f.code == 'musicKey')
                                     ..._getChordsChips(f.code, f.values,
-                                            (FacetValueDto fv) {
-                                          return page.isFacetValueApplied(fv);
-                                        }, setDialogState, pageProvider),
+                                        (FacetValueDto fv) {
+                                      return page.isFacetValueApplied(fv);
+                                    }, setDialogState, pageProvider),
                                   if (f.code == 'timeSignature')
                                     ..._getGenreChips(f.code, f.values,
-                                            (FacetValueDto fv) {
-                                          return page.isFacetValueApplied(fv);
-                                        }, setDialogState, pageProvider),
+                                        (FacetValueDto fv) {
+                                      return page.isFacetValueApplied(fv);
+                                    }, setDialogState, pageProvider),
                                   if (f.code == 'tempo')
-                                    ..._getTempoSlider(f as SliderFacetDto,
-                                        setDialogState, pageProvider)
+                                    ..._getTempoSlider(
+                                      f as SliderFacetDto,
+                                      setDialogState,
+                                      pageProvider,
+                                    )
                                 ])
                           ]),
                     ));
@@ -985,8 +1064,8 @@ class _PageFiltersState extends State<PageFilters> {
           color: Colors.black.withAlpha(100),
           child: Container(
             constraints: BoxConstraints(
-              // maxHeight: 60 / 100 * MediaQuery.of(context).size.height,
-            ),
+                // maxHeight: 60 / 100 * MediaQuery.of(context).size.height,
+                ),
             child: SafeArea(
               child: SimpleDialog(
                 insetPadding: EdgeInsets.all(10),
