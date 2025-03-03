@@ -47,7 +47,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   double animationDuration = 0.5; //milliseconds
   //this is the margin of the song source??
 
-  double leftRightPaddingSeconds = 0.2; //milliseconds
+  double leftRightPaddingSeconds = 0.0; //milliseconds
 
   late AudioPlayer metronomePlayer = AudioPlayer();
 
