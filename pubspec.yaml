@@ -50,6 +50,7 @@ dependencies:
   just_audio_mpv: ^0.1.7
   just_audio_windows: ^0.2.2
   audio_session: ^0.1.23
+  soundpool: ^2.4.1
   rxdart: ^0.28.0
   flutter_guitar_chord: ^0.0.2
   guitar_chord_library: ^0.0.4

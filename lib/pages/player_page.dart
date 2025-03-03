@@ -6,6 +6,7 @@ import 'package:accompaneo/pages/position_data.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/values/app_colors.dart';
 import 'package:accompaneo/values/app_theme.dart';
+import 'package:accompaneo/widgets/click_player.dart';
 import 'package:accompaneo/widgets/music_player_screen.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -107,14 +108,14 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     ApiService.getSongStructure(song.structureUrl).then((res) async {
       setState(() {
         musicPlayerScreen = MusicPlayerScreen(
+          clickPlayer:  ClickPlayer(4, 1, song.bpm, 0, 10000),
           musicData: res,
           playStream: _playerPlaySubject.stream,
           playSeekStream: _playSeekSubject,
         );
 
-        audioMargin =
-            (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000)
-                .round();
+        audioMargin = song.audioStreams![0].margin == 0 ? 0 :
+            (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000).round();
         audioMargin = 675;
 
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
@@ -283,22 +284,22 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                 onSelectionChanged:
                                     (Set<PracticeType> newSelection) {
                                   //SystemSound.play(SystemSoundType.click);
-                                  final String clickUrl = '';
+                                  // final String clickUrl = '';
 
-                                  AudioStream as = song.audioStreams!
-                                      .firstWhere((as) =>
-                                          as.type == newSelection.first.name);
+                                  // AudioStream as = song.audioStreams!
+                                  //     .firstWhere((as) =>
+                                  //         as.type == newSelection.first.name);
 
-                                  setAudioSource(newSelection.first ==
-                                              PracticeType.Click
-                                          ? clickUrl
-                                          : as.url)
-                                      .then((v) {
+                                  // setAudioSource(newSelection.first ==
+                                  //             PracticeType.Click
+                                  //         ? clickUrl
+                                  //         : as.url)
+                                  //     .then((v) {
                                     setState(() {
                                       _segmentedButtonSelection = newSelection;
                                       //_audioUrl = song.audioStreamUrls![newSelection.first.name];
                                     });
-                                  });
+                                  // });
                                 },
                                 // SegmentedButton uses a List<ButtonSegment<T>> to build its children
                                 // instead of a List<Widget> like ToggleButtons.

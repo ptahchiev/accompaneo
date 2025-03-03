@@ -5,6 +5,7 @@ import 'package:accompaneo/models/music_data.dart';
 import 'package:accompaneo/models/song/time_signature.dart';
 import 'package:accompaneo/utils/helpers/chords_helper.dart';
 import 'package:accompaneo/values/app_dimensions.dart';
+import 'package:accompaneo/widgets/click_player.dart';
 import 'package:accompaneo/widgets/pulsating_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -16,11 +17,13 @@ import '../values/app_colors.dart';
 
 class MusicPlayerScreen extends StatefulWidget {
   MusicPlayerScreen({
+    required this.clickPlayer,
     required this.musicData,
     required this.playStream,
     required this.playSeekStream,
   });
 
+  final ClickPlayer clickPlayer;
   final MusicData musicData;
   final Stream<bool> playStream;
   final Stream<int> playSeekStream;
@@ -37,6 +40,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   double _circleSize = 30;
   double? _pausedAnimationValue;
   double leftSideExtendIndex = 0.98;
+  int beat = 0;
+  String spent = "0:0";
+  StreamSubscription? streamSubscription;
 
   late AnimationController _wholeSongController;
   StreamSubscription? _playSubscription;
@@ -108,9 +114,17 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             } else {
               _wholeSongController.forward(from: 0);
             }
+            streamSubscription = widget.clickPlayer.stream.listen((event) {
+              setState(() {
+                beat = event + 1;
+                int seconds = widget.clickPlayer.totalDuration().inSeconds - widget.clickPlayer.remainingDuration().inSeconds;
+                spent = "${seconds ~/ 60}:${seconds % 60}";
+              });
+            });            
           } else {
             _pausedAnimationValue = _wholeSongController.value;
             _stopSong();
+            streamSubscription?.cancel();
           }
         });
       }
@@ -130,8 +144,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       bar.events.where((t) => t.type == EventType.meta).forEach((metaEvent) {
         if (metaEvent.content != null) {
           if (metaEvent.content!.type == 'timeSignature') {
-            _timeSignature = timeSignatures[metaEvent.content!.meter] ??
-                TimeSignature.empty();
+            _timeSignature = timeSignatures[metaEvent.content!.meter] ?? TimeSignature.empty();
           }
         }
       });
@@ -148,6 +161,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     _playSeekSubscription?.cancel();
     _wholeSongController.dispose();
     metronomePlayer.dispose();
+    widget.clickPlayer.dispose();
     super.dispose();
   }
 
