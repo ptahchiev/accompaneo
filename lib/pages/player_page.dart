@@ -17,6 +17,8 @@ import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../models/song/audio_stream.dart';
+
 class PlayerPage extends StatefulWidget {
   final Song song;
 
@@ -67,13 +69,13 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     _init();
   }
 
-  Future<void> setAudioSource(String audioSource) async {
+  Future<void> setAudioSource(String audioSource, Duration? duration) async {
     try {
       print("position: ${_player.position}");
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
               initialIndex: 0,
-              initialPosition: Duration(milliseconds: audioMargin),
+              initialPosition: duration ?? Duration(milliseconds: audioMargin),
               preload: true)
           .then((dur) {
         _player.pause();
@@ -101,6 +103,10 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     _player.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
         // completed show next song screen
+
+
+
+
       }
     });
     _player
@@ -134,7 +140,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
 
-      await setAudioSource(song.audioStreams![0].url);
+      await setAudioSource(song.audioStreams![0].url, null);
 
       // animationController = AnimationController(
       //   vsync: this,
@@ -219,15 +225,16 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
               position,
               bufferedPosition,
               duration ?? Duration.zero,
-              _player.playerState)),
+              _player.playerState, _player.processingState)),
       builder: (context, snapshot) {
         final playerState = snapshot.data;
         final playing = playerState?.playerState.playing;
+        final completed = playerState?.processingState == ProcessingState.completed;
         final durationState = snapshot.data;
         final progress = durationState?.position ?? Duration.zero;
         final buffered = durationState?.bufferedPosition ?? Duration.zero;
         final total = durationState?.duration ?? Duration.zero;
-        return playing != true || playing == null
+        return playing != true || playing == null || completed
             ? Scaffold(
                 backgroundColor: Colors.transparent.withOpacity(0.7), //yes
                 appBar: AppBar(
@@ -296,23 +303,26 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                 // This callback updates the set of selected segment values.
                                 onSelectionChanged:
                                     (Set<PracticeType> newSelection) {
-                                  //SystemSound.play(SystemSoundType.click);
-                                  // final String clickUrl = '';
-
-                                  // AudioStream as = song.audioStreams!
-                                  //     .firstWhere((as) =>
-                                  //         as.type == newSelection.first.name);
-
-                                  // setAudioSource(newSelection.first ==
-                                  //             PracticeType.Click
-                                  //         ? clickUrl
-                                  //         : as.url)
-                                  //     .then((v) {
-                                  setState(() {
-                                    _segmentedButtonSelection = newSelection;
-                                    //_audioUrl = song.audioStreamUrls![newSelection.first.name];
-                                  });
-                                  // });
+                                  final String clickUrl = '';
+                                  if(newSelection.first.name != PracticeType.Click.name) {
+                                    AudioStream as = song.audioStreams!
+                                        .firstWhere((as) =>
+                                            as.type == newSelection.first.name);
+                                    setAudioSource(newSelection.first ==
+                                                PracticeType.Click
+                                            ? clickUrl
+                                            : as.url, _player.position)
+                                        .then((v) {
+                                      setState(() {
+                                        _segmentedButtonSelection = newSelection;
+                                        //_audioUrl = song.audioStreamUrls![newSelection.first.name];
+                                      });
+                                    });                                    
+                                  } else {
+                                    setState(() {
+                                      _segmentedButtonSelection = newSelection;
+                                    });                                    
+                                  }
                                 },
                                 // SegmentedButton uses a List<ButtonSegment<T>> to build its children
                                 // instead of a List<Widget> like ToggleButtons.
@@ -341,7 +351,9 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                   ButtonSegment<PracticeType>(
                                       label: Text('Click'),
                                       value: PracticeType.Click),
-                                ])),
+                                  ]
+                          )
+                        ),
                         Align(
                           alignment: Alignment.center,
                           child: _playButton(
@@ -497,72 +509,14 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
               body: Stack(
                 children: [
                   GestureDetector(
-                      onTap: () {
-                        if (_player.playing) {
-                          _player.pause();
-                          _playerPlaySubject.add(false);
-                        }
-                      },
-                      child: musicPlayerScreen ?? Container()
-                      // Padding(
-                      //   padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / 25, horizontal: MediaQuery.of(context).size.width / 25),
-                      //   child: Column(
-                      //     //crossAxisCount: orientation == Orientation.portrait ? 1 : 2,
-                      //     children: <Widget>[
-                      //       Expanded(
-                      //         flex: 65,
-                      //         child: Container(
-                      //             decoration: BoxDecoration(borderRadius: radius, color: AppColors.primaryColor),
-                      //           ),
-                      //         ),
-                      //       Expanded(
-                      //         flex: 35,
-                      //         child: Padding(
-                      //           padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.height / 10),
-                      //           child: Column(
-                      //             children: [
-                      //                 Padding(
-                      //                   padding: EdgeInsets.symmetric(vertical: 20),
-                      //                   child: Row(
-                      //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      //                     children:
-                      //                     [
-                      //                       Text('Next', style: AppTheme.titleMedium.copyWith(color: Colors.black)),
-                      //                       CircleAvatar(backgroundColor: ChordsHelper.chordTypeColors[chord],
-                      //                         child: Text(chord.name, style: AppTheme.bodySmall.copyWith(color: Colors.white)))
-                      //                     ]
-                      //                   ),
-                      //                 ),
-                      //                 Expanded(
-                      //                   child: Flexible(
-                      //                     child: FlutterGuitarChord(
-                      //                       baseFret: position.baseFret,
-                      //                       chordName: chord.name,
-                      //                       fingers: position.fingers,
-                      //                       frets: position.frets,
-                      //                       totalString: instrument.stringCount,
-                      //                       stringStroke: 0.4,
-                      //                       //differentStringStrokes: _useStringThickness,
-                      //                       // stringColor: Colors.red,
-                      //                       // labelColor: Colors.teal,
-                      //                       // tabForegroundColor: Colors.white,
-                      //                       // tabBackgroundColor: Colors.deepOrange,
-                      //                       firstFrameStroke: 10,
-                      //                       barStroke: 0.5,
-                      //                       //firstFrameColor: Colors.red,
-                      //                       barColor: Colors.grey,
-                      //                       // labelOpenStrings: true,
-                      //                     ),
-                      //                   ),
-                      //                 )
-                      //             ]
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                      ),
+                    onTap: () {
+                      if (_player.playing) {
+                        _player.pause();
+                        _playerPlaySubject.add(false);
+                      }
+                    },
+                    child: musicPlayerScreen ?? Container()
+                  ),
                   _overlayPanel(portrait: orientation == Orientation.portrait),
                 ],
               ));

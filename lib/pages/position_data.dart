@@ -5,6 +5,7 @@ class PositionData {
   final Duration bufferedPosition;
   final Duration duration;
   final PlayerState playerState;
+  final ProcessingState processingState;
 
-  PositionData(this.position, this.bufferedPosition, this.duration, this.playerState);
+  PositionData(this.position, this.bufferedPosition, this.duration, this.playerState, this.processingState);
 }
