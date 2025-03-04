@@ -38,18 +38,15 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   double _segmentProgress = -0.2;
   TimeSignature _timeSignature = TimeSignature.empty();
   double _circleSize = 30;
-  double? _pausedAnimationValue;
   double leftSideExtendIndex = 0.98;
   int beat = 0;
   String spent = "0:0";
   StreamSubscription? streamSubscription;
 
-  late AnimationController _wholeSongController;
   StreamSubscription? _playSubscription;
   StreamSubscription? _playSeekSubscription;
   double _wholeSongTime = 0;
 
-  double _margin = 0;
   double animationDuration = 0.5; //milliseconds
   //this is the margin of the song source??
 
@@ -91,42 +88,23 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
     _computeTimeSignature();
 
-    _wholeSongController = AnimationController(
-      vsync: this,
-      lowerBound: 0,
-      upperBound: widget.musicData.clock.last.toDouble(),
-      duration:
-          Duration(milliseconds: (widget.musicData.clock.last * 1000).toInt()),
-    );
-    _wholeSongController.addListener(() {
-      setState(() {
-        // _wholeSongTime = _margin + _wholeSongController.value;
-      });
-    });
-
     _playSubscription = widget.playStream.listen((play) {
       if (mounted) {
         setState(() {
           if (play) {
-            if (_pausedAnimationValue != null) {
-              _wholeSongController.forward(from: _pausedAnimationValue);
-              _pausedAnimationValue = null;
-            } else {
-              _wholeSongController.forward(from: 0);
-            }
             if (streamSubscription != null) {
               streamSubscription?.resume();
             } else {
               streamSubscription = widget.clickPlayer.stream.listen((event) {
                 setState(() {
                   beat = event + 1;
-                  int seconds = widget.clickPlayer.totalDuration().inSeconds - widget.clickPlayer.remainingDuration().inSeconds;
+                  int seconds = widget.clickPlayer.totalDuration().inSeconds -
+                      widget.clickPlayer.remainingDuration().inSeconds;
                   spent = "${seconds ~/ 60}:${seconds % 60}";
                 });
               });
-            }       
+            }
           } else {
-            _pausedAnimationValue = _wholeSongController.value;
             _stopSong();
             streamSubscription?.pause();
           }
@@ -137,7 +115,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     _playSubscription = widget.playSeekStream.listen((playSeek) {
       if (mounted) {
         setState(() {
-          _wholeSongTime = (_margin + playSeek.toDouble()) / 1000;
+          _wholeSongTime = (playSeek.toDouble()) / 1000;
         });
       }
     });
@@ -156,15 +134,12 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     });
   }
 
-  void _stopSong() {
-    _wholeSongController.stop();
-  }
+  void _stopSong() {}
 
   @override
   void dispose() {
     _playSubscription?.cancel();
     _playSeekSubscription?.cancel();
-    _wholeSongController.dispose();
     metronomePlayer.dispose();
     widget.clickPlayer.dispose();
     super.dispose();
@@ -195,8 +170,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
   @override
   Widget build(BuildContext context) {
-    _margin = 0;
-
     _currentSegmentIndex = _currentSegmentIndexBasedOnElapsedTime();
     if (_currentSegmentIndex >= widget.musicData.bars.length) {
       return Container();
