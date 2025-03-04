@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:soundpool/soundpool.dart';
 
@@ -25,6 +26,7 @@ class ClickPlayer {
   late Duration period;
   final StreamController _controller = StreamController(sync: true);
   final Soundpool _pool = Soundpool.fromOptions();
+
   int? _up;
   int? _down;
 
@@ -34,30 +36,35 @@ class ClickPlayer {
   late Timer _timer;
   bool disposed = false;
 
-  ClickPlayer(this.clicksPerBar, this.barsPerStep, this.startBPM, this.stepBPM, this.stepAmount) {
+  ClickPlayer(this.clicksPerBar, this.barsPerStep, this.startBPM, this.stepBPM,
+      this.stepAmount) {
     _controller.onListen = () {
       beatAmount = -1;
 
       bpm = startBPM;
       Duration period = Duration(milliseconds: 60000 ~/ bpm);
 
-      void click(_) {
+      Future<void> click(_) async {
         if (_up == null || _down == null) {
           return; // skip if sounds are not yet cacheds
         }
 
         beatAmount++;
-        if (beatAmount * (steps + 1) >= stepAmount * clicksPerBar * barsPerStep) {
+        if (beatAmount * (steps + 1) >=
+            stepAmount * clicksPerBar * barsPerStep) {
           dispose();
           return;
         }
 
         if (beatAmount % clicksPerBar == 0) {
-          _pool.play(_up!);
+          print('UP');
+          await _pool.play(_up!);
         } else {
-          _pool.play(_down!);
+          print('DOWN');
+          await _pool.play(_down!);
         }
-
+        // await _pool.play(_down!);
+        // await _pool.play(_up!);
         _controller.add(beatAmount % clicksPerBar);
 
         if (beatAmount >= barsPerStep * clicksPerBar) {
@@ -88,11 +95,15 @@ class ClickPlayer {
   }
 
   Future<void> _loadSounds() async {
-    _up = await rootBundle.load("assets/effects/sfx_up.wav").then((ByteData soundData) {
+    _up = await rootBundle
+        .load("assets/effects/sfx_up.wav")
+        .then((ByteData soundData) {
       return _pool.load(soundData);
     });
 
-    _down = await rootBundle.load("assets/effects/sfx_down.wav").then((ByteData soundData) {
+    _down = await rootBundle
+        .load("assets/effects/sfx_down.wav")
+        .then((ByteData soundData) {
       return _pool.load(soundData);
     });
   }

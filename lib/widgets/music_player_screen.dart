@@ -100,7 +100,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     );
     _wholeSongController.addListener(() {
       setState(() {
-        _wholeSongTime = _margin + _wholeSongController.value;
+        // _wholeSongTime = _margin + _wholeSongController.value;
       });
     });
 
@@ -114,26 +114,31 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             } else {
               _wholeSongController.forward(from: 0);
             }
-            streamSubscription = widget.clickPlayer.stream.listen((event) {
-              setState(() {
-                beat = event + 1;
-                int seconds = widget.clickPlayer.totalDuration().inSeconds - widget.clickPlayer.remainingDuration().inSeconds;
-                spent = "${seconds ~/ 60}:${seconds % 60}";
+            if (streamSubscription != null) {
+              streamSubscription?.resume();
+            } else {
+              streamSubscription = widget.clickPlayer.stream.listen((event) {
+                setState(() {
+                  beat = event + 1;
+                  int seconds = widget.clickPlayer.totalDuration().inSeconds -
+                      widget.clickPlayer.remainingDuration().inSeconds;
+                  spent = "${seconds ~/ 60}:${seconds % 60}";
+                });
               });
-            });            
+            }
           } else {
             _pausedAnimationValue = _wholeSongController.value;
             _stopSong();
-            streamSubscription?.cancel();
+            streamSubscription?.pause();
           }
         });
       }
     });
+
     _playSubscription = widget.playSeekStream.listen((playSeek) {
       if (mounted) {
         setState(() {
-          _wholeSongTime = _margin + playSeek.toDouble();
-          _pausedAnimationValue = playSeek.toDouble();
+          _wholeSongTime = (_margin + playSeek.toDouble()) / 1000;
         });
       }
     });
@@ -144,7 +149,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       bar.events.where((t) => t.type == EventType.meta).forEach((metaEvent) {
         if (metaEvent.content != null) {
           if (metaEvent.content!.type == 'timeSignature') {
-            _timeSignature = timeSignatures[metaEvent.content!.meter] ?? TimeSignature.empty();
+            _timeSignature = timeSignatures[metaEvent.content!.meter] ??
+                TimeSignature.empty();
           }
         }
       });

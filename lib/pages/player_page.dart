@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:accompaneo/models/song/audio_stream.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/position_data.dart';
 import 'package:accompaneo/services/api_service.dart';
@@ -104,19 +103,33 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         // completed show next song screen
       }
     });
+    _player
+        .createPositionStream(
+      steps: 1,
+      minPeriod: Duration(
+        milliseconds: 5,
+      ),
+      maxPeriod: Duration(
+        milliseconds: 5,
+      ),
+    )
+        .listen((p) {
+      _playSeekSubject.add(p.inMilliseconds);
+    });
 
     ApiService.getSongStructure(song.structureUrl).then((res) async {
       setState(() {
         musicPlayerScreen = MusicPlayerScreen(
-          clickPlayer:  ClickPlayer(4, 1, song.bpm, 0, 10000),
+          clickPlayer: ClickPlayer(4, 1, song.bpm, 0, 10000),
           musicData: res,
           playStream: _playerPlaySubject.stream,
           playSeekStream: _playSeekSubject,
         );
 
-        audioMargin = song.audioStreams![0].margin == 0 ? 0 :
-            (res.clock[(song.audioStreams![0].margin * 10).round() - 1] * 1000).round();
-        audioMargin = 675;
+        audioMargin = song.audioStreams![0].margin == 0
+            ? 0
+            : (((res.clock[1] * song.audioStreams![0].margin) * 1000) / 2)
+                .round();
 
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
@@ -295,10 +308,10 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                   //         ? clickUrl
                                   //         : as.url)
                                   //     .then((v) {
-                                    setState(() {
-                                      _segmentedButtonSelection = newSelection;
-                                      //_audioUrl = song.audioStreamUrls![newSelection.first.name];
-                                    });
+                                  setState(() {
+                                    _segmentedButtonSelection = newSelection;
+                                    //_audioUrl = song.audioStreamUrls![newSelection.first.name];
+                                  });
                                   // });
                                 },
                                 // SegmentedButton uses a List<ButtonSegment<T>> to build its children
@@ -385,8 +398,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                         total: total,
                                         onSeek: _player.seek,
                                         onDragUpdate: (details) {
-                                          _playSeekSubject
-                                              .add(details.timeStamp.inSeconds);
+                                          // _playSeekSubject
+                                          //     .add(details.timeStamp.inSeconds);
                                         },
                                         thumbColor: AppColors.primaryColor,
                                         baseBarColor: Colors.white,

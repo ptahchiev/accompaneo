@@ -44,7 +44,6 @@ dependencies:
   spider: ^4.2.2
   wakelock_plus: ^1.2.10
   audio_video_progress_bar: ^2.0.3
-  audioplayers: ^6.1.0
   auto_size_text: ^3.0.0
   just_audio: ^0.9.43
   just_audio_mpv: ^0.1.7
