@@ -70,7 +70,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   Future<void> setAudioSource(String audioSource) async {
     try {
       print("position: ${_player.position}");
-      // await _player.setVolume(0);
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
               initialIndex: 0,
@@ -106,7 +105,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     });
     _player
         .createPositionStream(
-      steps: 10,
+      steps: 1,
       minPeriod: Duration(
         milliseconds: 5,
       ),
@@ -129,10 +128,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
         audioMargin = song.audioStreams![0].margin == 0
             ? 0
-            : (res.clock[(song.audioStreams![0].margin * 10).round() - 1] *
-                    1000)
+            : (((res.clock[1] * song.audioStreams![0].margin) * 1000) / 2)
                 .round();
-        audioMargin = 675;
 
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });

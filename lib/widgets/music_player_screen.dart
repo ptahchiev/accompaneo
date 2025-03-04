@@ -130,7 +130,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             _pausedAnimationValue = _wholeSongController.value;
             _stopSong();
             streamSubscription?.pause();
-            // streamSubscription?.cancel();
           }
         });
       }
@@ -140,8 +139,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       if (mounted) {
         setState(() {
           _wholeSongTime = (_margin + playSeek.toDouble()) / 1000;
-          print('_wholeSongTime: $_wholeSongTime');
-          // _pausedAnimationValue = playSeek.toDouble();
         });
       }
     });
