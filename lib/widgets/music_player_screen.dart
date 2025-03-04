@@ -120,12 +120,11 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               streamSubscription = widget.clickPlayer.stream.listen((event) {
                 setState(() {
                   beat = event + 1;
-                  int seconds = widget.clickPlayer.totalDuration().inSeconds -
-                      widget.clickPlayer.remainingDuration().inSeconds;
+                  int seconds = widget.clickPlayer.totalDuration().inSeconds - widget.clickPlayer.remainingDuration().inSeconds;
                   spent = "${seconds ~/ 60}:${seconds % 60}";
                 });
               });
-            }
+            }       
           } else {
             _pausedAnimationValue = _wholeSongController.value;
             _stopSong();
