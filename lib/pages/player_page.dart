@@ -71,11 +71,11 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   Future<void> setAudioSource(String audioSource, Duration? duration) async {
     try {
       print("position: ${_player.position}");
-
+      // await _player.setVolume(0);
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
               initialIndex: 0,
-              initialPosition: duration ?? Duration(milliseconds: audioMargin),
+              initialPosition: Duration(milliseconds: audioMargin),
               preload: true)
           .then((dur) {
         _player.pause();
@@ -120,9 +120,16 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     });
 
     ApiService.getSongStructure(song.structureUrl).then((res) async {
+      res.bars.removeAt(0);
       setState(() {
         musicPlayerScreen = MusicPlayerScreen(
-          clickPlayer: ClickPlayer(4, 1, song.bpm, 0, 10000),
+          clickPlayer: ClickPlayer(
+            4,
+            1,
+            song.bpm,
+            0,
+            10000,
+          ),
           musicData: res,
           playStream: _playerPlaySubject.stream,
           playSeekStream: _playSeekSubject,
@@ -138,7 +145,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         //     : (((res.clock[1] * song.audioStreams![0].margin) * 1000)).round();
 
         audioMargin = (song.audioStreams![0].margin * 1000).round();
-
+        audioMargin += (res.clock[1].toDouble() * 1000).toInt();
+        // audioMargin = 10000;
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
 

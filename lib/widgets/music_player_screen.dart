@@ -88,7 +88,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   @override
   void initState() {
     super.initState();
-
+    metronomePlayer.setVolume(1);
+    metronomePlayer.setAsset('assets/effects/metronome.mp3');
     _computeTimeSignature();
 
     _playSubscription = widget.playStream.listen((play) {
@@ -101,7 +102,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               streamSubscription = widget.clickPlayer.stream.listen((event) {
                 setState(() {
                   beat = event + 1;
-                  int seconds = widget.clickPlayer.totalDuration().inSeconds - widget.clickPlayer.remainingDuration().inSeconds;
+                  int seconds = widget.clickPlayer.totalDuration().inSeconds -
+                      widget.clickPlayer.remainingDuration().inSeconds;
                   spent = "${seconds ~/ 60}:${seconds % 60}";
                 });
               });
@@ -189,6 +191,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
   @override
   Widget build(BuildContext context) {
+    // _wholeSongTime = 28.063;
     int? currentSegmentIndex = _currentSegmentIndexBasedOnElapsedTime();
     if (currentSegmentIndex == null) {
       if (!_animationEnded) {
@@ -647,7 +650,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       child: Stack(
           clipBehavior: Clip.none,
           children: metronomeBeats.map((event) {
-            var left = (segmentWidth * event.position) - (size - (size / 20)); //size/20 is 2.5 because our border is 5
+            var left = (segmentWidth * event.position) -
+                (size - (size / 20)); //size/20 is 2.5 because our border is 5
             return Positioned(
               left: left,
               top: -120,
@@ -655,6 +659,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                 title: '${event.name}',
                 isActive: segmentProgress >= event.position,
                 whenActive: () {
+                  metronomePlayer.setVolume(1);
                   metronomePlayer.setAsset('assets/effects/metronome.mp3');
                   metronomePlayer.play();
                 },
@@ -679,8 +684,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       height: 50,
       child: Stack(clipBehavior: Clip.none, children: [
         ...chords.map((event) {
-          var left = (segmentWidth * event.position) - (size - (size / 20));//size/20 is 2.5 because our border is 5
-          
+          var left = (segmentWidth * event.position) -
+              (size - (size / 20)); //size/20 is 2.5 because our border is 5
+
           return Positioned(
             left: left,
             top: -120,
@@ -700,7 +706,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     required double segmentWidth,
     required double padding,
   }) {
-    int totalBeats = timeSignature.numberOfBeats + timeSignature.numberOfSubBeats;
+    int totalBeats =
+        timeSignature.numberOfBeats + timeSignature.numberOfSubBeats;
     return Positioned.fill(
       top: -70,
       left: padding,
@@ -709,7 +716,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         clipBehavior: Clip.none,
         children: List.generate(totalBeats, (index) {
           return Positioned(
-            left: (segmentWidth * (index  / totalBeats)),
+            left: (segmentWidth * (index / totalBeats)),
             child: Container(
               height: _circleSize,
               width: _circleSize,
@@ -723,10 +730,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                       : Dimensions.smallChordSize,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color:
-                        segmentProgress >= (index/totalBeats)
-                            ? Colors.white
-                            : Colors.grey,
+                    color: segmentProgress >= (index / totalBeats)
+                        ? Colors.white
+                        : Colors.grey,
                   ),
                 ),
               ),
