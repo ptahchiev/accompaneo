@@ -38,6 +38,7 @@ enum ChordType {
   E7,
   F7,
   G7,
+  Asus2,
   Amaj7,
   Bmaj7,
   Cmaj7,
@@ -89,6 +90,7 @@ class ChordsHelper {
     ChordType.E7: Colors.brown,
     ChordType.F7: Colors.blue,
     ChordType.G7: Colors.green,
+    ChordType.Asus2: Colors.blueGrey,
     ChordType.Amaj7: Colors.blueGrey,
     ChordType.Bmaj7: Colors.purple,
     ChordType.Cmaj7: Colors.red,
@@ -129,6 +131,7 @@ class ChordsHelper {
     ChordType.F7: F7,
     //ChordType.G7: G7,
     //ChordType.A7: A7,
+    ChordType.Asus2: Asus2,
     ChordType.Amaj7: Amaj7,
     ChordType.Bmaj7: Bmaj7,
     ChordType.Cmaj7: Cmaj7,
@@ -426,6 +429,18 @@ class ChordsHelper {
     tabForegroundColor: Colors.white,
     tabBackgroundColor: Colors.blue,
   );
+
+  static const FlutterGuitarChord Asus2 = FlutterGuitarChord(
+    baseFret: 1,
+    chordName: 'Asus2',
+    fingers: '0 0 1 2 0 0',
+    frets: '0 0 2 2 0 0',
+    totalString: 6,
+    labelColor: AppColors.primaryColor,
+    showLabel: false,
+    tabForegroundColor: Colors.white,
+    tabBackgroundColor: Colors.blueGrey,
+  );  
 
   static const FlutterGuitarChord Amaj7 = FlutterGuitarChord(
     baseFret: 1,

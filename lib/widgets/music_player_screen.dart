@@ -17,13 +17,13 @@ import '../values/app_colors.dart';
 
 class MusicPlayerScreen extends StatefulWidget {
   MusicPlayerScreen({
-    required this.clickPlayer,
+    // required this.clickPlayer,
     required this.musicData,
     required this.playStream,
     required this.playSeekStream,
   });
 
-  final ClickPlayer clickPlayer;
+  // final ClickPlayer clickPlayer;
   final MusicData musicData;
   final Stream<bool> playStream;
   final Stream<int> playSeekStream;
@@ -117,13 +117,13 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             if (streamSubscription != null) {
               streamSubscription?.resume();
             } else {
-              streamSubscription = widget.clickPlayer.stream.listen((event) {
-                setState(() {
-                  beat = event + 1;
-                  int seconds = widget.clickPlayer.totalDuration().inSeconds - widget.clickPlayer.remainingDuration().inSeconds;
-                  spent = "${seconds ~/ 60}:${seconds % 60}";
-                });
-              });
+              // streamSubscription = widget.clickPlayer.stream.listen((event) {
+              //   setState(() {
+              //     beat = event + 1;
+              //     int seconds = widget.clickPlayer.totalDuration().inSeconds - widget.clickPlayer.remainingDuration().inSeconds;
+              //     spent = "${seconds ~/ 60}:${seconds % 60}";
+              //   });
+              // });
             }       
           } else {
             _pausedAnimationValue = _wholeSongController.value;
@@ -166,7 +166,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     _playSeekSubscription?.cancel();
     _wholeSongController.dispose();
     metronomePlayer.dispose();
-    widget.clickPlayer.dispose();
+    // widget.clickPlayer.dispose();
     super.dispose();
   }
 

@@ -103,10 +103,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     _player.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
         // completed show next song screen
-
-
-
-
       }
     });
     _player
@@ -120,22 +116,23 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       ),
     )
         .listen((p) {
-      _playSeekSubject.add(p.inMilliseconds);
+      _playSeekSubject.add(p.inMilliseconds - audioMargin);
     });
 
     ApiService.getSongStructure(song.structureUrl).then((res) async {
       setState(() {
         musicPlayerScreen = MusicPlayerScreen(
-          clickPlayer: ClickPlayer(4, 1, song.bpm, 0, 10000),
+          //clickPlayer: ClickPlayer(4, 1, song.bpm, 0, 10000),
           musicData: res,
           playStream: _playerPlaySubject.stream,
           playSeekStream: _playSeekSubject,
         );
 
-        audioMargin = song.audioStreams![0].margin == 0
-            ? 0
-            : (((res.clock[1] * song.audioStreams![0].margin) * 1000) / 2)
-                .round();
+        // audioMargin = song.audioStreams![0].margin == 0
+        //     ? 0
+        //     : (((res.clock[1] * song.audioStreams![0].margin) * 1000)).round();
+
+        audioMargin = (song.audioStreams![0].margin * 1000).round();
 
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });

@@ -22,6 +22,8 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
   late final Animation<double> _scaleAnimation;
   late final Animation<double> _fadeAnimation;
 
+  final double size = 50;
+
   @override
   void initState() {
     super.initState();
@@ -87,8 +89,8 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
           child: ScaleTransition(
             scale: _scaleAnimation,
             child: Container(
-              width: 50 * 2.5,
-              height: 50 * 2.5,
+              width: size * 2.5,
+              height: size * 2.5,
               decoration: BoxDecoration(
                   shape: BoxShape.circle, color: AppColors.primaryColor),
             ),
@@ -102,8 +104,8 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
               border: Border.all(color: chord == ChordType.UNKNOWN ? Colors.orange : Colors.white, width: 5),
               borderRadius: BorderRadius.all(Radius.circular(100)),
             ),
-            width: 50,
-            height: 50,
+            width: size,
+            height: size,
             child: Center(
               child: AutoSizeText(
                 widget.title,
