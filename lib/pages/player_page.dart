@@ -75,12 +75,15 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
               initialIndex: 0,
-              initialPosition: Duration(milliseconds: audioMargin),
+              initialPosition: duration ?? Duration(milliseconds: 0),
               preload: true)
           .then((dur) {
+        _player.setClip(
+            start: Duration(milliseconds: audioMargin), end: _player.duration);
         _player.pause();
         _playerPlaySubject.add(false);
       });
+
       //_player.setClip(start: Duration(milliseconds: 5120));
     } on PlayerException catch (e) {
       print("Error loading audio source: $audioSource $e");
@@ -116,7 +119,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       ),
     )
         .listen((p) {
-      _playSeekSubject.add(p.inMilliseconds - audioMargin);
+      _playSeekSubject.add(p.inMilliseconds);
     });
 
     ApiService.getSongStructure(song.structureUrl).then((res) async {
@@ -411,8 +414,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                           setState(() {
                                             _animationEnded = false;
                                             _playSeekSubject.add(details
-                                                    .timeStamp.inMilliseconds -
-                                                audioMargin);
+                                                .timeStamp.inMilliseconds);
                                           });
                                         },
                                         thumbColor: AppColors.primaryColor,
@@ -486,7 +488,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         icon: const Icon(Icons.replay_outlined),
         iconSize: iconSize,
         color: Colors.white,
-        onPressed: () => _player.seek(Duration(milliseconds: audioMargin)),
+        onPressed: () => _player.seek(Duration(milliseconds: 0)),
       );
     }
   }
