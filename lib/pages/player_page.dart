@@ -5,7 +5,6 @@ import 'package:accompaneo/pages/position_data.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/values/app_colors.dart';
 import 'package:accompaneo/values/app_theme.dart';
-import 'package:accompaneo/widgets/click_player.dart';
 import 'package:accompaneo/widgets/music_player_screen.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -71,6 +70,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   Future<void> setAudioSource(String audioSource, Duration? duration) async {
     try {
       print("position: ${_player.position}");
+
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
               initialIndex: 0,
