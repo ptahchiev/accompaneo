@@ -5,6 +5,7 @@ import 'package:accompaneo/models/music_data.dart';
 import 'package:accompaneo/models/song/time_signature.dart';
 import 'package:accompaneo/utils/helpers/chords_helper.dart';
 import 'package:accompaneo/values/app_dimensions.dart';
+import 'package:accompaneo/widgets/click_player.dart';
 import 'package:accompaneo/widgets/pulsating_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +17,14 @@ import '../values/app_colors.dart';
 
 class MusicPlayerScreen extends StatefulWidget {
   MusicPlayerScreen({
-    // required this.clickPlayer,
+    required this.clickPlayer,
     required this.musicData,
     required this.playStream,
     required this.playSeekStream,
     required this.animationEnded,
   });
 
-  // final ClickPlayer clickPlayer;
+  final ClickPlayer clickPlayer;
   final MusicData musicData;
   final Stream<bool> playStream;
   final Stream<int> playSeekStream;
@@ -56,7 +57,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
   late AudioPlayer metronomePlayer = AudioPlayer();
 
-  Map<String, TimeSignature> _timeSignatures = {
+  final Map<String, TimeSignature> _timeSignatures = {
     '2/4': TimeSignature(
         name: '2/4',
         numberOfBeats: 2,
@@ -97,13 +98,13 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             if (streamSubscription != null) {
               streamSubscription?.resume();
             } else {
-              // streamSubscription = widget.clickPlayer.stream.listen((event) {
-              //   setState(() {
-              //     beat = event + 1;
-              //     int seconds = widget.clickPlayer.totalDuration().inSeconds - widget.clickPlayer.remainingDuration().inSeconds;
-              //     spent = "${seconds ~/ 60}:${seconds % 60}";
-              //   });
-              // });
+              streamSubscription = widget.clickPlayer.stream.listen((event) {
+                setState(() {
+                  beat = event + 1;
+                  int seconds = widget.clickPlayer.totalDuration().inSeconds - widget.clickPlayer.remainingDuration().inSeconds;
+                  spent = "${seconds ~/ 60}:${seconds % 60}";
+                });
+              });
             }
           } else {
             _stopSong();
@@ -159,7 +160,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     _playSubscription?.cancel();
     _playSeekSubscription?.cancel();
     metronomePlayer.dispose();
-    // widget.clickPlayer.dispose();
+    widget.clickPlayer.dispose();
     super.dispose();
   }
 
@@ -638,9 +639,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     required double padding,
   }) {
     double size = 50;
-    int totalBeats =
-        timeSignature.numberOfBeats + timeSignature.numberOfSubBeats;
-    double startPosition = (segmentWidth - _circleSize) / (totalBeats - 1);
     return Positioned(
       top: 0,
       left: padding,
@@ -649,16 +647,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       child: Stack(
           clipBehavior: Clip.none,
           children: metronomeBeats.map((event) {
-            var numberOfSectionsPerBeat =
-                (timeSignature.numberOfSubBeats / timeSignature.numberOfBeats) +
-                    1;
-
-            var eventLength = 1 / timeSignature.numberOfBeats;
-
-            var left = (startPosition *
-                    ((event.position /
-                        (eventLength / numberOfSectionsPerBeat)))) -
-                (size - (size / 20)); //size/20 is 2.5 because our border is 5
+            var left = (segmentWidth * event.position) - (size - (size / 20)); //size/20 is 2.5 because our border is 5
             return Positioned(
               left: left,
               top: -120,
@@ -683,9 +672,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     required double padding,
   }) {
     double size = 50;
-    int totalBeats =
-        timeSignature.numberOfBeats + timeSignature.numberOfSubBeats;
-    double startPosition = (segmentWidth - _circleSize) / (totalBeats - 1);
     return Positioned(
       top: 0,
       left: padding,
@@ -693,8 +679,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       height: 50,
       child: Stack(clipBehavior: Clip.none, children: [
         ...chords.map((event) {
-          var left = (startPosition * ((event.position / 0.125))) -
-              (size - (size / 20)); //size/20 is 2.5 because our border is 5
+          var left = (segmentWidth * event.position) - (size - (size / 20));//size/20 is 2.5 because our border is 5
+          
           return Positioned(
             left: left,
             top: -120,
@@ -714,9 +700,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     required double segmentWidth,
     required double padding,
   }) {
-    int totalBeats =
-        timeSignature.numberOfBeats + timeSignature.numberOfSubBeats;
-    double startPosition = (segmentWidth - _circleSize) / (totalBeats - 1);
+    int totalBeats = timeSignature.numberOfBeats + timeSignature.numberOfSubBeats;
     return Positioned.fill(
       top: -70,
       left: padding,
@@ -725,7 +709,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         clipBehavior: Clip.none,
         children: List.generate(totalBeats, (index) {
           return Positioned(
-            left: index * startPosition,
+            left: (segmentWidth * (index  / totalBeats)),
             child: Container(
               height: _circleSize,
               width: _circleSize,
@@ -740,7 +724,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color:
-                        segmentProgress >= index * startPosition / segmentWidth
+                        segmentProgress >= (index/totalBeats)
                             ? Colors.white
                             : Colors.grey,
                   ),
