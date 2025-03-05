@@ -74,15 +74,22 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       // await _player.setVolume(0);
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
-              initialIndex: 0,
-              initialPosition: duration ?? Duration(milliseconds: 0),
-              preload: true)
+              initialIndex: 0, initialPosition: duration, preload: true)
           .then((dur) {
-        _player.setClip(
-            start: Duration(milliseconds: audioMargin), end: _player.duration);
         _player.pause();
         _playerPlaySubject.add(false);
       });
+
+      await _player.setClip(
+        start: Duration(milliseconds: audioMargin),
+        end: Duration(
+            milliseconds:
+                (_player.duration?.inMilliseconds ?? 0 - audioMargin)),
+      );
+
+      if (duration != null) {
+        await _player.seek(duration);
+      }
 
       //_player.setClip(start: Duration(milliseconds: 5120));
     } on PlayerException catch (e) {
@@ -108,6 +115,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         // completed show next song screen
       }
     });
+
     _player
         .createPositionStream(
       steps: 1,
@@ -456,7 +464,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         iconSize: iconSize,
         color: Colors.white,
         onPressed: () async {
-          await _player.seek(Duration(milliseconds: audioMargin));
+          await _player.seek(Duration(milliseconds: 0));
           _player.play();
           _playerPlaySubject.add(true);
           _animationEnded = false;
@@ -468,7 +476,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
             icon: const Icon(Icons.play_arrow_outlined),
             iconSize: iconSize,
             color: Colors.white,
-            onPressed: () {
+            onPressed: () async {
               _player.play();
               _playerPlaySubject.add(true);
             }),
@@ -488,7 +496,9 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         icon: const Icon(Icons.replay_outlined),
         iconSize: iconSize,
         color: Colors.white,
-        onPressed: () => _player.seek(Duration(milliseconds: 0)),
+        onPressed: () {
+          _player.seek(Duration(milliseconds: 0));
+        },
       );
     }
   }
