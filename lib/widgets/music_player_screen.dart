@@ -21,12 +21,14 @@ class MusicPlayerScreen extends StatefulWidget {
     required this.musicData,
     required this.playStream,
     required this.playSeekStream,
+    required this.animationEnded,
   });
 
   final ClickPlayer clickPlayer;
   final MusicData musicData;
   final Stream<bool> playStream;
   final Stream<int> playSeekStream;
+  final VoidCallback animationEnded;
 
   @override
   _MusicPlayerScreenState createState() => _MusicPlayerScreenState();
@@ -38,7 +40,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   double _segmentProgress = -0.2;
   TimeSignature _timeSignature = TimeSignature.empty();
   double _circleSize = 30;
-  double leftSideExtendIndex = 0.98;
+  bool _animationEnded = false;
   int beat = 0;
   String spent = "0:0";
   StreamSubscription? streamSubscription;
@@ -115,6 +117,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     _playSubscription = widget.playSeekStream.listen((playSeek) {
       if (mounted) {
         setState(() {
+          _animationEnded = false;
           _wholeSongTime = (playSeek.toDouble()) / 1000;
         });
       }
@@ -145,18 +148,20 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     super.dispose();
   }
 
-  int _currentSegmentIndexBasedOnElapsedTime() {
-    int result = 0;
+  int? _currentSegmentIndexBasedOnElapsedTime() {
+    int? result;
     widget.musicData.clock.forEachIndexed((index, c) {
-      if (index > 0 && _wholeSongTime != 0) {
-        if (c <= _wholeSongTime &&
-            (widget.musicData.clock.safeIndex(index + 1) ?? 0) >=
-                _wholeSongTime) {
-          result = index;
-        }
+      // if (_wholeSongTime != 0) {
+      if (c <= _wholeSongTime &&
+          (widget.musicData.clock.safeIndex(index + 1) ?? 0) >=
+              _wholeSongTime) {
+        result = index;
       }
+      // }
     });
-
+    if (_wholeSongTime < 0) {
+      result = 0;
+    }
     return result;
   }
 
@@ -170,10 +175,16 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
   @override
   Widget build(BuildContext context) {
-    _currentSegmentIndex = _currentSegmentIndexBasedOnElapsedTime();
-    if (_currentSegmentIndex >= widget.musicData.bars.length) {
+    int? currentSegmentIndex = _currentSegmentIndexBasedOnElapsedTime();
+    if (currentSegmentIndex == null) {
+      if (!_animationEnded) {
+        _animationEnded = true;
+        widget.animationEnded();
+      }
+
       return Container();
     }
+    _currentSegmentIndex = currentSegmentIndex;
     final Bar bar = widget.musicData.bars[_currentSegmentIndex];
     return Scaffold(
       backgroundColor: Colors.white,

@@ -42,12 +42,11 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   _PlayerPageState({required this.song});
 
   int audioMargin = 0;
+  bool _animationEnded = false;
   final _player = AudioPlayer();
   final _metronomePlayer = AudioPlayer(handleAudioSessionActivation: false);
   final PublishSubject<bool> _playerPlaySubject = PublishSubject<bool>();
   final PublishSubject<int> _playSeekSubject = PublishSubject<int>();
-
-  // AnimationController animationController;
 
   MusicPlayerScreen? musicPlayerScreen;
 
@@ -103,10 +102,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     _player.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
         // completed show next song screen
-
-
-
-
       }
     });
     _player
@@ -120,7 +115,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       ),
     )
         .listen((p) {
-      _playSeekSubject.add(p.inMilliseconds);
+      _playSeekSubject.add(p.inMilliseconds - audioMargin);
     });
 
     ApiService.getSongStructure(song.structureUrl).then((res) async {
@@ -130,6 +125,11 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
           musicData: res,
           playStream: _playerPlaySubject.stream,
           playSeekStream: _playSeekSubject,
+          animationEnded: () {
+            _animationEnded = true;
+            _player.pause();
+            _playerPlaySubject.add(false);
+          },
         );
 
         audioMargin = song.audioStreams![0].margin == 0
@@ -141,22 +141,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       });
 
       await setAudioSource(song.audioStreams![0].url, null);
-
-      // animationController = AnimationController(
-      //   vsync: this,
-      //   lowerBound: -0.2,
-      //   upperBound: 1.2,
-      //   duration: const Duration(seconds: 0),
-      // );
-      // animationController.addListener(() {
-      //   setState(() {
-      //     _segmentProgress = animationController.value;
-      //     if (animationController.status == AnimationStatus.completed) {
-      //       _segmentProgress = 1.0;
-      //       _nextSegment();
-      //     }
-      //   });
-      // });
     });
   }
 
@@ -225,11 +209,13 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
               position,
               bufferedPosition,
               duration ?? Duration.zero,
-              _player.playerState, _player.processingState)),
+              _player.playerState,
+              _player.processingState)),
       builder: (context, snapshot) {
         final playerState = snapshot.data;
         final playing = playerState?.playerState.playing;
-        final completed = playerState?.processingState == ProcessingState.completed;
+        final completed =
+            playerState?.processingState == ProcessingState.completed;
         final durationState = snapshot.data;
         final progress = durationState?.position ?? Duration.zero;
         final buffered = durationState?.bufferedPosition ?? Duration.zero;
@@ -304,24 +290,28 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                 onSelectionChanged:
                                     (Set<PracticeType> newSelection) {
                                   final String clickUrl = '';
-                                  if(newSelection.first.name != PracticeType.Click.name) {
+                                  if (newSelection.first.name !=
+                                      PracticeType.Click.name) {
                                     AudioStream as = song.audioStreams!
                                         .firstWhere((as) =>
                                             as.type == newSelection.first.name);
-                                    setAudioSource(newSelection.first ==
-                                                PracticeType.Click
-                                            ? clickUrl
-                                            : as.url, _player.position)
+                                    setAudioSource(
+                                            newSelection.first ==
+                                                    PracticeType.Click
+                                                ? clickUrl
+                                                : as.url,
+                                            _player.position)
                                         .then((v) {
                                       setState(() {
-                                        _segmentedButtonSelection = newSelection;
+                                        _segmentedButtonSelection =
+                                            newSelection;
                                         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
                                       });
-                                    });                                    
+                                    });
                                   } else {
                                     setState(() {
                                       _segmentedButtonSelection = newSelection;
-                                    });                                    
+                                    });
                                   }
                                 },
                                 // SegmentedButton uses a List<ButtonSegment<T>> to build its children
@@ -351,9 +341,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                   ButtonSegment<PracticeType>(
                                       label: Text('Click'),
                                       value: PracticeType.Click),
-                                  ]
-                          )
-                        ),
+                                ])),
                         Align(
                           alignment: Alignment.center,
                           child: _playButton(
@@ -410,8 +398,12 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                         total: total,
                                         onSeek: _player.seek,
                                         onDragUpdate: (details) {
-                                          // _playSeekSubject
-                                          //     .add(details.timeStamp.inSeconds);
+                                          setState(() {
+                                            _animationEnded = false;
+                                            _playSeekSubject.add(details
+                                                    .timeStamp.inMilliseconds -
+                                                audioMargin);
+                                          });
                                         },
                                         thumbColor: AppColors.primaryColor,
                                         baseBarColor: Colors.white,
@@ -446,6 +438,18 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         height: iconSize,
         child: const CircularProgressIndicator(color: Colors.white),
       );
+    } else if (playing == false && _animationEnded) {
+      return IconButton(
+        icon: const Icon(Icons.replay_outlined),
+        iconSize: iconSize,
+        color: Colors.white,
+        onPressed: () async {
+          await _player.seek(Duration(milliseconds: audioMargin));
+          _player.play();
+          _playerPlaySubject.add(true);
+          _animationEnded = false;
+        },
+      );
     } else if (playing != true) {
       return Container(
         child: IconButton(
@@ -472,7 +476,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         icon: const Icon(Icons.replay_outlined),
         iconSize: iconSize,
         color: Colors.white,
-        onPressed: () => _player.seek(Duration.zero),
+        onPressed: () => _player.seek(Duration(milliseconds: audioMargin)),
       );
     }
   }
@@ -509,14 +513,13 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
               body: Stack(
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      if (_player.playing) {
-                        _player.pause();
-                        _playerPlaySubject.add(false);
-                      }
-                    },
-                    child: musicPlayerScreen ?? Container()
-                  ),
+                      onTap: () {
+                        if (_player.playing) {
+                          _player.pause();
+                          _playerPlaySubject.add(false);
+                        }
+                      },
+                      child: musicPlayerScreen ?? Container()),
                   _overlayPanel(portrait: orientation == Orientation.portrait),
                 ],
               ));
