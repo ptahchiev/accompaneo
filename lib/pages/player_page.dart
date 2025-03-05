@@ -5,6 +5,7 @@ import 'package:accompaneo/pages/position_data.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/values/app_colors.dart';
 import 'package:accompaneo/values/app_theme.dart';
+import 'package:accompaneo/widgets/click_player.dart';
 import 'package:accompaneo/widgets/music_player_screen.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -121,7 +122,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     ApiService.getSongStructure(song.structureUrl).then((res) async {
       setState(() {
         musicPlayerScreen = MusicPlayerScreen(
-          //clickPlayer: ClickPlayer(4, 1, song.bpm, 0, 10000),
+          clickPlayer: ClickPlayer(4, 1, song.bpm, 0, 10000),
           musicData: res,
           playStream: _playerPlaySubject.stream,
           playSeekStream: _playSeekSubject,
