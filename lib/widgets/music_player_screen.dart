@@ -37,7 +37,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     with TickerProviderStateMixin {
   int _currentSegmentIndex = 0;
   double _segmentProgress = -0.2;
-  TimeSignature _timeSignature = TimeSignature.empty();
+
   TimeSignature _globalTimeSignature = TimeSignature.empty();
   double _circleSize = 30;
   bool _animationEnded = false;
@@ -134,10 +134,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               TimeSignature.empty();
         }
       }
-      _timeSignature = signature ?? _globalTimeSignature;
-      return _timeSignature;
+      return signature ?? _globalTimeSignature;
     } else {
-      _timeSignature = _globalTimeSignature;
       widget.musicData.bars.firstWhereOrNull((bar) {
         Event? metaEvent =
             bar.events.firstWhereOrNull((t) => t.type == EventType.meta);
@@ -145,7 +143,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
           if (metaEvent.content!.type == 'timeSignature') {
             _globalTimeSignature = _timeSignatures[metaEvent.content!.meter] ??
                 TimeSignature.empty();
-            _timeSignature = _globalTimeSignature;
             return true;
           }
         }
@@ -202,8 +199,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     }
     _currentSegmentIndex = currentSegmentIndex;
     final Bar bar = widget.musicData.bars[_currentSegmentIndex];
-    _computeTimeSignature(bar: bar);
-    print(": ${_currentSegmentIndex} ${_timeSignature.name}");
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -429,11 +425,10 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     List<Event> countInEvents =
         bar.events.where((e) => e.type == EventType.countIn).toList();
     if (countInEvents.isNotEmpty) {
-      metronomeBeats
-          .addAll(List.generate(_timeSignature.numberOfBeats, (index) {
+      metronomeBeats.addAll(List.generate(timeSignature.numberOfBeats, (index) {
         return Event(
             type: EventType.countIn,
-            position: index * (1 / _timeSignature.numberOfBeats),
+            position: index * (1 / timeSignature.numberOfBeats),
             start: 0,
             duration: 0,
             name: "${index + 1}");
