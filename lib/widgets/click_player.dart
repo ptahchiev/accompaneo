@@ -61,11 +61,11 @@ class ClickPlayer {
           return;
         }
 
-        if (beatAmount % clicksPerBar == 0) {
-          await _pool.play(_up!);
-        } else {
-          await _pool.play(_down!);
-        }
+        // if (beatAmount % clicksPerBar == 0) {
+        //   await _pool.play(_up!);
+        // } else {
+        //   await _pool.play(_down!);
+        // }
 
         _controller.add(beatAmount % clicksPerBar);
 

@@ -631,6 +631,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             padding: padding,
           ),
           _countInWidget(
+            segmentIndex: segmentIndex,
             metronomeBeats: metronomeBeats,
             segmentProgress: segmentProgress,
             timeSignature: timeSignature,
@@ -651,6 +652,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   }
 
   Widget _countInWidget({
+    required int segmentIndex,
     required List<Event> metronomeBeats,
     required double segmentProgress,
     required TimeSignature timeSignature,
@@ -658,32 +660,46 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     required double padding,
   }) {
     double size = 50;
+
     return Positioned(
       top: 0,
       left: padding,
       right: padding,
       height: 50,
-      child: Stack(
-          clipBehavior: Clip.none,
-          children: metronomeBeats.map((event) {
-            var left = (segmentWidth * event.position) -
-                (size - (size / 20)); //size/20 is 2.5 because our border is 5
-            return Positioned(
-              left: left,
-              top: -120,
-              child: PulsatingWidget(
-                title: '${event.name}',
-                isActive: segmentProgress >= event.position,
-                whenActive: () {
-                  if (_playing) {
-                    metronomePlayer.setVolume(1);
-                    metronomePlayer.setAsset('assets/effects/metronome.mp3');
-                    metronomePlayer.play();
-                  }
-                },
-              ),
-            );
-          }).toList()),
+      child: segmentIndex != 0
+          ? Container()
+          : Stack(
+              clipBehavior: Clip.none,
+              children: metronomeBeats.map((event) {
+                var left = (segmentWidth * event.position) -
+                    (size -
+                        (size / 20)); //size/20 is 2.5 because our border is 5
+                bool isActive = false;
+                if (event.position == 0) {
+                  isActive = (segmentProgress >= event.position && _playing) ||
+                      _wholeSongTime != 0;
+                } else {
+                  isActive = segmentProgress >= event.position;
+                }
+                return Positioned(
+                  left: left,
+                  top: -120,
+                  child: PulsatingWidget(
+                    title: '${event.name}',
+                    isActive: isActive,
+                    whenActive: () {
+                      print(
+                          "When  active: ${event.position} ${_wholeSongTime}");
+                      if (_playing) {
+                        metronomePlayer.setVolume(1);
+                        metronomePlayer
+                            .setAsset('assets/effects/metronome.mp3');
+                        metronomePlayer.play();
+                      }
+                    },
+                  ),
+                );
+              }).toList()),
     );
   }
 
