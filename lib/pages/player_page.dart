@@ -131,7 +131,19 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     });
 
     ApiService.getSongStructure(song.structureUrl).then((res) async {
-      res.bars.removeAt(0);
+      audioMargin = (song.audioStreams![0].margin * 1000).round();
+
+      if (res.clock.first == 0) {
+        audioMargin += (res.clock[1].toDouble() * 1000).toInt();
+
+        res.bars.removeAt(0);
+        res.clock.removeAt(0);
+      } else if (res.bars.first.events.isEmpty) {
+        audioMargin += (res.clock[1].toDouble() * 1000).toInt();
+        res.bars.removeAt(0);
+        res.clock.removeAt(0);
+      }
+
       setState(() {
         musicPlayerScreen = MusicPlayerScreen(
           clickPlayer: ClickPlayer(
@@ -151,18 +163,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
           },
         );
 
-        // audioMargin = song.audioStreams![0].margin == 0
-        //     ? 0
-        //     : (((res.clock[1] * song.audioStreams![0].margin) * 1000)).round();
-
-        audioMargin = (song.audioStreams![0].margin * 1000).round();
-        // if (res.clock[0] == 0) {
-        //   audioMargin += (res.clock[1].toDouble() * 1000).toInt();
-        // } else {
-        //   audioMargin += (res.clock[0].toDouble() * 1000).toInt();
-        // }
-
-        // audioMargin = 10000;
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
 
@@ -455,6 +455,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     final playerState = snapshot.data;
     final processingState = playerState?.playerState.processingState;
     final playing = playerState?.playerState.playing;
+    _animationEnded = false;
+
     if (processingState == ProcessingState.loading ||
         processingState == ProcessingState.buffering) {
       return Container(

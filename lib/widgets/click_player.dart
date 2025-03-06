@@ -50,10 +50,7 @@ class ClickPlayer {
       Duration period = Duration(milliseconds: 60000 ~/ bpm);
 
       Future<void> click(_) async {
-        print('CLICK: ${DateTime.now().second}');
-
         if (_up == null || _down == null) {
-          print('up down not laoded');
           return; // skip if sounds are not yet cached
         }
 
@@ -65,10 +62,8 @@ class ClickPlayer {
         }
 
         if (beatAmount % clicksPerBar == 0) {
-          print('UP');
           await _pool.play(_up!);
         } else {
-          print('DOWN');
           await _pool.play(_down!);
         }
 

@@ -1,5 +1,3 @@
-
-
 class MusicData {
   MusicData({
     required this.strum,

@@ -170,24 +170,39 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   int? _currentSegmentIndexBasedOnElapsedTime() {
     int? result;
     widget.musicData.clock.forEachIndexed((index, c) {
-      if (c <= _wholeSongTime &&
-          (widget.musicData.clock.safeIndex(index + 1) ?? 0) >=
-              _wholeSongTime) {
-        result = index;
+      // if (c <= _wholeSongTime &&
+      //     (widget.musicData.clock.safeIndex(index + 1) ?? 0) >=
+      //         _wholeSongTime) {
+      //   result = index;
+      // }
+      if (index == 0) {
+        if (c >= _wholeSongTime) {
+          result = index;
+        }
+      } else {
+        if (c >= _wholeSongTime &&
+            (widget.musicData.clock.safeIndex(index - 1) ?? 0) <=
+                _wholeSongTime) {
+          result = index;
+        }
       }
     });
     if (_wholeSongTime < 0) {
       result = 0;
     }
+
     return result;
   }
 
   double endSideOfClock(int index) {
-    return widget.musicData.clock.safeIndex(index + 1)?.toDouble() ?? 0;
+    return widget.musicData.clock.safeIndex(index)?.toDouble() ?? 0;
   }
 
   double startSideOfClock(int index) {
-    return widget.musicData.clock.safeIndex(index)?.toDouble() ?? 0;
+    if (index == 0) {
+      return 0;
+    }
+    return widget.musicData.clock.safeIndex(index - 1)?.toDouble() ?? 0;
   }
 
   @override
