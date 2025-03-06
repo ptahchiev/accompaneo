@@ -156,7 +156,12 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         //     : (((res.clock[1] * song.audioStreams![0].margin) * 1000)).round();
 
         audioMargin = (song.audioStreams![0].margin * 1000).round();
-        audioMargin += (res.clock[1].toDouble() * 1000).toInt();
+        // if (res.clock[0] == 0) {
+        //   audioMargin += (res.clock[1].toDouble() * 1000).toInt();
+        // } else {
+        //   audioMargin += (res.clock[0].toDouble() * 1000).toInt();
+        // }
+
         // audioMargin = 10000;
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });

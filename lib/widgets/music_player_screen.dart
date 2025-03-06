@@ -54,7 +54,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   //this is the margin of the song source??
 
   double leftRightPaddingSeconds = 0.2; //milliseconds
-
+  bool _playing = false;
   late AudioPlayer metronomePlayer = AudioPlayer();
 
   final Map<String, TimeSignature> _timeSignatures = {
@@ -95,6 +95,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     _playSubscription = widget.playStream.listen((play) {
       if (mounted) {
         setState(() {
+          _playing = play;
           if (play) {
             if (streamSubscription != null) {
               streamSubscription?.resume();
@@ -659,9 +660,11 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                 title: '${event.name}',
                 isActive: segmentProgress >= event.position,
                 whenActive: () {
-                  metronomePlayer.setVolume(1);
-                  metronomePlayer.setAsset('assets/effects/metronome.mp3');
-                  metronomePlayer.play();
+                  if (_playing) {
+                    metronomePlayer.setVolume(1);
+                    metronomePlayer.setAsset('assets/effects/metronome.mp3');
+                    metronomePlayer.play();
+                  }
                 },
               ),
             );
