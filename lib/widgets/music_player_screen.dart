@@ -209,7 +209,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   Widget build(BuildContext context) {
     // _wholeSongTime = 28.063;
     int? currentSegmentIndex = _currentSegmentIndexBasedOnElapsedTime();
-    if (currentSegmentIndex == null) {
+    if (currentSegmentIndex == null ||
+        _currentSegmentIndex >= widget.musicData.bars.length) {
       if (!_animationEnded) {
         _animationEnded = true;
         widget.animationEnded();
