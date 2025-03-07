@@ -7,7 +7,6 @@ import '../utils/helpers/snackbar_helper.dart';
 import '../values/app_constants.dart';
 import '../values/app_regex.dart';
 import '../values/app_strings.dart';
-import '../values/app_theme.dart';
 import '../widgets/app_text_form_field.dart';
 
 // This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
@@ -86,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
                     AppStrings.updateYourProfile,
-                    style: AppTheme.sectionTitle.copyWith(color: Colors.black),
+                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: Colors.black),
                   )
                 ],
               )),

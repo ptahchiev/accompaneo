@@ -1,13 +1,14 @@
+import 'package:accompaneo/models/playlists.dart';
+import 'package:accompaneo/models/settings_data.dart';
+import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
-import 'package:accompaneo/values/app_colors.dart';
 import 'package:accompaneo/values/app_strings.dart';
-import 'package:accompaneo/values/app_theme.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
-
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -16,29 +17,37 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
 
   final ValueNotifier<bool> fieldValidNotifier = ValueNotifier(false);
+  late final TextEditingController themeModeController;
   late final TextEditingController colorController;
   late final TextEditingController languageController;
   late final TextEditingController instrumentController;
   late final TextEditingController countInEffectController;
 
-
   final _formKey = GlobalKey<FormState>();
+
+  final List<DropdownMenuEntry> themeModeEntries = [
+    DropdownMenuEntry(value: 'DARK', label: 'Dark'), 
+    DropdownMenuEntry(value: 'LIGHT', label: 'Light')
+  ];
+
   final List<DropdownMenuEntry> languageEntries = [DropdownMenuEntry(value: 'en', label: 'English'), DropdownMenuEntry(value: 'bg', label: 'Bulgarian')];
   final List<DropdownMenuEntry> instrumentEntries = [
-    DropdownMenuEntry(value: 'piano', label: 'Piano'), 
-    DropdownMenuEntry(value: 'guitar', label: 'Guitar'),
-    DropdownMenuEntry(value: 'ukulele', label: 'Ukulele'),
+    DropdownMenuEntry(value: 'PIANO', label: 'Piano'), 
+    DropdownMenuEntry(value: 'GUITAR', label: 'Guitar'),
+    DropdownMenuEntry(value: 'UKULELE', label: 'Ukulele'),
   ];
   
   final List<DropdownMenuEntry> countInEffectEntries = [
-    DropdownMenuEntry(value: 'fingerClick', label: 'Fingerclick'), 
-    DropdownMenuEntry(value: 'metronome', label: 'Metronome')
+    DropdownMenuEntry(value: 'FINGERCLICK', label: 'Fingerclick'), 
+    DropdownMenuEntry(value: 'METRONOME', label: 'Metronome')
   ];
 
-  String languageValue = 'English';
-  String instrumentValue = 'Piano';
+  String themeModeValue = 'LIGHT';
+  String languageValue = 'en';
+  String instrumentValue = 'PIANO';
+  String countInEffectValue = 'FINGERCLICK';
 
-  late Color dialogSelectColor;
+  late Color dialogSelectColor = Colors.red;
 
   List<Color> colorHistory = [];
   Color currentColor = Colors.amber;
@@ -48,6 +57,7 @@ class _SettingsPageState extends State<SettingsPage> {
   void changeColors(List<Color> colors) => setState(() => currentColors = colors);
 
   void initializeControllers() {
+    themeModeController = TextEditingController()..addListener(controllerListener);
     colorController = TextEditingController()..addListener(controllerListener);
     languageController = TextEditingController()..addListener(controllerListener);
     instrumentController = TextEditingController()..addListener(controllerListener);
@@ -55,6 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void disposeControllers() {
+    themeModeController.dispose();
     colorController.dispose();
     languageController.dispose();
     instrumentController.dispose();
@@ -62,22 +73,35 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void controllerListener() {
-    final name = colorController.text;
-    final email = languageController.text;
-    final password = instrumentController.text;
+    final themeMode = themeModeController.text;
+    final color = colorController.text;
+    final language = languageController.text;
+    final instrument = instrumentController.text;
 
-    if (name.isEmpty &&
-        email.isEmpty &&
-        password.isEmpty) return;
+    if (themeMode.isEmpty && color.isEmpty &&
+        language.isEmpty &&
+        instrument.isEmpty) return;
 
-    fieldValidNotifier.value = false;
+    fieldValidNotifier.value = true;
   }
 
   @override
   void initState() {
     super.initState();
     initializeControllers();
-    dialogSelectColor = AppColors.primaryColor;
+
+    SettingsData settingsData = Provider.of<PlaylistsModel>(context, listen: false).getSettings();
+    setState(() {
+      themeModeValue = settingsData.themeMode;
+      languageValue = settingsData.sessionLocale.languageCode;
+      instrumentValue = settingsData.instrumentType;
+      countInEffectValue = settingsData.countInEffect;
+    });
+
+    themeModeController.value = TextEditingValue(text: settingsData.themeMode);
+    languageController.value = TextEditingValue(text: settingsData.sessionLocale.languageCode);
+    instrumentController.value = TextEditingValue(text: settingsData.instrumentType);
+    countInEffectController.value = TextEditingValue(text: settingsData.countInEffect);
   }
 
   @override
@@ -100,7 +124,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   Text(
                     AppStrings.settings,
-                    style: AppTheme.sectionTitle.copyWith(color: Colors.black),
+                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: Colors.black),
                   )
                 ],
             )),          
@@ -180,15 +204,15 @@ class _SettingsPageState extends State<SettingsPage> {
                     Padding(
                       padding: EdgeInsets.only(bottom:20),
                       child: DropdownMenu(
-                        controller: colorController,
+                        controller: themeModeController,
                         expandedInsets: EdgeInsets.zero,
-                        dropdownMenuEntries: languageEntries,
-                        initialSelection: languageEntries.first,
+                        dropdownMenuEntries: themeModeEntries,
+                        initialSelection: themeModeValue,
                         requestFocusOnTap: true,
-                        label: const Text('Color'),
+                        label: const Text('Theme'),
                         onSelected: (value) {
                           setState(() {
-                            
+                            themeModeValue = value;
                           });
                         },
                       ),
@@ -199,12 +223,12 @@ class _SettingsPageState extends State<SettingsPage> {
                         controller: languageController,
                         expandedInsets: EdgeInsets.zero,
                         dropdownMenuEntries: languageEntries,
-                        initialSelection: languageEntries.first,
+                        initialSelection: languageValue,
                         requestFocusOnTap: true,
                         label: const Text('Language'),
                         onSelected: (value) {
                           setState(() {
-                            
+                            languageValue = value;
                           });
                         },
                       ),
@@ -216,12 +240,12 @@ class _SettingsPageState extends State<SettingsPage> {
                         expandedInsets: EdgeInsets.zero,
                         enableSearch: false,
                         dropdownMenuEntries: instrumentEntries,
-                        initialSelection: instrumentEntries.first,
+                        initialSelection: instrumentValue,
                         requestFocusOnTap: true,
                         label: const Text('Instrument'),
                         onSelected: (value) {
                           setState(() {
-                            
+                            instrumentValue = value;
                           });
                         },
                       ),
@@ -233,16 +257,16 @@ class _SettingsPageState extends State<SettingsPage> {
                         expandedInsets: EdgeInsets.zero,
                         enableSearch: false,
                         dropdownMenuEntries: countInEffectEntries,
-                        initialSelection: countInEffectEntries.first,
+                        initialSelection: countInEffectValue,
                         requestFocusOnTap: true,
                         label: const Text('Count-in effect'),
                         onSelected: (value) {
                           setState(() {
-                            
+                            countInEffectValue = value;
                           });
                         },
                       ),
-                    ),                    
+                    ),
                     Padding(
                       padding: EdgeInsets.only(bottom: 20),
                       child: ValueListenableBuilder(
@@ -251,12 +275,21 @@ class _SettingsPageState extends State<SettingsPage> {
                           return FilledButton(
                             onPressed: isValid
                                 ? () {
-                                    SnackbarHelper.showSnackBar(
-                                      AppStrings.registrationComplete,
+                                    SettingsData settingsData = SettingsData(
+                                      themeMode: themeModeValue, 
+                                      instrumentType: instrumentValue, 
+                                      countInEffect: countInEffectValue, 
+                                      sessionLocale: Locale(languageValue)
                                     );
-                                    colorController.clear();
-                                    languageController.clear();
-                                    instrumentController.clear();
+                                  
+                                    final result = ApiService.updateSettings(settingsData);
+                                    
+                                    result.then((response) {
+                                      Provider.of<PlaylistsModel>(context, listen: false).setSettingsData(settingsData);
+                                      SnackbarHelper.showSnackBar(
+                                        'Settings updated!',
+                                      );
+                                    });       
                                   }
                                 : null,
                             child: const Text(AppStrings.submit),
@@ -265,7 +298,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     FilledButton(
-                      onPressed: () {},
+                      onPressed: () {
+                      },
                       style: ButtonStyle(
                         foregroundColor: WidgetStateProperty<Color>.fromMap(
                           <WidgetStatesConstraint, Color>{

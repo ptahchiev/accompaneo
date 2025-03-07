@@ -10,7 +10,6 @@ import '../values/app_constants.dart';
 import '../values/app_regex.dart';
 import '../values/app_routes.dart';
 import '../values/app_strings.dart';
-import '../values/app_theme.dart';
 import '../widgets/app_text_form_field.dart';
 import '../widgets/gradient_background.dart';
 
@@ -88,11 +87,11 @@ class _RegisterPageState extends State<RegisterPage> {
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const GradientBackground(
+          GradientBackground(
             children: [
-              Text(AppStrings.register, style: AppTheme.titleLarge),
+              Text(AppStrings.register, style: Theme.of(context).textTheme.titleLarge),
               SizedBox(height: 6),
-              Text(AppStrings.createYourAccount, style: AppTheme.bodySmall),
+              Text(AppStrings.createYourAccount, style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
           Padding(
@@ -274,7 +273,7 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               Text(
                 AppStrings.iHaveAnAccount,
-                style: AppTheme.bodySmall.copyWith(color: Colors.black),
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
               ),
               TextButton(
                 onPressed: () => NavigationHelper.pushReplacementNamed(

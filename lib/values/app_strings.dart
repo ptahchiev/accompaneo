@@ -61,4 +61,6 @@ class AppStrings {
   static const String updateYourProfile = 'Update your profile';
   static const String settings = 'Settings';
   static const String cancelSubscription = 'Cancel Subscription';
+
+  static const String home = 'Home';
 }

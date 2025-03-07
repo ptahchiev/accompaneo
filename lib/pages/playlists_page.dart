@@ -39,10 +39,10 @@ class CardList extends StatelessWidget {
                     return Wrap(
                       children: [
                         ListTile(
-                          title: Text(playlists.items[index].name),
+                          title: Text(playlists.items[index].name, style: Theme.of(context).textTheme.bodyMedium),
                           visualDensity: VisualDensity(vertical: 0),
                           leading: BrowsableImage(backgroundColor: Colors.red, icon: Icons.favorite),
-                          subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs'),
+                          subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs', style: Theme.of(context).textTheme.bodySmall),
                             onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlist': playlists.items[index].copy(code: '', url: '/favourites')})
                         ),
                         Divider(),
@@ -52,8 +52,8 @@ class CardList extends StatelessWidget {
                   return ListTile(
                           leading: BrowsableImage(),
                           visualDensity: VisualDensity(vertical: 0),
-                          title: Text(playlists.items[index].name),
-                          subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs'),
+                          title: Text(playlists.items[index].name, style: Theme.of(context).textTheme.bodyMedium),
+                          subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs', style: Theme.of(context).textTheme.bodySmall),
                           onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlist': playlists.items[index].copy(url : '/${playlists.items[index].code}')})
                   );
                 },

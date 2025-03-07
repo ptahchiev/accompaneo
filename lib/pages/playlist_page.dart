@@ -26,8 +26,6 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import '../values/app_theme.dart';
-
 class PlaylistPage extends StatefulWidget {
   final String? queryTerm;
 
@@ -413,7 +411,7 @@ class _PageResultsState extends State<PageResults> {
             final textPainter = TextPainter(
               text: TextSpan(
                 text: playlistName,
-                style: AppTheme.sectionTitle,
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
               maxLines: 1,
               textDirection: TextDirection.ltr,
@@ -428,7 +426,7 @@ class _PageResultsState extends State<PageResults> {
                 playlistName,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: AppTheme.sectionTitle,
+                style: Theme.of(context).textTheme.headlineMedium,
                 maxLines: 1,
               ),
             );
@@ -451,43 +449,6 @@ class _PageResultsState extends State<PageResults> {
               ],
             );
           }),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text('${pageProvider.page.totalElements} songs',
-              overflow: TextOverflow.clip),
-        ),
-      ],
-    );
-
-    return Row(
-      children: [
-        Expanded(
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  'adasdsa adasd aaa sd asdsd',
-                  // widget.playlist.name + widget.playlist.name,
-                  // widget.playlist.name,
-                  softWrap: false,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTheme.sectionTitle,
-                  maxLines: 1,
-                ),
-              ),
-              Flexible(
-                fit: FlexFit.loose,
-                child: Container(
-                  constraints: BoxConstraints(minWidth: 10),
-                  child: Divider(
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -605,14 +566,10 @@ class _PageResultsState extends State<PageResults> {
             }
           });
         },
-        title: Text(song.name,
-            style: const TextStyle(
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black)),
+        title: Text(song.name, style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold)),
         subtitle:
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(song.artist.name),
+          Text(song.artist.name, style: Theme.of(context).textTheme.bodySmall),
           Wrap(
             spacing: 10,
             children: song.chords!
@@ -621,7 +578,7 @@ class _PageResultsState extends State<PageResults> {
                     decoration: BoxDecoration(
                         color: Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(5)),
-                    child: Text(ch)))
+                    child: Text(ch, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black))))
                 .toList(),
           )
         ]),
@@ -923,7 +880,7 @@ class _PageFiltersState extends State<PageFilters> {
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
                     '${tempoRangeValues.start.ceilToDouble()} - ${tempoRangeValues.end.ceilToDouble()}',
-                    style: AppTheme.titleMedium)),
+                    style: Theme.of(context).textTheme.titleMedium)),
           )
         ]),
       ),
@@ -970,7 +927,7 @@ class _PageFiltersState extends State<PageFilters> {
           0,
           Center(
               child: Text('Filter by:',
-                  style: AppTheme.titleMedium.copyWith(color: Colors.black))));
+                  style: Theme.of(context).textTheme.titleMedium)));
       widgets.insert(
           1,
           Container(

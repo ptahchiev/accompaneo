@@ -4,7 +4,6 @@ import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/position_data.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/values/app_colors.dart';
-import 'package:accompaneo/values/app_theme.dart';
 import 'package:accompaneo/widgets/click_player.dart';
 import 'package:accompaneo/widgets/music_player_screen.dart';
 import 'package:audio_session/audio_session.dart';
@@ -122,7 +121,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     ApiService.getSongStructure(song.structureUrl).then((res) async {
       setState(() {
         musicPlayerScreen = MusicPlayerScreen(
-          clickPlayer: ClickPlayer(4, 1, song.bpm, 0, 10000),
+          clickPlayer: ClickPlayer(4, 1, 58.968058968058, 0, 10000),
           musicData: res,
           playStream: _playerPlaySubject.stream,
           playSeekStream: _playSeekSubject,
@@ -374,12 +373,12 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                                   color: Colors.white),
                                           Text(song.name,
                                               textAlign: TextAlign.center,
-                                              style: AppTheme.titleLarge
+                                              style: Theme.of(context).textTheme.titleLarge!
                                                   .copyWith(
                                                       color: Colors.white)),
                                           Text(song.artist.name,
                                               textAlign: TextAlign.center,
-                                              style: AppTheme.sectionTitle
+                                              style: Theme.of(context).textTheme.headlineMedium!
                                                   .copyWith(
                                                       color: Colors.white))
                                         ]),
