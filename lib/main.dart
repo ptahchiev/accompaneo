@@ -100,7 +100,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: Text('Accompaneo', style: Theme.of(context).textTheme.titleLarge),
+                              child: Text('Accompaneo', style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white)),
                             ),
                             Text('ver. 1.0', style: Theme.of(context).textTheme.bodySmall),
                             Text('by Petar Tahchiev',

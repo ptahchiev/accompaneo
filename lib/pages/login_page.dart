@@ -92,10 +92,10 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               Text(
                 AppStrings.signInToYourNAccount,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white),
               ),
               SizedBox(height: 6),
-              Text(AppStrings.signInToYourAccount, style: Theme.of(context).textTheme.bodySmall),
+              Text(AppStrings.signInToYourAccount, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white)),
             ],
           ),
           Form(

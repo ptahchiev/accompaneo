@@ -3,7 +3,7 @@ import 'package:accompaneo/models/settings_data.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
 import 'package:accompaneo/values/app_strings.dart';
-import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +30,7 @@ class _SettingsPageState extends State<SettingsPage> {
     DropdownMenuEntry(value: 'LIGHT', label: 'Light')
   ];
 
-  final List<DropdownMenuEntry> languageEntries = [DropdownMenuEntry(value: 'en', label: 'English'), DropdownMenuEntry(value: 'bg', label: 'Bulgarian')];
+  final List<DropdownMenuEntry> languageEntries = [DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('US', width: 30, height:20), value: 'en', label: 'English'), DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('BG', width: 30, height: 20), value: 'bg', label: 'Bulgarian')];
   final List<DropdownMenuEntry> instrumentEntries = [
     DropdownMenuEntry(value: 'PIANO', label: 'Piano'), 
     DropdownMenuEntry(value: 'GUITAR', label: 'Guitar'),
@@ -136,71 +136,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ColorIndicator(
-                      width: 40,
-                      height: 40,
-                      borderRadius: 0,
-                      color: dialogSelectColor,
-                      elevation: 1,
-                      onSelectFocus: false,
-                      onSelect: () async {
-                        // Wait for the dialog to return color selection result.
-                        final Color newColor = await showColorPickerDialog(
-                          // The dialog needs a context, we pass it in.
-                          context,
-                          // We use the dialogSelectColor, as its starting color.
-                          dialogSelectColor,
-                          title: Text('ColorPicker', style: Theme.of(context).textTheme.titleLarge),
-                          width: 40,
-                          height: 40,
-                          spacing: 0,
-                          runSpacing: 0,
-                          borderRadius: 0,
-                          wheelDiameter: 165,
-                          enableOpacity: true,
-                          showColorCode: true,
-                          colorCodeHasColor: true,
-                          pickersEnabled: <ColorPickerType, bool> {
-                            ColorPickerType.wheel: true,
-                          },
-                          copyPasteBehavior: const ColorPickerCopyPasteBehavior(
-                            copyButton: true,
-                            pasteButton: true,
-                            longPressMenu: true,
-                          ),
-                          actionButtons: const ColorPickerActionButtons(
-                            okButton: true,
-                            closeButton: true,
-                            dialogActionButtons: false,
-                          ),
-                          transitionBuilder: (BuildContext context,
-                              Animation<double> a1,
-                              Animation<double> a2,
-                              Widget widget) {
-                            final double curvedValue =
-                                Curves.easeInOutBack.transform(a1.value) - 1.0;
-                            return Transform(
-                              transform: Matrix4.translationValues(
-                                  0.0, curvedValue * 200, 0.0),
-                              child: Opacity(
-                                opacity: a1.value,
-                                child: widget,
-                              ),
-                            );
-                          },
-                          transitionDuration: const Duration(milliseconds: 400),
-                          constraints: const BoxConstraints(minHeight: 480, minWidth: 320, maxWidth: 320),
-                        );
-                        // We update the dialogSelectColor, to the returned result
-                        // color. If the dialog was dismissed it actually returns
-                        // the color we started with. The extra update for that
-                        // below does not really matter, but if you want you can
-                        // check if they are equal and skip the update below.
-                        setState(() {
-                          dialogSelectColor = newColor;
-                        });
-                      }
-                    ),
                     Padding(
                       padding: EdgeInsets.only(bottom:20),
                       child: DropdownMenu(

@@ -66,9 +66,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         children: [
           GradientBackground(
             children: [
-              Text(AppStrings.forgotPassword, style: Theme.of(context).textTheme.titleLarge),
+              Text(AppStrings.forgotPassword, style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white)),
               SizedBox(height: 6),
-              Text(AppStrings.enterYourEmail, style: Theme.of(context).textTheme.bodySmall),
+              Text(AppStrings.enterYourEmail, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white)),
             ],
           ),
           Padding(

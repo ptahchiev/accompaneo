@@ -52,10 +52,6 @@ class AppTextFormField extends StatelessWidget {
           floatingLabelBehavior: FloatingLabelBehavior.always,
         ),
         onTapOutside: (event) => FocusScope.of(context).unfocus(),
-        style: const TextStyle(
-          fontWeight: FontWeight.w500,
-          color: Colors.black,
-        ),
       ),
     );
   }

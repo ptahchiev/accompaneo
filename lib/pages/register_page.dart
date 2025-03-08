@@ -89,9 +89,9 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           GradientBackground(
             children: [
-              Text(AppStrings.register, style: Theme.of(context).textTheme.titleLarge),
+              Text(AppStrings.register, style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white)),
               SizedBox(height: 6),
-              Text(AppStrings.createYourAccount, style: Theme.of(context).textTheme.bodySmall),
+              Text(AppStrings.createYourAccount, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white)),
             ],
           ),
           Padding(

@@ -52,16 +52,22 @@ class AppTheme {
         fontSize: 24,
         letterSpacing: 0.5,
       ),
+      bodyLarge : TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+        fontSize: 16,
+        letterSpacing: 0.5,
+      ),      
       bodyMedium : TextStyle(
         fontWeight: FontWeight.bold,
         color: Colors.white,
-        fontSize: 20,
-        letterSpacing: 0.5,
+        fontSize: 14,
+        letterSpacing: 0.25,
       ),
       bodySmall: TextStyle(
         color: Colors.white,
-        letterSpacing: 0.5,
-        fontSize: 16,
+        letterSpacing: 0.4,
+        fontSize: 12,
       )
     ),
     inputDecorationTheme: const InputDecorationTheme(
@@ -161,19 +167,19 @@ class AppTheme {
       headlineMedium : TextStyle(
         fontWeight: FontWeight.bold,
         color: Colors.black,
-        fontSize: 24,
+        fontSize: 16,
         letterSpacing: 0.5,
       ),
       bodyMedium : TextStyle(
         fontWeight: FontWeight.bold,
         color: Colors.black,
-        fontSize: 20,
-        letterSpacing: 0.5,
+        fontSize: 14,
+        letterSpacing: 0.25,
       ),
       bodySmall: TextStyle(
         color: Colors.grey,
-        letterSpacing: 0.5,
-        fontSize: 16,
+        letterSpacing: 0.4,
+        fontSize: 12,
       )
     ),
     inputDecorationTheme: const InputDecorationTheme(

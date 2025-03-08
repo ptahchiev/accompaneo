@@ -85,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
                     AppStrings.updateYourProfile,
-                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: Colors.black),
+                    style: Theme.of(context).textTheme.headlineMedium,
                   )
                 ],
               )),
@@ -162,7 +162,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               passwordObscure
                                   ? Icons.visibility_off_outlined
                                   : Icons.visibility_outlined,
-                              color: Colors.black,
                             ),
                           ),
                         ),
