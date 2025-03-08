@@ -9,7 +9,6 @@ import '../values/app_constants.dart';
 import '../values/app_regex.dart';
 import '../values/app_routes.dart';
 import '../values/app_strings.dart';
-import '../values/app_theme.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -65,11 +64,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const GradientBackground(
+          GradientBackground(
             children: [
-              Text(AppStrings.forgotPassword, style: AppTheme.titleLarge),
+              Text(AppStrings.forgotPassword, style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white)),
               SizedBox(height: 6),
-              Text(AppStrings.enterYourEmail, style: AppTheme.bodySmall),
+              Text(AppStrings.enterYourEmail, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white)),
             ],
           ),
           Padding(
@@ -126,7 +125,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             children: [
               Text(
                 AppStrings.iHaveAnAccount,
-                style: AppTheme.bodySmall.copyWith(color: Colors.black),
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
               ),
               TextButton(
                 onPressed: () => NavigationHelper.pushReplacementNamed(

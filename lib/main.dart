@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'pages/home_page.dart';
 import 'pages/playlists_page.dart';
@@ -89,7 +90,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                const DrawerHeader(
+                DrawerHeader(
                     decoration: BoxDecoration(
                       color: AppColors.darkerBlue,
                     ),
@@ -99,12 +100,11 @@ class _AccompaneoState extends State<AccompaneoApp> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: Text('Accompaneo',
-                                  style: AppTheme.titleLarge),
+                              child: Text('Accompaneo', style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white)),
                             ),
-                            Text('ver. 1.0', style: AppTheme.bodySmall),
+                            Text('ver. 1.0', style: Theme.of(context).textTheme.bodySmall),
                             Text('by Petar Tahchiev',
-                                style: AppTheme.bodySmall),
+                                style: Theme.of(context).textTheme.bodySmall),
                           ]),
                     )),
                 ListTile(
@@ -129,7 +129,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
                 icon: Container(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Icon(Icons.home)),
-                label: 'Home',
+                label: AppLocalizations.of(context)!.home,
               ),
               NavigationDestination(
                 icon: Icon(Icons.person),
@@ -166,8 +166,12 @@ class Accompaneo extends StatelessWidget {
 
     return MaterialApp(
       title: 'Accompaneo',
+      locale: Provider.of<PlaylistsModel>(context, listen:true).getSettings().sessionLocale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,    
       initialRoute: hasValidToken ? AppRoutes.home : AppRoutes.login,
-      theme: AppTheme.themeData,
+      theme: AppTheme.theme(Provider.of<PlaylistsModel>(context, listen:true).getThemeMode().name),
+      themeMode: Provider.of<PlaylistsModel>(context, listen:false).getThemeMode(),
       navigatorKey: NavigationHelper.key,
       scaffoldMessengerKey: SnackbarHelper.key,
       onGenerateRoute: Routes.generateRoute,

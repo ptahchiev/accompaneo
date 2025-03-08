@@ -12,7 +12,6 @@ import '../utils/helpers/navigation_helper.dart';
 import '../values/app_constants.dart';
 import '../values/app_routes.dart';
 import '../values/app_strings.dart';
-import '../values/app_theme.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -89,14 +88,14 @@ class _LoginPageState extends State<LoginPage> {
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const GradientBackground(
+          GradientBackground(
             children: [
               Text(
                 AppStrings.signInToYourNAccount,
-                style: AppTheme.titleLarge,
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white),
               ),
               SizedBox(height: 6),
-              Text(AppStrings.signInToYourAccount, style: AppTheme.bodySmall),
+              Text(AppStrings.signInToYourAccount, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white)),
             ],
           ),
           Form(
@@ -168,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                       return FilledButton(
                         onPressed: isValid
                             ? () {
-                                final result = ApiService.login(emailController.text, passwordController.text);
+                                final result = ApiService.login(context, emailController.text, passwordController.text);
                                 result.then((response) {
                                   if (response.statusCode == 200) {
                                     emailController.clear();
@@ -197,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
                           AppStrings.orLoginWith,
-                          style: AppTheme.bodySmall.copyWith(
+                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
                             color: Colors.black,
                           ),
                         ),
@@ -266,7 +265,7 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               Text(
                 AppStrings.doNotHaveAnAccount,
-                style: AppTheme.bodySmall.copyWith(color: Colors.black),
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
               ),
               const SizedBox(width: 4),
               TextButton(

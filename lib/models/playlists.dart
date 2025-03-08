@@ -1,4 +1,5 @@
 import 'package:accompaneo/models/playlist.dart';
+import 'package:accompaneo/models/settings_data.dart';
 import 'package:accompaneo/utils/fixed_size_fifo_queue.dart';
 import 'package:collection/collection.dart';
 import 'package:accompaneo/models/song/song.dart';
@@ -10,6 +11,10 @@ class PlaylistsModel extends ChangeNotifier {
 
   final List<Playlist> _playlists = [];
 
+  Locale locale = Locale('en');
+
+  SettingsData? _settingsData;
+
   UnmodifiableListView<Playlist> get items => UnmodifiableListView(_playlists);
 
   Playlist? getFavouritesPlaylist() {
@@ -18,7 +23,20 @@ class PlaylistsModel extends ChangeNotifier {
 
   List<Song> getLatestPlayedPlaylistSongs() {
     return latestPlayed.queue.toList();
-  }  
+  }
+
+  ThemeMode getThemeMode() {
+    return _settingsData != null ? ThemeMode.values.firstWhere((tm) => tm.name == _settingsData!.themeMode.toLowerCase()) : ThemeMode.light;
+  }
+
+  SettingsData getSettings() {
+    return _settingsData ?? SettingsData.empty();
+  }
+
+  void setSettingsData(SettingsData settingsData) {
+    _settingsData = settingsData;
+    notifyListeners();
+  }
 
   void add(Playlist item) {
     _playlists.add(item);
@@ -60,14 +78,6 @@ class PlaylistsModel extends ChangeNotifier {
   void addSongToLatestPlayed(Song song) {
     latestPlayed.enqueue(song);
     notifyListeners();
-
-
-    // Playlist? playlist = _playlists.firstWhereOrNull((p) => p.latestPlayed);
-    // if (playlist != null) {
-    //   playlist.firstPageSongs.content.insert(0, song);
-    //   playlist.firstPageSongs.totalElements = playlist.firstPageSongs.totalElements + 1;
-    //   n
-    // }
   }
 
   void addSongToFavourites(Song song) {

@@ -9,7 +9,6 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../utils/helpers/snackbar_helper.dart';
 import '../values/app_strings.dart';
-import '../values/app_theme.dart';
 import '../widgets/app_text_form_field.dart';
 
 class NewPlaylistWidget extends StatefulWidget {
@@ -63,7 +62,7 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
 
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Icon(Icons.drag_handle),
           centerTitle: true,
           shape: RoundedRectangleBorder(borderRadius: radius)),
@@ -83,7 +82,7 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                           alignment: Alignment.topCenter,
                           child: Text(
                             AppStrings.newPlaylist,
-                            style: AppTheme.sectionTitle,
+                            style: Theme.of(context).textTheme.headlineMedium,
                           ))),
                   AppTextFormField(
                     autofocus: false,
@@ -133,7 +132,7 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                                   }
                                 });
                               }
-                            : null,
+                            : null,                            
                         child: const Text(AppStrings.submit),
                       );
                     },

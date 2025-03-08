@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:accompaneo/models/music_data.dart';
+import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/song/time_signature.dart';
 import 'package:accompaneo/utils/helpers/chords_helper.dart';
 import 'package:accompaneo/values/app_dimensions.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_guitar_chord/flutter_guitar_chord.dart';
 import 'package:guitar_chord_library/guitar_chord_library.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 
 import '../values/app_colors.dart';
 
@@ -45,7 +47,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   int beat = 0;
   String spent = "0:0";
   StreamSubscription? streamSubscription;
-
   StreamSubscription? _playSubscription;
   StreamSubscription? _playSeekSubscription;
   double _wholeSongTime = 0;
@@ -667,40 +668,23 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       left: padding,
       right: padding,
       height: 50,
-      child: segmentIndex != 0
-          ? Container()
-          : Stack(
-              clipBehavior: Clip.none,
-              children: metronomeBeats.map((event) {
-                var left = (segmentWidth * event.position) -
-                    (size -
-                        (size / 20)); //size/20 is 2.5 because our border is 5
-                bool isActive = false;
-                if (event.position == 0) {
-                  isActive = (segmentProgress >= event.position && _playing) ||
-                      _wholeSongTime != 0;
-                } else {
-                  isActive = segmentProgress >= event.position;
-                }
-                return Positioned(
-                  left: left,
-                  top: -120,
-                  child: PulsatingWidget(
-                    title: '${event.name}',
-                    isActive: isActive,
-                    whenActive: () {
-                      print(
-                          "When  active: ${event.position} ${_wholeSongTime}");
-                      if (_playing) {
-                        metronomePlayer.setVolume(1);
-                        metronomePlayer
-                            .setAsset('assets/effects/metronome.mp3');
-                        metronomePlayer.play();
-                      }
-                    },
-                  ),
-                );
-              }).toList()),
+      child: Stack(
+          clipBehavior: Clip.none,
+          children: metronomeBeats.map((event) {
+            var left = (segmentWidth * event.position) - (size - (size / 20)); //size/20 is 2.5 because our border is 5
+            return Positioned(
+              left: left,
+              top: -120,
+              child: PulsatingWidget(
+                title: '${event.name}',
+                isActive: segmentProgress >= event.position,
+                whenActive: () {
+                  metronomePlayer.setAsset('assets/effects/${Provider.of<PlaylistsModel>(context, listen:true).getSettings().countInEffect.toLowerCase()}.mp3');
+                  metronomePlayer.play();
+                },
+              ),
+            );
+          }).toList()),
     );
   }
 

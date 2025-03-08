@@ -9,7 +9,6 @@ import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/values/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../values/app_theme.dart';
 import 'package:accompaneo/widgets/hero_layout_card.dart';
 
 class Section extends StatelessWidget {
@@ -40,7 +39,7 @@ class Section extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Text(
                     playlist.name,
-                    style: AppTheme.sectionTitle,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                 ),
                 Expanded(child: Divider(color: Colors.grey.shade600)),

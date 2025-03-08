@@ -61,7 +61,7 @@ class HeroLayoutCard extends StatelessWidget {
                               imageInfo.name,
                               overflow: TextOverflow.clip,
                               softWrap: false,
-                              style: AppTheme.heroCardTitle,
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
                             ),
                           ),
                           Visibility(
@@ -70,7 +70,7 @@ class HeroLayoutCard extends StatelessWidget {
                               (imageInfo is Song) ? (imageInfo as Song).artist.name : '',
                               overflow: TextOverflow.clip,
                               softWrap: false,
-                              style: AppTheme.bodySmall.copyWith(color: Colors.white),
+                              style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white),
                             ),
                           )
                         ],

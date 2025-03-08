@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../values/app_strings.dart';
-import '../values/app_theme.dart';
 
 class SelectPlaylistWidget extends StatefulWidget {
 
@@ -82,7 +81,7 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                   padding: const EdgeInsets.only(bottom: 30),
                   child: Align(
                     alignment: Alignment.topCenter,
-                    child: Text(AppStrings.selectPlaylist, style: AppTheme.sectionTitle,
+                    child: Text(AppStrings.selectPlaylist, style: Theme.of(context).textTheme.headlineMedium,
                   ))
                 ),
                 ListTile(
