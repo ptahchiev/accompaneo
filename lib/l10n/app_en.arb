@@ -1,10 +1,63 @@
 {
-  "helloWorld": "Hello World!",
   "home":"Home",
-  "@home" : {
-    "description": "asdas"
-  },
-  "@helloWorld": {
-    "description": "The conventional newborn programmer greeting"
-  }
+  "loginAndRegister" : 'Login and Register UI',
+  "uhOhPageNotFound"": 'uh-oh!\nPage not found',
+  "register": 'Register',
+  "login": 'Login',
+  "createYourAccount": 'Create your account',
+  "doNotHaveAnAccount": "Don't have an account?",
+  "facebook": 'Facebook',
+  "google": 'Google',
+  "signInToYourNAccount": 'Sign in to your\nAccount',
+  "signInToYourAccount": 'Sign in to your Account',
+  "iHaveAnAccount": 'I have an account?',
+  "forgotPassword": 'Forgot Password?',
+  "enterYourEmail": 'Enter your email below to receive instructions',
+  "submit": 'Submit',
+  "orLoginWith": 'or Login with',
+
+  "loggedIn": 'Logged In!',
+  "registrationComplete": 'Registration Complete!',
+  "profileUpdated": 'Profile Updated!',
+
+  "name": 'Name',
+  "pleaseEnterName": 'Please, Enter Name',
+  "invalidName": 'Invalid Name',
+
+  "email": 'Email',
+  "pleaseEnterEmailAddress": 'Please, Enter Email Address',
+  "invalidEmailAddress": 'Invalid Email Address',
+
+  "password": 'Password',
+  "pleaseEnterPassword": 'Please, Enter Password',
+  "invalidPassword": 'Invalid Password',
+
+  "confirmPassword": 'Confirm Password',
+  "pleaseReEnterPassword": 'Please, Re-Enter Password',
+  "passwordNotMatched": 'Password not matched!',
+
+  "language": 'Language',
+  "selectLanguage": 'Select Language',
+  "invalidLanguage": 'Invalid Language',
+
+  "color": 'Color',
+  "specifyColor": 'Specify Color',
+  "invalidColor": 'Invalid color',
+
+  "instrument": 'Instrument',
+  "selectInstrument": 'Select Instrument',
+  "invalidInstrument": 'Invalid Instrument',
+
+  "newPlaylist": 'New Playlist',
+  "playlistName": 'Playlist Name',
+  "pleaseEnterPlaylistName": 'Please, Enter Playlist Name',
+  "invalidPlaylistName": 'Invalid Playlist Name',
+
+  "selectPlaylist": 'Select Playlist',
+  "playlistCreated": 'Playlist created successfully',
+  "playlistDeleted": 'Playlist deleted successfully',
+
+  "updateYourProfile": 'Update your profile',
+  "settings": 'Settings',
+  "cancelSubscription": 'Cancel Subscription',
 }

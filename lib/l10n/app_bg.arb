@@ -1,4 +1,63 @@
 {
-    "helloWorld": "¡Hola Mundo!",
-    "home":"Начало"
+  "home":"Начало",
+  "loginAndRegister" : 'Вход и регистрация',
+  "uhOhPageNotFound"": 'опс!\nСтраницата не е намерена',
+  "register": 'Регистрация',
+  "login": 'Вход',
+  "createYourAccount": 'Създай профил',
+  "doNotHaveAnAccount": "Нямате профил?",
+  "facebook": 'Facebook',
+  "google": 'Google',
+  "signInToYourNAccount": 'Влезте в своя\nпрофил',
+  "signInToYourAccount": 'ВЛезте в своя профил',
+  "iHaveAnAccount": 'Вече имате профил?',
+  "forgotPassword": 'Забравена парола?',
+  "enterYourEmail": 'Въведете имейла си по-долу за да получите информация',
+  "submit": 'Изпрати',
+  "orLoginWith": 'или вход с',
+
+  "loggedIn": 'Влязохте успешно!',
+  "registrationComplete": 'Регистрацията е завършена!',
+  "profileUpdated": 'Профилът ви е обновен!',
+
+  "name": 'Име',
+  "pleaseEnterName": 'Моля, въведете име',
+  "invalidName": 'Невалидно име',
+
+  "email": 'Имейл',
+  "pleaseEnterEmailAddress": 'Моля, въведете имейл адрес',
+  "invalidEmailAddress": 'Невалиден имейл адрес',
+
+  "password": 'Парола',
+  "pleaseEnterPassword": 'Моля, въведете парола',
+  "invalidPassword": 'Невалидна парола',
+
+  "confirmPassword": 'Потвърдете паролата',
+  "pleaseReEnterPassword": 'Моля въведете потвърждение на паролата',
+  "passwordNotMatched": 'Паролите не съвпадат!',
+
+  "language": 'Език',
+  "selectLanguage": 'Изберете език',
+  "invalidLanguage": 'Невалиден език',
+
+  "color": 'Цвят',
+  "specifyColor": 'Изберете цвят',
+  "invalidColor": 'Невалиден цвят',
+
+  "instrument": 'Инструмент',
+  "selectInstrument": 'Изберете инструмент',
+  "invalidInstrument": 'Невеалиден инструмент',
+
+  "newPlaylist": 'Нов плейлист',
+  "playlistName": 'Име на плейлист',
+  "pleaseEnterPlaylistName": 'Моля въведете име на плейлиста',
+  "invalidPlaylistName": 'Невалидно име на плейлиста',
+
+  "selectPlaylist": 'Изберете плейлист',
+  "playlistCreated": 'Плейлистът е създаден успешно',
+  "playlistDeleted": 'Плейлистът е изтрит успешно',
+
+  "updateYourProfile": 'Обновете профила си',
+  "settings": 'Настройки',
+  "cancelSubscription": 'Прекратете абонамента си',
 }
