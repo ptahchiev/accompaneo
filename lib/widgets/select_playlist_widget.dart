@@ -9,7 +9,7 @@ import 'package:accompaneo/widgets/new_playlist_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import '../values/app_strings.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SelectPlaylistWidget extends StatefulWidget {
 
@@ -81,12 +81,12 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
                   padding: const EdgeInsets.only(bottom: 30),
                   child: Align(
                     alignment: Alignment.topCenter,
-                    child: Text(AppStrings.selectPlaylist, style: Theme.of(context).textTheme.headlineMedium,
+                    child: Text(AppLocalizations.of(context)!.selectPlaylist, style: Theme.of(context).textTheme.headlineMedium,
                   ))
                 ),
                 ListTile(
                   visualDensity: VisualDensity(vertical: 0),
-                  title: Text('Create new playlist'),
+                  title: Text(AppLocalizations.of(context)!.createNewPlaylist),
                   leading: BrowsableImage(icon: Icons.add),
                   onTap: () =>  {
                     //widget.panelController.close(),
@@ -131,7 +131,7 @@ class _SelectPlaylistWidgetState extends State<SelectPlaylistWidget> {
       if (response.statusCode == 200) {
         widget.panelController.close();
         Provider.of<PlaylistsModel>(context, listen: false).addSongToPlaylist(playlistCode, widget.song);
-        SnackbarHelper.showSnackBar('Song was added to playlist');
+        SnackbarHelper.showSnackBar(AppLocalizations.of(context)!.songAddedToPlaylist);
       } else {
         var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
         if (jsonResponse['message'] != null) {

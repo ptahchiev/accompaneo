@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert' as convert;
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:accompaneo/models/facet_value.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlists.dart';
@@ -12,7 +12,6 @@ import 'package:accompaneo/utils/helpers/navigation_helper.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
 import 'package:accompaneo/values/app_colors.dart';
 import 'package:accompaneo/values/app_routes.dart';
-import 'package:accompaneo/values/app_strings.dart';
 import 'package:accompaneo/widgets/browsable_image.dart';
 import 'package:accompaneo/widgets/chord_chip.dart';
 import 'package:accompaneo/widgets/genre_chip.dart';
@@ -338,7 +337,7 @@ class _PageResultsState extends State<PageResults> {
 
                     //widget.onPlaylistDelete();
                     SnackbarHelper.showSnackBar(
-                      AppStrings.playlistDeleted,
+                      AppLocalizations.of(context)!.playlistDeleted,
                     );
                   } else {
                     SnackbarHelper.showSnackBar(
@@ -380,7 +379,7 @@ class _PageResultsState extends State<PageResults> {
             firstPageProgressIndicatorBuilder: (_) => getLoadingWidget(),
             // newPageProgressIndicatorBuilder: (_) => NewPageProgressIndicator(),
             noItemsFoundIndicatorBuilder: (_) =>
-                _noDataView("No Results Found"),
+                _noDataView(AppLocalizations.of(context)!.noResultsFound),
             //noMoreItemsIndicatorBuilder: (_) => NoMoreItemsIndicator(),
           ),
         )
@@ -403,59 +402,61 @@ class _PageResultsState extends State<PageResults> {
       );
 
   Widget playlistHeader(PageProvider pageProvider) {
-    return Row(
-      children: [
-        Expanded(
-          child: LayoutBuilder(builder: (context, constraints) {
-            String playlistName = widget.playlist.name;
-            final textPainter = TextPainter(
-              text: TextSpan(
-                text: playlistName,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              maxLines: 1,
-              textDirection: TextDirection.ltr,
-            )..layout(maxWidth: constraints.maxWidth);
-
-            double textWidth = textPainter.width;
-            double remainingWidth = constraints.maxWidth - textWidth - 20;
-
-            Widget textWidget = Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                playlistName,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.headlineMedium,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: LayoutBuilder(builder: (context, constraints) {
+              String playlistName = widget.playlist.name;
+              final textPainter = TextPainter(
+                text: TextSpan(
+                  text: playlistName,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 maxLines: 1,
-              ),
-            );
-            Widget dividerWidget = Container(
-              color: Colors.grey.shade500,
-              height: 1,
-              constraints: BoxConstraints(
-                minWidth: 10,
-              ),
-            );
-            if (remainingWidth > 20) {
-              dividerWidget = Expanded(child: dividerWidget);
-            } else {
-              textWidget = Expanded(child: textWidget);
-            }
-            return Row(
-              children: [
-                textWidget,
-                dividerWidget,
-              ],
-            );
-          }),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text('${pageProvider.page.totalElements} songs',
-              overflow: TextOverflow.clip),
-        ),
-      ],
+                textDirection: TextDirection.ltr,
+              )..layout(maxWidth: constraints.maxWidth);
+      
+              double textWidth = textPainter.width;
+              double remainingWidth = constraints.maxWidth - textWidth - 20;
+      
+              Widget textWidget = Container(
+                child: Text(
+                  playlistName,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                  maxLines: 1,
+                ),
+              );
+              Widget dividerWidget = Container(
+                color: Colors.grey.shade500,
+                height: 1,
+                constraints: BoxConstraints(
+                  minWidth: 10,
+                ),
+              );
+              if (remainingWidth > 20) {
+                dividerWidget = Expanded(child: dividerWidget);
+              } else {
+                textWidget = Expanded(child: textWidget);
+              }
+              return Row(
+                children: [
+                  textWidget,
+                  dividerWidget,
+                ],
+              );
+            }),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text('${pageProvider.page.totalElements} songs',
+                overflow: TextOverflow.clip),
+          ),
+        ],
+      ),
     );
   }
 
@@ -594,7 +595,7 @@ class _PageResultsState extends State<PageResults> {
                         .then((v) {
                       Provider.of<PlaylistsModel>(context, listen: false)
                           .removeSongFromFavourites(song);
-                      SnackbarHelper.showSnackBar('Song removed favourites');
+                      SnackbarHelper.showSnackBar(AppLocalizations.of(context)!.songRemovedFromFavourites);
                       song.favoured = false;
                       setState(() {
                         //futurePlaylist = Future.value(snapshot.data);
@@ -604,7 +605,7 @@ class _PageResultsState extends State<PageResults> {
                     ApiService.addSongToFavouritesPlaylist(song.code).then((v) {
                       Provider.of<PlaylistsModel>(context, listen: false)
                           .addSongToFavourites(song);
-                      SnackbarHelper.showSnackBar('Song added to favourites');
+                      SnackbarHelper.showSnackBar(AppLocalizations.of(context)!.songAddedToFavourites);
                       song.favoured = true;
                       setState(() {
                         //futurePlaylist = Future.value(snapshot.data);
@@ -651,7 +652,7 @@ class _PageResultsState extends State<PageResults> {
             Visibility(
               visible: widget.playlist.code.isNotEmpty,
               child: ListTile(
-                  title: Text('Remove from playlist'),
+                  title: Text(AppLocalizations.of(context)!.removeFromPlaylist),
                   leading: Icon(Icons.remove, color: Colors.black, size: 28),
                   onTap: () {
                     Navigator.pop(context, true);
@@ -662,7 +663,7 @@ class _PageResultsState extends State<PageResults> {
                         Provider.of<PlaylistsModel>(context, listen: false)
                             .removeSongFromPlaylist(widget.playlist.code, song);
                         SnackbarHelper.showSnackBar(
-                            'Song removed from playlist');
+                            AppLocalizations.of(context)!.songRemovedFromPlaylist);
                       } else {
                         var jsonResponse = convert.jsonDecode(response.body)
                             as Map<String, dynamic>;
@@ -679,7 +680,7 @@ class _PageResultsState extends State<PageResults> {
                   }),
             ),
             ListTile(
-                title: Text('Add to playlist'),
+                title: Text(AppLocalizations.of(context)!.addToPlaylist),
                 leading: Icon(Icons.add, color: Colors.black, size: 28),
                 onTap: () {
                   Navigator.pop(context, true);
@@ -688,7 +689,7 @@ class _PageResultsState extends State<PageResults> {
                 }),
             Divider(),
             ListTile(
-                title: Text('View All Songs By Artist'),
+                title: Text(AppLocalizations.of(context)!.viewAllSongsByArtists),
                 leading: Icon(Icons.search, color: Colors.black, size: 28),
                 onTap: () {
                   Navigator.pop(context, true);
@@ -730,7 +731,7 @@ class _PageResultsState extends State<PageResults> {
                   ? TextField(
                       controller: searchController,
                       decoration: InputDecoration(
-                        hintText: 'Search for songs, artists...',
+                        hintText: AppLocalizations.of(context)!.searchForSongsArtists,
                         hintStyle: const TextStyle(color: Colors.grey),
                         contentPadding: const EdgeInsets.all(15),
                         prefixIcon: const Icon(Icons.search),
@@ -926,7 +927,7 @@ class _PageFiltersState extends State<PageFilters> {
       widgets.insert(
           0,
           Center(
-              child: Text('Filter by:',
+              child: Text(AppLocalizations.of(context)!.filterBy,
                   style: Theme.of(context).textTheme.titleMedium)));
       widgets.insert(
           1,

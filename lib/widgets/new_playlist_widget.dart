@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../utils/helpers/snackbar_helper.dart';
-import '../values/app_strings.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../widgets/app_text_form_field.dart';
 
 class NewPlaylistWidget extends StatefulWidget {
@@ -81,20 +81,20 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                       child: Align(
                           alignment: Alignment.topCenter,
                           child: Text(
-                            AppStrings.newPlaylist,
+                            AppLocalizations.of(context)!.newPlaylist,
                             style: Theme.of(context).textTheme.headlineMedium,
                           ))),
                   AppTextFormField(
                     autofocus: false,
-                    labelText: AppStrings.playlistName,
+                    labelText: AppLocalizations.of(context)!.playlistName,
                     keyboardType: TextInputType.name,
                     textInputAction: TextInputAction.next,
                     onChanged: (value) => _formKey.currentState?.validate(),
                     validator: (value) {
                       return value!.isEmpty
-                          ? AppStrings.pleaseEnterPlaylistName
+                          ? AppLocalizations.of(context)!.pleaseEnterPlaylistName
                           : value.length < 4
-                              ? AppStrings.invalidPlaylistName
+                              ? AppLocalizations.of(context)!.invalidPlaylistName
                               : null;
                     },
                     controller: nameController,
@@ -118,7 +118,7 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                                             listen: false)
                                         .add(playlist);
                                     SnackbarHelper.showSnackBar(
-                                      AppStrings.playlistCreated,
+                                      AppLocalizations.of(context)!.playlistCreated,
                                     );
 
                                     widget.createCallback(playlist);
@@ -133,7 +133,7 @@ class _NewPlaylistWidgetState extends State<NewPlaylistWidget> {
                                 });
                               }
                             : null,                            
-                        child: const Text(AppStrings.submit),
+                        child: Text(AppLocalizations.of(context)!.submit),
                       );
                     },
                   ),

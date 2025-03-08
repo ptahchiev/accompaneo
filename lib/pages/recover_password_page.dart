@@ -1,5 +1,6 @@
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../utils/helpers/snackbar_helper.dart';
 
 import '../widgets/app_text_form_field.dart';
@@ -8,7 +9,6 @@ import '../utils/helpers/navigation_helper.dart';
 import '../values/app_constants.dart';
 import '../values/app_regex.dart';
 import '../values/app_routes.dart';
-import '../values/app_strings.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -66,9 +66,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         children: [
           GradientBackground(
             children: [
-              Text(AppStrings.forgotPassword, style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white)),
+              Text(AppLocalizations.of(context)!.forgotPassword, style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white)),
               SizedBox(height: 6),
-              Text(AppStrings.enterYourEmail, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white)),
+              Text(AppLocalizations.of(context)!.enterYourEmail, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white)),
             ],
           ),
           Padding(
@@ -79,17 +79,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   AppTextFormField(
-                    labelText: AppStrings.email,
+                    labelText: AppLocalizations.of(context)!.email,
                     controller: emailController,
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.emailAddress,
                     onChanged: (_) => _formKey.currentState?.validate(),
                     validator: (value) {
                       return value!.isEmpty
-                          ? AppStrings.pleaseEnterEmailAddress
+                          ? AppLocalizations.of(context)!.pleaseEnterEmailAddress
                           : AppConstants.emailRegex.hasMatch(value)
                               ? null
-                              : AppStrings.invalidEmailAddress;
+                              : AppLocalizations.of(context)!.invalidEmailAddress;
                     },
                   ),
                   ValueListenableBuilder(
@@ -112,7 +112,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 });
                               }
                             : null,
-                        child: const Text(AppStrings.submit),
+                        child: Text(AppLocalizations.of(context)!.submit),
                       );
                     },
                   ),
@@ -124,14 +124,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                AppStrings.iHaveAnAccount,
+                AppLocalizations.of(context)!.iHaveAnAccount,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
               ),
               TextButton(
                 onPressed: () => NavigationHelper.pushReplacementNamed(
                   AppRoutes.login,
                 ),
-                child: const Text(AppStrings.login),
+                child: Text(AppLocalizations.of(context)!.login),
               ),
             ],
           ),

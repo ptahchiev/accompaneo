@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../utils/helpers/snackbar_helper.dart';
 import '../values/app_constants.dart';
 import '../values/app_regex.dart';
-import '../values/app_strings.dart';
 import '../widgets/app_text_form_field.dart';
 
 // This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
@@ -84,7 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    AppStrings.updateYourProfile,
+                    AppLocalizations.of(context)!.updateYourProfile,
                     style: Theme.of(context).textTheme.headlineMedium,
                   )
                 ],
@@ -98,30 +97,30 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   AppTextFormField(
                     readOnly: true,
-                    labelText: AppStrings.email,
+                    labelText: AppLocalizations.of(context)!.email,
                     controller: emailController,
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.emailAddress,
                     onChanged: (_) => _formKey.currentState?.validate(),
                     validator: (value) {
                       return value!.isEmpty
-                          ? AppStrings.pleaseEnterEmailAddress
+                          ? AppLocalizations.of(context)!.pleaseEnterEmailAddress
                           : AppConstants.emailRegex.hasMatch(value)
                               ? null
-                              : AppStrings.invalidEmailAddress;
+                              : AppLocalizations.of(context)!.invalidEmailAddress;
                     },
                   ),
                   AppTextFormField(
                     autofocus: false,
-                    labelText: AppStrings.name,
+                    labelText: AppLocalizations.of(context)!.name,
                     keyboardType: TextInputType.name,
                     textInputAction: TextInputAction.next,
                     onChanged: (value) => _formKey.currentState?.validate(),
                     validator: (value) {
                       return value!.isEmpty
-                          ? AppStrings.pleaseEnterName
+                          ? AppLocalizations.of(context)!.pleaseEnterName
                           : value.length < 2
-                              ? AppStrings.invalidName
+                              ? AppLocalizations.of(context)!.invalidName
                               : null;
                     },
                     controller: nameController,
@@ -132,7 +131,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       return AppTextFormField(
                         obscureText: passwordObscure,
                         controller: passwordController,
-                        labelText: AppStrings.password,
+                        labelText: AppLocalizations.of(context)!.password,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.visiblePassword,
                         onChanged: (_) => _formKey.currentState?.validate(),
@@ -140,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           return value!.isEmpty ||
                                   AppConstants.passwordRegex.hasMatch(value)
                               ? null
-                              : AppStrings.invalidPassword;
+                              : AppLocalizations.of(context)!.invalidPassword;
                         },
                         suffixIcon: Focus(
                           /// If false,
@@ -179,12 +178,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                   'password': passwordController.text
                                 }).then((result) {
                                   SnackbarHelper.showSnackBar(
-                                    AppStrings.profileUpdated,
+                                    AppLocalizations.of(context)!.profileUpdated,
                                   );
                                 });
                               }
                             : null,
-                        child: const Text(AppStrings.submit),
+                        child: Text(AppLocalizations.of(context)!.submit),
                       );
                     },
                   ),

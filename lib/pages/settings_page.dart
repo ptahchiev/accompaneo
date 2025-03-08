@@ -2,7 +2,7 @@ import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/settings_data.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
-import 'package:accompaneo/values/app_strings.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -123,8 +123,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    AppStrings.settings,
-                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(color: Colors.black),
+                    AppLocalizations.of(context)!.settings,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   )
                 ],
             )),          
@@ -144,7 +144,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         dropdownMenuEntries: themeModeEntries,
                         initialSelection: themeModeValue,
                         requestFocusOnTap: true,
-                        label: const Text('Theme'),
+                        label: Text(AppLocalizations.of(context)!.theme),
                         onSelected: (value) {
                           setState(() {
                             themeModeValue = value;
@@ -160,7 +160,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         dropdownMenuEntries: languageEntries,
                         initialSelection: languageValue,
                         requestFocusOnTap: true,
-                        label: const Text('Language'),
+                        label: Text(AppLocalizations.of(context)!.language),
                         onSelected: (value) {
                           setState(() {
                             languageValue = value;
@@ -177,7 +177,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         dropdownMenuEntries: instrumentEntries,
                         initialSelection: instrumentValue,
                         requestFocusOnTap: true,
-                        label: const Text('Instrument'),
+                        label: Text(AppLocalizations.of(context)!.instrument),
                         onSelected: (value) {
                           setState(() {
                             instrumentValue = value;
@@ -194,7 +194,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         dropdownMenuEntries: countInEffectEntries,
                         initialSelection: countInEffectValue,
                         requestFocusOnTap: true,
-                        label: const Text('Count-in effect'),
+                        label: Text(AppLocalizations.of(context)!.countInEffect),
                         onSelected: (value) {
                           setState(() {
                             countInEffectValue = value;
@@ -222,12 +222,12 @@ class _SettingsPageState extends State<SettingsPage> {
                                     result.then((response) {
                                       Provider.of<PlaylistsModel>(context, listen: false).setSettingsData(settingsData);
                                       SnackbarHelper.showSnackBar(
-                                        'Settings updated!',
+                                        AppLocalizations.of(context)!.settingsUpdated,
                                       );
                                     });       
                                   }
                                 : null,
-                            child: const Text(AppStrings.submit),
+                            child: Text(AppLocalizations.of(context)!.submit),
                           );
                         },
                       ),
@@ -253,7 +253,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             }
                         ),
                       ),
-                      child: const Text(AppStrings.cancelSubscription),
+                      child: Text(AppLocalizations.of(context)!.cancelSubscription),
                     )
                   ],
                 ),

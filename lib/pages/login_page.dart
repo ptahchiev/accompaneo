@@ -11,7 +11,7 @@ import '../widgets/gradient_background.dart';
 import '../utils/helpers/navigation_helper.dart';
 import '../values/app_constants.dart';
 import '../values/app_routes.dart';
-import '../values/app_strings.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -91,11 +91,11 @@ class _LoginPageState extends State<LoginPage> {
           GradientBackground(
             children: [
               Text(
-                AppStrings.signInToYourNAccount,
+                AppLocalizations.of(context)!.signInToYourAccount,
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white),
               ),
               SizedBox(height: 6),
-              Text(AppStrings.signInToYourAccount, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white)),
+              Text(AppLocalizations.of(context)!.signInToYourAccount, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white)),
             ],
           ),
           Form(
@@ -108,16 +108,16 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   AppTextFormField(
                     controller: emailController,
-                    labelText: AppStrings.email,
+                    labelText: AppLocalizations.of(context)!.email,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     onChanged: (_) => _formKey.currentState?.validate(),
                     validator: (value) {
                       return value!.isEmpty
-                          ? AppStrings.pleaseEnterEmailAddress
+                          ? AppLocalizations.of(context)!.pleaseEnterEmailAddress
                           : AppConstants.emailRegex.hasMatch(value)
                               ? null
-                              : AppStrings.invalidEmailAddress;
+                              : AppLocalizations.of(context)!.invalidEmailAddress;
                     },
                   ),
                   ValueListenableBuilder(
@@ -126,16 +126,16 @@ class _LoginPageState extends State<LoginPage> {
                       return AppTextFormField(
                         obscureText: passwordObscure,
                         controller: passwordController,
-                        labelText: AppStrings.password,
+                        labelText: AppLocalizations.of(context)!.password,
                         textInputAction: TextInputAction.done,
                         keyboardType: TextInputType.visiblePassword,
                         onChanged: (_) => _formKey.currentState?.validate(),
                         validator: (value) {
                           return value!.isEmpty
-                              ? AppStrings.pleaseEnterPassword
+                              ? AppLocalizations.of(context)!.pleaseEnterPassword
                               : AppConstants.passwordRegex.hasMatch(value)
                                   ? null
-                                  : AppStrings.invalidPassword;
+                                  : AppLocalizations.of(context)!.invalidPassword;
                         },
                         suffixIcon: IconButton(
                           onPressed: () =>
@@ -158,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () => NavigationHelper.pushReplacementNamed(
                       AppRoutes.forgotPassword,
                     ),
-                    child: const Text(AppStrings.forgotPassword),
+                    child: Text(AppLocalizations.of(context)!.forgotPassword),
                   ),
                   const SizedBox(height: 20),
                   ValueListenableBuilder(
@@ -184,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                                 });
                               }
                             : null,
-                        child: const Text(AppStrings.login),
+                        child: Text(AppLocalizations.of(context)!.login),
                       );
                     },
                   ),
@@ -195,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
-                          AppStrings.orLoginWith,
+                          AppLocalizations.of(context)!.orLoginWith,
                           style: Theme.of(context).textTheme.bodySmall!.copyWith(
                             color: Colors.black,
                           ),
@@ -224,8 +224,8 @@ class _LoginPageState extends State<LoginPage> {
                             // });
                           },
                           icon: SvgPicture.asset(Vectors.google, width: 14),
-                          label: const Text(
-                            AppStrings.google,
+                          label: Text(
+                            AppLocalizations.of(context)!.google,
                             style: TextStyle(color: Colors.black),
                           ),
                         ),
@@ -248,8 +248,8 @@ class _LoginPageState extends State<LoginPage> {
                             // });
                           },
                           icon: SvgPicture.asset(Vectors.facebook, width: 14),
-                          label: const Text(
-                            AppStrings.facebook,
+                          label: Text(
+                            AppLocalizations.of(context)!.facebook,
                             style: TextStyle(color: Colors.black),
                           ),
                         ),
@@ -264,7 +264,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                AppStrings.doNotHaveAnAccount,
+                AppLocalizations.of(context)!.doNotHaveAnAccount,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
               ),
               const SizedBox(width: 4),
@@ -272,7 +272,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () => NavigationHelper.pushReplacementNamed(
                   AppRoutes.register,
                 ),
-                child: const Text(AppStrings.register),
+                child: Text(AppLocalizations.of(context)!.register),
               ),
             ],
           ),

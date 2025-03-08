@@ -29,7 +29,6 @@ class AppTheme {
       contentTextStyle: TextStyle(
         fontWeight: FontWeight.bold,
         color: Colors.white,
-        fontSize: 20,
         letterSpacing: 0.5,
       )
     ),
@@ -136,10 +135,8 @@ class AppTheme {
         fontSize: 18,
         fontWeight: FontWeight.bold
       )
-
-    )    
-  );  
-
+    )
+  );
   static final ThemeData lightThemeData = ThemeData(
     brightness: Brightness.light,
     useMaterial3: true,
@@ -147,7 +144,7 @@ class AppTheme {
     scaffoldBackgroundColor: Colors.white,
     snackBarTheme: const SnackBarThemeData(
       contentTextStyle: TextStyle(
-        color: Colors.grey,
+        color: Colors.white,
         letterSpacing: 0.5,
       )
     ),

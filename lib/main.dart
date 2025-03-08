@@ -72,7 +72,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
       },
       child: Scaffold(
           appBar: AppBar(
-            title: const Text('Accompaneo'),
+            title: Text(AppLocalizations.of(context)!.accompaneo),
             centerTitle: true,
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             actions: <Widget>[
@@ -100,15 +100,15 @@ class _AccompaneoState extends State<AccompaneoApp> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: Text('Accompaneo', style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white)),
+                              child: Text(AppLocalizations.of(context)!.accompaneo, style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white)),
                             ),
-                            Text('ver. 1.0', style: Theme.of(context).textTheme.bodySmall),
-                            Text('by Petar Tahchiev',
+                            Text('v. 1.0', style: Theme.of(context).textTheme.bodySmall),
+                            Text(AppLocalizations.of(context)!.byPetarTahchiev,
                                 style: Theme.of(context).textTheme.bodySmall),
                           ]),
                     )),
                 ListTile(
-                  title: const Text('Logout'),
+                  title: Text(AppLocalizations.of(context)!.logout),
                   selected: _selectedIndex == 0,
                   onTap: () {
                     Navigator.pop(context);
@@ -126,22 +126,20 @@ class _AccompaneoState extends State<AccompaneoApp> {
             onDestinationSelected: _onItemTapped,
             destinations: <NavigationDestination>[
               NavigationDestination(
-                icon: Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Icon(Icons.home)),
+                icon: Icon(Icons.home),
                 label: AppLocalizations.of(context)!.home,
               ),
               NavigationDestination(
                 icon: Icon(Icons.person),
-                label: 'Profile',
+                label: AppLocalizations.of(context)!.profile,
               ),
               NavigationDestination(
                 icon: Icon(Icons.settings_rounded),
-                label: 'Settings',
+                label: AppLocalizations.of(context)!.settings,
               ),
               NavigationDestination(
                 icon: Icon(Icons.headphones),
-                label: 'Playlists',
+                label: AppLocalizations.of(context)!.playlists,
               )
             ],
           )),
