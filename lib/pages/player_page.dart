@@ -70,16 +70,26 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   Future<void> setAudioSource(String audioSource, Duration? duration) async {
     try {
       print("position: ${_player.position}");
-
+      // await _player.setVolume(0);
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
-              initialIndex: 0,
-              initialPosition: duration ?? Duration(milliseconds: audioMargin),
-              preload: true)
+              initialIndex: 0, initialPosition: duration, preload: true)
           .then((dur) {
         _player.pause();
         _playerPlaySubject.add(false);
       });
+
+      await _player.setClip(
+        start: Duration(milliseconds: audioMargin),
+        end: Duration(
+            milliseconds:
+                (_player.duration?.inMilliseconds ?? 0 - audioMargin)),
+      );
+
+      if (duration != null) {
+        await _player.seek(duration);
+      }
+
       //_player.setClip(start: Duration(milliseconds: 5120));
     } on PlayerException catch (e) {
       print("Error loading audio source: $audioSource $e");
@@ -104,6 +114,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         // completed show next song screen
       }
     });
+
     _player
         .createPositionStream(
       steps: 1,
@@ -115,10 +126,23 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
       ),
     )
         .listen((p) {
-      _playSeekSubject.add(p.inMilliseconds - audioMargin);
+      _playSeekSubject.add(p.inMilliseconds);
     });
 
     ApiService.getSongStructure(song.structureUrl).then((res) async {
+      audioMargin = (song.audioStreams![0].margin * 1000).round();
+
+      if (res.clock.first == 0) {
+        audioMargin += (res.clock[1].toDouble() * 1000).toInt();
+
+        res.bars.removeAt(0);
+        res.clock.removeAt(0);
+      } else if (res.bars.first.events.isEmpty) {
+        audioMargin += (res.clock[1].toDouble() * 1000).toInt();
+        res.bars.removeAt(0);
+        res.clock.removeAt(0);
+      }
+
       setState(() {
         musicPlayerScreen = MusicPlayerScreen(
           clickPlayer: ClickPlayer(4, 1, 58.968058968058, 0, 10000),
@@ -131,12 +155,6 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
             _playerPlaySubject.add(false);
           },
         );
-
-        // audioMargin = song.audioStreams![0].margin == 0
-        //     ? 0
-        //     : (((res.clock[1] * song.audioStreams![0].margin) * 1000)).round();
-
-        audioMargin = (song.audioStreams![0].margin * 1000).round();
 
         //_audioUrl = song.audioStreamUrls![newSelection.first.name];
       });
@@ -402,8 +420,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                           setState(() {
                                             _animationEnded = false;
                                             _playSeekSubject.add(details
-                                                    .timeStamp.inMilliseconds -
-                                                audioMargin);
+                                                .timeStamp.inMilliseconds);
                                           });
                                         },
                                         thumbColor: AppColors.primaryColor,
@@ -431,6 +448,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     final playerState = snapshot.data;
     final processingState = playerState?.playerState.processingState;
     final playing = playerState?.playerState.playing;
+    _animationEnded = false;
+
     if (processingState == ProcessingState.loading ||
         processingState == ProcessingState.buffering) {
       return Container(
@@ -445,7 +464,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         iconSize: iconSize,
         color: Colors.white,
         onPressed: () async {
-          await _player.seek(Duration(milliseconds: audioMargin));
+          await _player.seek(Duration(milliseconds: 0));
           _player.play();
           _playerPlaySubject.add(true);
           _animationEnded = false;
@@ -457,7 +476,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
             icon: const Icon(Icons.play_arrow_outlined),
             iconSize: iconSize,
             color: Colors.white,
-            onPressed: () {
+            onPressed: () async {
               _player.play();
               _playerPlaySubject.add(true);
             }),
@@ -477,7 +496,9 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
         icon: const Icon(Icons.replay_outlined),
         iconSize: iconSize,
         color: Colors.white,
-        onPressed: () => _player.seek(Duration(milliseconds: audioMargin)),
+        onPressed: () {
+          _player.seek(Duration(milliseconds: 0));
+        },
       );
     }
   }

@@ -5,8 +5,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class PulsatingWidget extends StatefulWidget {
-  const PulsatingWidget({required this.isActive, required this.title, this.whenActive, Key? key})
-      : super(key: key);
+  const PulsatingWidget({
+    required this.isActive,
+    required this.title,
+    this.whenActive,
+    Key? key,
+  }) : super(key: key);
   final bool isActive;
   final String title;
   final Function? whenActive;
@@ -62,7 +66,7 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
       );
       if (widget.whenActive != null) {
         widget.whenActive!();
-      }      
+      }
     } else {
       if (!widget.isActive) {
         _controller.stop();
@@ -100,8 +104,13 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
           child: Container(
             padding: EdgeInsets.all(Dimensions.smallMargin),
             decoration: BoxDecoration(
-              color: chord == ChordType.UNKNOWN ? Colors.white : ChordsHelper.chordTypeColors[chord],
-              border: Border.all(color: chord == ChordType.UNKNOWN ? Colors.orange : Colors.white, width: 5),
+              color: chord == ChordType.UNKNOWN
+                  ? Colors.white
+                  : ChordsHelper.chordTypeColors[chord],
+              border: Border.all(
+                  color:
+                      chord == ChordType.UNKNOWN ? Colors.orange : Colors.white,
+                  width: 5),
               borderRadius: BorderRadius.all(Radius.circular(100)),
             ),
             width: size,
@@ -113,7 +122,8 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   fontFeatures: const [FontFeature.tabularFigures()],
-                  color: chord == ChordType.UNKNOWN ? Colors.orange : Colors.white,
+                  color:
+                      chord == ChordType.UNKNOWN ? Colors.orange : Colors.white,
                   height: 1,
                 ),
                 textAlign: TextAlign.center,

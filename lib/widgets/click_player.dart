@@ -36,8 +36,13 @@ class ClickPlayer {
   late Timer _timer;
   bool disposed = false;
 
-  ClickPlayer(this.clicksPerBar, this.barsPerStep, this.startBPM, this.stepBPM,
-      this.stepAmount) {
+  ClickPlayer(
+    this.clicksPerBar,
+    this.barsPerStep,
+    this.startBPM,
+    this.stepBPM,
+    this.stepAmount,
+  ) {
     _controller.onListen = () {
       beatAmount = -1;
 
@@ -46,7 +51,7 @@ class ClickPlayer {
 
       Future<void> click(_) async {
         if (_up == null || _down == null) {
-          return; // skip if sounds are not yet cacheds
+          return; // skip if sounds are not yet cached
         }
 
         beatAmount++;
@@ -56,15 +61,12 @@ class ClickPlayer {
           return;
         }
 
-        if (beatAmount % clicksPerBar == 0) {
-          print('UP');
-          await _pool.play(_up!);
-        } else {
-          print('DOWN');
-          await _pool.play(_down!);
-        }
-        // await _pool.play(_down!);
-        // await _pool.play(_up!);
+        // if (beatAmount % clicksPerBar == 0) {
+        //   await _pool.play(_up!);
+        // } else {
+        //   await _pool.play(_down!);
+        // }
+
         _controller.add(beatAmount % clicksPerBar);
 
         if (beatAmount >= barsPerStep * clicksPerBar) {
@@ -78,7 +80,7 @@ class ClickPlayer {
       }
 
       _timer = Timer.periodic(period, click);
-
+      click(0);
       _controller
         ..onCancel = () {
           _timer.cancel();
