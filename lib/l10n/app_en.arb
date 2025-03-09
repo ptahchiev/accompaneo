@@ -123,5 +123,12 @@
   "tempo" : "Tempo",
 
   "addToPlaylist" : "Add to playlist",
-  "viewAllSongsByArtists" : "View All Songs By Artist"
+  "viewAllSongsByArtists" : "View All Songs By Artist",
+
+  "play" : "PLAY",
+  "about" : "ABOUT",
+  "practice": "Practice",
+  "band" : "Band",
+  "plusVocals" : "+Vocals",
+  "click" : "Click"
 }

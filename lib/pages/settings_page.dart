@@ -25,10 +25,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String themeModeValue = 'LIGHT';
-  String languageValue = 'en';
-  String instrumentValue = 'PIANO';
-  String countInEffectValue = 'FINGERCLICK';
+  String? themeModeValue;
+  String? languageValue;
+  String? instrumentValue;
+  String? countInEffectValue;
 
   List<Color> colorHistory = [];
   Color currentColor = Colors.amber;
@@ -71,18 +71,10 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
     initializeControllers();
 
-    SettingsData settingsData = Provider.of<PlaylistsModel>(context, listen: false).getSettings();
-    setState(() {
-      themeModeValue = settingsData.themeMode;
-      languageValue = settingsData.sessionLocale.languageCode;
-      instrumentValue = settingsData.instrumentType;
-      countInEffectValue = settingsData.countInEffect;
-    });
-
-    themeModeController.value = TextEditingValue(text: settingsData.themeMode);
-    languageController.value = TextEditingValue(text: settingsData.sessionLocale.languageCode);
-    instrumentController.value = TextEditingValue(text: settingsData.instrumentType);
-    countInEffectController.value = TextEditingValue(text: settingsData.countInEffect);
+    // themeModeController.value = TextEditingValue(text: settingsData.themeMode);
+    // languageController.value = TextEditingValue(text: settingsData.sessionLocale.languageCode);
+    // instrumentController.value = TextEditingValue(text: settingsData.instrumentType);
+    // countInEffectController.value = TextEditingValue(text: settingsData.countInEffect);
   }
 
   @override
@@ -123,7 +115,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         controller: themeModeController,
                         expandedInsets: EdgeInsets.zero,
                         dropdownMenuEntries: getThemeModeEntries(context),
-                        initialSelection: themeModeValue,
+                        initialSelection: themeModeValue ?? Provider.of<PlaylistsModel>(context, listen: true).getSettings().themeMode,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.theme),
                         onSelected: (value) {
@@ -139,7 +131,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         controller: languageController,
                         expandedInsets: EdgeInsets.zero,
                         dropdownMenuEntries: getLanguageEntries(context),
-                        initialSelection: languageValue,
+                        initialSelection: languageValue ?? Provider.of<PlaylistsModel>(context, listen: true).getSettings().sessionLocale.languageCode,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.language),
                         onSelected: (value) {
@@ -156,7 +148,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         expandedInsets: EdgeInsets.zero,
                         enableSearch: false,
                         dropdownMenuEntries: getInstrumentEntries(context),
-                        initialSelection: instrumentValue,
+                        initialSelection: instrumentValue ?? Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.instrument),
                         onSelected: (value) {
@@ -173,7 +165,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         expandedInsets: EdgeInsets.zero,
                         enableSearch: false,
                         dropdownMenuEntries: getCountInEntries(context),
-                        initialSelection: countInEffectValue,
+                        initialSelection: countInEffectValue ?? Provider.of<PlaylistsModel>(context, listen: true).getSettings().countInEffect,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.countInEffect),
                         onSelected: (value) {
@@ -192,10 +184,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             onPressed: isValid
                                 ? () {
                                     SettingsData settingsData = SettingsData(
-                                      themeMode: themeModeValue, 
-                                      instrumentType: instrumentValue, 
-                                      countInEffect: countInEffectValue, 
-                                      sessionLocale: Locale(languageValue)
+                                      themeMode: themeModeValue ?? Provider.of<PlaylistsModel>(context, listen: false).getSettings().themeMode, 
+                                      instrumentType: instrumentValue ?? Provider.of<PlaylistsModel>(context, listen: false).getSettings().instrumentType, 
+                                      countInEffect: countInEffectValue ?? Provider.of<PlaylistsModel>(context, listen: false).getSettings().countInEffect, 
+                                      sessionLocale: languageValue != null ? Locale(languageValue!) : Provider.of<PlaylistsModel>(context, listen: false).getSettings().sessionLocale
                                     );
                                   
                                     final result = ApiService.updateSettings(settingsData);

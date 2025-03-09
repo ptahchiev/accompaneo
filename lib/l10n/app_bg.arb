@@ -123,5 +123,12 @@
   "tempo" : "Темпо",
 
   "addToPlaylist" : "Добави в плейлист",
-  "viewAllSongsByArtists" : "Всички песни на изпълнителя"
+  "viewAllSongsByArtists" : "Всички песни на изпълнителя",
+
+  "play" : "СВИРИ",
+  "about" : "ОТНОСНО",
+  "practice": "Практика",
+  "band" : "Бенд",
+  "plusVocals" : "+Вокали",
+  "click" : "Щрак"
 }

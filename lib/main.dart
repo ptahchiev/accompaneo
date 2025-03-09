@@ -1,4 +1,5 @@
 import 'package:accompaneo/models/playlists.dart';
+import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -111,10 +112,12 @@ class _AccompaneoState extends State<AccompaneoApp> {
                   title: Text(AppLocalizations.of(context)!.logout),
                   selected: _selectedIndex == 0,
                   onTap: () {
-                    Navigator.pop(context);
-                    //logout
-                    //navigate to login screen
-                    NavigationHelper.pushReplacementNamed(AppRoutes.login);
+                    ApiService.logout().then((v) {
+                      Navigator.pop(context);
+                      //logout
+                      //navigate to login screen
+                      NavigationHelper.pushReplacementNamed(AppRoutes.login);
+                    });
                   },
                 ),
               ],
