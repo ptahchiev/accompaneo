@@ -27,6 +27,7 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
   late final Animation<double> _fadeAnimation;
 
   final double size = 50;
+  bool played = false;
 
   @override
   void initState() {
@@ -35,36 +36,22 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
-    )..repeat();
+    );
 
     _scaleAnimation = Tween<double>(begin: 0, end: 1.2).animate(_controller);
     _fadeAnimation = Tween<double>(begin: 1, end: 0).animate(_controller);
-
-    // _controller = AnimationController(
-    //   vsync: this,
-    //   duration: const Duration(milliseconds: 200),
-    //   lowerBound: 1.0,
-    //   upperBound: 1.2,
-    // )..addListener(() {});
-
-    if (widget.isActive) {
-      _controller.forward(
-        from: 0,
-      );
-      if (widget.whenActive != null) {
-        widget.whenActive!();
-      }
-    }
   }
 
   @override
   void didUpdateWidget(covariant PulsatingWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     if (widget.isActive && !oldWidget.isActive) {
       _controller.forward(
         from: 0,
       );
       if (widget.whenActive != null) {
+        played = true;
         widget.whenActive!();
       }
     } else {
