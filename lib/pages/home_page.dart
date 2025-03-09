@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:accompaneo/models/homepage_sections.dart';
 import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/simple_playlist.dart';
@@ -54,18 +55,18 @@ class _HomePageState extends State<HomePage> {
                   return ListView(
                     controller: ScrollController(),
                     children: [
-                      Section(playlist: SimplePlaylist(code: '', name: 'Genres'), sectionData: snapshot.data?.genres),
-                      Section(playlist: SimplePlaylist(code: '', name: 'Artists'), sectionData: snapshot.data?.artists),
-                      Section(playlist: SimplePlaylist(code: '', name: 'Most Popular', url: '/mostPopular'), sectionData: snapshot.data?.mostPopular),
-                      Section(playlist: SimplePlaylist(code: '', name: 'Latest', url: '/latestAdded'), sectionData: snapshot.data?.latestAdded),
+                      Section(playlist: SimplePlaylist(code: '', name: AppLocalizations.of(context)!.genres), sectionData: snapshot.data?.genres),
+                      Section(playlist: SimplePlaylist(code: '', name: AppLocalizations.of(context)!.artists), sectionData: snapshot.data?.artists),
+                      Section(playlist: SimplePlaylist(code: '', name: AppLocalizations.of(context)!.mostPopular, url: '/mostPopular'), sectionData: snapshot.data?.mostPopular),
+                      Section(playlist: SimplePlaylist(code: '', name: AppLocalizations.of(context)!.latest, url: '/latestAdded'), sectionData: snapshot.data?.latestAdded),
                       Consumer<PlaylistsModel>(
                           builder: (context, playlists, child) {
-                            return Section(playlist: SimplePlaylist(code: '', name: 'Jump back in', url: '/latestPlayed', favourites: false, latestPlayed: true), sectionData: playlists.getLatestPlayedPlaylistSongs());
+                            return Section(playlist: SimplePlaylist(code: '', name: AppLocalizations.of(context)!.jumpBackIn, url: '/latestPlayed', favourites: false, latestPlayed: true), sectionData: playlists.getLatestPlayedPlaylistSongs());
                           }
                       ),
                       Consumer<PlaylistsModel>(
                           builder: (context, playlists, child) {
-                            return Section(playlist: SimplePlaylist(code: '', name: 'Your favourites', url: '/favourites', favourites: true, latestPlayed: false), sectionData: playlists.getFavouritesPlaylist() != null ? playlists.getFavouritesPlaylist()!.firstPageSongs.content : []);
+                            return Section(playlist: SimplePlaylist(code: '', name: AppLocalizations.of(context)!.yourFavourites, url: '/favourites', favourites: true, latestPlayed: false), sectionData: playlists.getFavouritesPlaylist() != null ? playlists.getFavouritesPlaylist()!.firstPageSongs.content : []);
                           }
                       )
                   ]

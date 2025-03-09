@@ -324,8 +324,8 @@ class _PageResultsState extends State<PageResults> {
       builder: (BuildContext context) {
         return SimpleDialog(children: [
           ListTile(
-              title: Text('Delete playlist'),
-              leading: Icon(Icons.add, color: Colors.black, size: 28),
+              title: Text(AppLocalizations.of(context)!.deletePlaylist),
+              leading: Icon(Icons.add, size: 28),
               onTap: () {
                 final result = ApiService.deletePlaylist(playlistCode);
                 result.then((response) {
@@ -653,7 +653,7 @@ class _PageResultsState extends State<PageResults> {
               visible: widget.playlist.code.isNotEmpty,
               child: ListTile(
                   title: Text(AppLocalizations.of(context)!.removeFromPlaylist),
-                  leading: Icon(Icons.remove, color: Colors.black, size: 28),
+                  leading: Icon(Icons.remove, size: 28),
                   onTap: () {
                     Navigator.pop(context, true);
                     final result = ApiService.removeSongFromPlaylist(
@@ -681,7 +681,7 @@ class _PageResultsState extends State<PageResults> {
             ),
             ListTile(
                 title: Text(AppLocalizations.of(context)!.addToPlaylist),
-                leading: Icon(Icons.add, color: Colors.black, size: 28),
+                leading: Icon(Icons.add, size: 28),
                 onTap: () {
                   Navigator.pop(context, true);
                   pc.open();
@@ -690,13 +690,13 @@ class _PageResultsState extends State<PageResults> {
             Divider(),
             ListTile(
                 title: Text(AppLocalizations.of(context)!.viewAllSongsByArtists),
-                leading: Icon(Icons.search, color: Colors.black, size: 28),
+                leading: Icon(Icons.search, size: 28),
                 onTap: () {
                   Navigator.pop(context, true);
                   NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {
                     'playlist': SimplePlaylist(
                         code: '',
-                        name: 'Songs by ${song.artist.name}',
+                        name: AppLocalizations.of(context)!.songsByX(song.artist.name),
                         searchable: true),
                     'queryTerm': ':artistCode:${song.artist.code}'
                   });

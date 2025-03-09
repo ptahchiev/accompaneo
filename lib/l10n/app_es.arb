@@ -26,6 +26,12 @@
   "registrationComplete": "Registration Complete!",
   "profileUpdated": "Profile Updated!",
 
+  "artists" : "Artists",
+  "mostPopular" : "Most Popular",
+  "latest" : "Latest",
+  "jumpBackIn" : "Jump back in",
+  "yourFavourites" : "Your Favourites",
+
   "name": "Name",
   "pleaseEnterName": "Please, Enter Name",
   "invalidName": "Invalid Name",
@@ -82,6 +88,8 @@
   "playlistName": "Playlist Name",
   "pleaseEnterPlaylistName": "Please, Enter Playlist Name",
   "invalidPlaylistName": "Invalid Playlist Name",
+
+  "songsByX" : "Songs by {artist}",
 
   "nSongs": "{count, plural, =0{no songs} =1{1 song} other{{count} songs}}",
   "selectPlaylist": "Select Playlist",
