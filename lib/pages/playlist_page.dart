@@ -452,7 +452,7 @@ class _PageResultsState extends State<PageResults> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text('${pageProvider.page.totalElements} songs',
+            child: Text(AppLocalizations.of(context)!.nSongs(pageProvider.page.totalElements),
                 overflow: TextOverflow.clip),
           ),
         ],

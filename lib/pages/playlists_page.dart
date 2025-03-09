@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:accompaneo/widgets/new_playlist_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlaylistsPage extends StatefulWidget {
   const PlaylistsPage({super.key});
@@ -42,7 +43,7 @@ class CardList extends StatelessWidget {
                           title: Text(playlists.items[index].name, style: Theme.of(context).textTheme.bodyMedium),
                           visualDensity: VisualDensity(vertical: 0),
                           leading: BrowsableImage(backgroundColor: Colors.red, icon: Icons.favorite),
-                          subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs', style: Theme.of(context).textTheme.bodySmall),
+                          subtitle: Text(AppLocalizations.of(context)!.nSongs(playlists.items[index].firstPageSongs.totalElements), style: Theme.of(context).textTheme.bodySmall),
                             onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlist': playlists.items[index].copy(code: '', url: '/favourites')})
                         ),
                         Divider(),
@@ -53,7 +54,7 @@ class CardList extends StatelessWidget {
                           leading: BrowsableImage(),
                           visualDensity: VisualDensity(vertical: 0),
                           title: Text(playlists.items[index].name, style: Theme.of(context).textTheme.bodyMedium),
-                          subtitle: Text('${playlists.items[index].firstPageSongs.totalElements} songs', style: Theme.of(context).textTheme.bodySmall),
+                          subtitle: Text(AppLocalizations.of(context)!.nSongs(playlists.items[index].firstPageSongs.totalElements), style: Theme.of(context).textTheme.bodySmall),
                           onTap: () => NavigationHelper.pushNamed(AppRoutes.playlist, arguments: {'playlist': playlists.items[index].copy(url : '/${playlists.items[index].code}')})
                   );
                 },

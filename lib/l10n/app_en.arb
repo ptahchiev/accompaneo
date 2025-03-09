@@ -83,6 +83,8 @@
   "pleaseEnterPlaylistName": "Please, Enter Playlist Name",
   "invalidPlaylistName": "Invalid Playlist Name",
 
+
+  "nSongs": "{count, plural, =0{no songs} =1{1 song} other{{count} songs}}",
   "selectPlaylist": "Select Playlist",
   "playlistCreated": "Playlist created successfully",
   "playlistDeleted": "Playlist deleted successfully",
