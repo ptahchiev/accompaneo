@@ -76,6 +76,7 @@ class Event {
   final double position;
   final String? text;
   final int? wordId;
+
   final double start;
   final double duration;
 }

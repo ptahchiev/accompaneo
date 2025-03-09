@@ -70,7 +70,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
   Future<void> setAudioSource(String audioSource, Duration? duration) async {
     try {
       print("position: ${_player.position}");
-      // await _player.setVolume(0);
+      await _player.setVolume(0);
       await _player
           .setAudioSource(AudioSource.uri(Uri.parse(audioSource)),
               initialIndex: 0, initialPosition: duration, preload: true)
@@ -391,12 +391,16 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                                   color: Colors.white),
                                           Text(song.name,
                                               textAlign: TextAlign.center,
-                                              style: Theme.of(context).textTheme.titleLarge!
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleLarge!
                                                   .copyWith(
                                                       color: Colors.white)),
                                           Text(song.artist.name,
                                               textAlign: TextAlign.center,
-                                              style: Theme.of(context).textTheme.headlineMedium!
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineMedium!
                                                   .copyWith(
                                                       color: Colors.white))
                                         ]),

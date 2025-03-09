@@ -449,11 +449,12 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     if (countInEvents.isNotEmpty) {
       metronomeBeats.addAll(List.generate(timeSignature.numberOfBeats, (index) {
         return Event(
-            type: EventType.countIn,
-            position: index * (1 / timeSignature.numberOfBeats),
-            start: 0,
-            duration: 0,
-            name: "${index + 1}");
+          type: EventType.countIn,
+          position: index * (1 / timeSignature.numberOfBeats),
+          start: 0,
+          duration: 0,
+          name: "${index + 1}",
+        );
       }));
     }
 
@@ -671,15 +672,19 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       child: Stack(
           clipBehavior: Clip.none,
           children: metronomeBeats.map((event) {
-            var left = (segmentWidth * event.position) - (size - (size / 20)); //size/20 is 2.5 because our border is 5
+            var left = (segmentWidth * event.position) -
+                (size - (size / 20)); //size/20 is 2.5 because our border is 5
             return Positioned(
               left: left,
               top: -120,
               child: PulsatingWidget(
+                key: ValueKey(event.position),
                 title: '${event.name}',
-                isActive: segmentProgress >= event.position,
+                isActive: segmentProgress >= event.position &&
+                    (_playing || segmentProgress > event.position),
                 whenActive: () {
-                  metronomePlayer.setAsset('assets/effects/${Provider.of<PlaylistsModel>(context, listen:true).getSettings().countInEffect.toLowerCase()}.mp3');
+                  metronomePlayer.setAsset(
+                      'assets/effects/${Provider.of<PlaylistsModel>(context, listen: true).getSettings().countInEffect.toLowerCase()}.mp3');
                   metronomePlayer.play();
                 },
               ),
