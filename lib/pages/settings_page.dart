@@ -25,29 +25,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final List<DropdownMenuEntry> themeModeEntries = [
-    DropdownMenuEntry(value: 'DARK', label: 'Dark'), 
-    DropdownMenuEntry(value: 'LIGHT', label: 'Light')
-  ];
-
-  final List<DropdownMenuEntry> languageEntries = [DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('US', width: 30, height:20), value: 'en', label: 'English'), DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('BG', width: 30, height: 20), value: 'bg', label: 'Bulgarian')];
-  final List<DropdownMenuEntry> instrumentEntries = [
-    DropdownMenuEntry(value: 'PIANO', label: 'Piano'), 
-    DropdownMenuEntry(value: 'GUITAR', label: 'Guitar'),
-    DropdownMenuEntry(value: 'UKULELE', label: 'Ukulele'),
-  ];
-  
-  final List<DropdownMenuEntry> countInEffectEntries = [
-    DropdownMenuEntry(value: 'FINGERCLICK', label: 'Fingerclick'), 
-    DropdownMenuEntry(value: 'METRONOME', label: 'Metronome')
-  ];
-
   String themeModeValue = 'LIGHT';
   String languageValue = 'en';
   String instrumentValue = 'PIANO';
   String countInEffectValue = 'FINGERCLICK';
-
-  late Color dialogSelectColor = Colors.red;
 
   List<Color> colorHistory = [];
   Color currentColor = Colors.amber;
@@ -141,7 +122,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: DropdownMenu(
                         controller: themeModeController,
                         expandedInsets: EdgeInsets.zero,
-                        dropdownMenuEntries: themeModeEntries,
+                        dropdownMenuEntries: getThemeModeEntries(context),
                         initialSelection: themeModeValue,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.theme),
@@ -157,7 +138,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: DropdownMenu(
                         controller: languageController,
                         expandedInsets: EdgeInsets.zero,
-                        dropdownMenuEntries: languageEntries,
+                        dropdownMenuEntries: getLanguageEntries(context),
                         initialSelection: languageValue,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.language),
@@ -174,7 +155,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         controller: instrumentController,
                         expandedInsets: EdgeInsets.zero,
                         enableSearch: false,
-                        dropdownMenuEntries: instrumentEntries,
+                        dropdownMenuEntries: getInstrumentEntries(context),
                         initialSelection: instrumentValue,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.instrument),
@@ -191,7 +172,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         controller: countInEffectController,
                         expandedInsets: EdgeInsets.zero,
                         enableSearch: false,
-                        dropdownMenuEntries: countInEffectEntries,
+                        dropdownMenuEntries: getCountInEntries(context),
                         initialSelection: countInEffectValue,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.countInEffect),
@@ -263,5 +244,35 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         )
     );
+  }
+  
+  List<DropdownMenuEntry> getThemeModeEntries(BuildContext context) {
+    return  [
+      DropdownMenuEntry(value: 'DARK', label: AppLocalizations.of(context)!.dark), 
+      DropdownMenuEntry(value: 'LIGHT', label: AppLocalizations.of(context)!.light)
+    ];
+  }
+
+  List<DropdownMenuEntry> getLanguageEntries(BuildContext context) {
+    return [
+      DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('US', width: 30, height:20), value: 'en', label: AppLocalizations.of(context)!.en), 
+      DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('BG', width: 30, height: 20), value: 'bg', label: AppLocalizations.of(context)!.bg),
+      DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('ES', width: 30, height: 20), value: 'es', label: AppLocalizations.of(context)!.es)
+    ];
+  }
+
+  List<DropdownMenuEntry> getInstrumentEntries(BuildContext context) {
+    return  [
+      DropdownMenuEntry(value: 'PIANO', label: AppLocalizations.of(context)!.piano), 
+      DropdownMenuEntry(value: 'GUITAR', label: AppLocalizations.of(context)!.guitar),
+      DropdownMenuEntry(value: 'UKULELE', label: AppLocalizations.of(context)!.ukulele),
+    ];
+  }
+
+  List<DropdownMenuEntry> getCountInEntries(BuildContext context) {
+    return [
+      DropdownMenuEntry(value: 'FINGERCLICK', label: AppLocalizations.of(context)!.fingerclick), 
+      DropdownMenuEntry(value: 'METRONOME', label: AppLocalizations.of(context)!.metronome)
+    ];
   }
 }

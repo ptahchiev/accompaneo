@@ -62,6 +62,20 @@
   "selectCountInEffect": "Изберете отбройтелен ефект",
   "invalidCountInEffect": "Невалиден отбройтелен ефект",
 
+  "light" : "Светла",
+  "dark" : "Тъмна",
+
+  "en" : "Английски",
+  "bg" : "Български",
+  "es" : "Испански",  
+
+  "piano": "Пиано",
+  "guitar": "Китара",
+  "ukulele": "Укулеле",
+
+  "fingerclick": "Щракане с пръсти",
+  "metronome": "Метроном",
+
   "settingsUpdated" : "Настройките са променени",    
 
   "newPlaylist": "Нов плейлист",

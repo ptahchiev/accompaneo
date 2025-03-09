@@ -62,6 +62,20 @@
   "selectCountInEffect": "Select count-in effect",
   "invalidCountInEffect": "Invalid count-in effect",
   
+  "light" : "Light",
+  "dark" : "Dark",
+
+  "en" : "English",
+  "bg" : "Bulgarian",
+  "es" : "Spanish",  
+
+  "piano": "Piano",
+  "guitar": "Guitar",
+  "ukulele": "Ukulele",
+
+  "fingerclick": "Fingerclick",
+  "metronome": "Metronome",
+
   "settingsUpdated" : "Settings updated",
 
   "newPlaylist": "New Playlist",

@@ -125,7 +125,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             children: [
               Text(
                 AppLocalizations.of(context)!.iHaveAnAccount,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
               TextButton(
                 onPressed: () => NavigationHelper.pushReplacementNamed(

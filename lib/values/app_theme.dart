@@ -113,6 +113,7 @@ class AppTheme {
         foregroundColor: Colors.black,
         backgroundColor: AppColors.primaryColor,
         disabledBackgroundColor: Colors.grey.shade300,
+        disabledForegroundColor: Colors.grey.shade500,
         minimumSize: const Size(double.infinity, 52),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -223,6 +224,7 @@ class AppTheme {
         foregroundColor: Colors.black,
         backgroundColor: AppColors.primaryColor,
         disabledBackgroundColor: Colors.grey.shade300,
+        disabledForegroundColor: Colors.grey.shade500,
         minimumSize: const Size(double.infinity, 52),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
