@@ -439,7 +439,85 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                 ]))
                       ],
                     ),
-                    Icon(Icons.directions_transit)
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Wrap(
+                            children: [
+                              Text("Title: ", style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium!
+                                  .copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text(song.name,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall!
+                                  .copyWith(color: Colors.white)),
+                            ],
+                          ),
+                          Wrap(
+                            children: [
+                              Text("Artist: ", style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium!
+                                  .copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text(song.artist.name,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall!
+                                  .copyWith(color: Colors.white)),
+                            ],
+                          ),
+                          // Wrap(
+                          //   children: [
+                          //     Text("Key: ", style: Theme.of(context)
+                          //         .textTheme
+                          //         .headlineMedium!
+                          //         .copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                          //     Text(song.key ?? '',
+                          //     textAlign: TextAlign.center,
+                          //     style: Theme.of(context)
+                          //         .textTheme
+                          //         .headlineSmall!
+                          //         .copyWith(color: Colors.white)),
+                          //   ],
+                          // ),
+                          Wrap(
+                            children: [
+                              Text("Tempo: ", style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium!
+                                  .copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text("${song.bpm.roundToDouble()}",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall!
+                                  .copyWith(color: Colors.white)),
+                            ],
+                          ), 
+                          Wrap(
+                            children: [
+                              Text("Chords: ", style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium!
+                                  .copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text(song.chords!.join(","),
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall!
+                                    .copyWith(color: Colors.white)
+                              )
+                            ],
+                          ),
+                        ]
+                      ),
+                    )
                   ],
                 ))
             : Container();
