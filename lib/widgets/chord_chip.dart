@@ -28,6 +28,12 @@ class ChordChip extends FacetChip {
   }
 
   Color? getChordColor(String chord) {
-    return ChordsHelper.chordTypeColors[ChordType.values.firstWhere((e) => e.toString() == 'ChordType.$chord', orElse: () => ChordType.UNKNOWN)];
+    ChordType chordType = ChordType.values.firstWhere((e) => e.toString() == 'ChordType.$chord', orElse: () => ChordType.UNKNOWN);
+    AccompaneoChord? ac = ChordsHelper.accompaneoChords[chordType];
+    if (ac == null) {
+      return Colors.black;
+    }
+
+    return ac.color;
   }
 }

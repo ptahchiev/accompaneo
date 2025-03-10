@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:accompaneo/models/playlists.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/position_data.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:guitar_chord_library/guitar_chord_library.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -510,11 +512,11 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    var _selection = 'Guitar';
+    var _selection = Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType;
     var _useFlat = false;
 
-    var instrument = (_selection == null || _selection == 'Guitar')
-        ? GuitarChordLibrary.instrument()
+    var instrument = (_selection == null || _selection == 'GUITAR')
+        ? GuitarChordLibrary.instrument(InstrumentType.guitar)
         : GuitarChordLibrary.instrument(InstrumentType.ukulele);
 
     List<String> keys = instrument.getKeys(_useFlat);

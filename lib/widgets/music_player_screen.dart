@@ -282,12 +282,20 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
           [];
       nextChord = nextChords.isNotEmpty ? nextChords.first : null;
     }
-    var instrument = GuitarChordLibrary.instrument(InstrumentType.guitar);
-    ChordType chord = nextChord != null
+
+    var _selection = Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType;
+    var _useFlat = false;
+
+    var instrument = (_selection == null || _selection == 'GUITAR')
+        ? GuitarChordLibrary.instrument(InstrumentType.guitar)
+        : GuitarChordLibrary.instrument(InstrumentType.ukulele);
+
+    ChordType chordType = nextChord != null
         ? ChordsHelper.stringToChord(nextChord.name!)
         : ChordType.UNKNOWN;
-    FlutterGuitarChord position =
-        ChordsHelper.chordTypeOptions[chord] ?? ChordsHelper.UNKNOWN;
+
+    AccompaneoChord accompaneoChord = ChordsHelper.accompaneoChords[chordType] ?? AccompaneoChord("", "", Colors.black);
+    ChordPosition c = instrument.getChordPositions(accompaneoChord.prefix, accompaneoChord.suffix)![0];
 
     return Column(
       children: [
@@ -307,7 +315,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                 padding: const EdgeInsets.all(Dimensions.smallMargin),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: ChordsHelper.chordTypeColors[chord],
+                  color: accompaneoChord.color,
                   border: Border.all(color: Colors.white),
                 ),
                 child: Text(
@@ -326,15 +334,14 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             horizontal: portrait ? MediaQuery.of(context).size.height / 10 : 0,
           ),
           child: FlutterGuitarChord(
-            baseFret: position.baseFret,
-            chordName: chord.name,
-            fingers: position.fingers,
-            frets: position.frets,
+            baseFret: c.baseFret,
+            chordName: chordType.name,
+            fingers: c.fingers,
+            frets: c.frets,
             totalString: instrument.stringCount,
             stringStroke: 0.4,
             tabForegroundColor: Colors.white,
-            tabBackgroundColor:
-                ChordsHelper.chordTypeColors[chord] ?? Colors.black,
+            tabBackgroundColor: accompaneoChord.color,
             firstFrameStroke: 10,
             barStroke: 0.5,
             showLabel: false,

@@ -2,6 +2,7 @@ import 'package:accompaneo/models/playlists.dart';
 import 'package:accompaneo/models/settings_data.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/utils/helpers/snackbar_helper.dart';
+import 'package:accompaneo/values/app_colors.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +26,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String? themeModeValue;
+  final List<bool> _selectedThemes = [false, false];
+  final List<bool> _selectedInstruments = <bool>[false, false, false];
+
   String? languageValue;
-  String? instrumentValue;
   String? countInEffectValue;
 
   List<Color> colorHistory = [];
@@ -109,22 +111,52 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Text(AppLocalizations.of(context)!.theme),
                     Padding(
                       padding: EdgeInsets.only(bottom:20),
-                      child: DropdownMenu(
-                        controller: themeModeController,
-                        expandedInsets: EdgeInsets.zero,
-                        dropdownMenuEntries: getThemeModeEntries(context),
-                        initialSelection: themeModeValue ?? Provider.of<PlaylistsModel>(context, listen: true).getSettings().themeMode,
-                        requestFocusOnTap: true,
-                        label: Text(AppLocalizations.of(context)!.theme),
-                        onSelected: (value) {
+                      child: ToggleButtons(
+                        direction: Axis.horizontal,
+                        onPressed: (int index) {
                           setState(() {
-                            themeModeValue = value;
+                            for (int i = 0; i < _selectedThemes.length; i++) {
+                              _selectedThemes[i] = i == index;
+                            }
                           });
                         },
+                        borderRadius: const BorderRadius.all(Radius.circular(8)),
+                        selectedBorderColor: AppColors.primaryColor,
+                        selectedColor: Colors.white,
+                        fillColor: AppColors.primaryColor,
+                        color: AppColors.primaryColor,
+                        constraints: const BoxConstraints(minHeight: 40.0, minWidth: 80.0),
+                        isSelected: _selectedThemes.contains(true) ? _selectedThemes : [Provider.of<PlaylistsModel>(context, listen: false).getSettings().themeMode == 'LIGHT', Provider.of<PlaylistsModel>(context, listen: false).getSettings().themeMode == 'DARK'],
+                        children: getThemeModeEntries(context),
                       ),
                     ),
+
+                    Text(AppLocalizations.of(context)!.instrument, style : Theme.of(context).textTheme.titleSmall),
+                    Padding(
+                      padding: EdgeInsets.only(bottom:20),
+                      child: ToggleButtons(
+                        direction: Axis.horizontal,
+                        onPressed: (int index) {
+                          setState(() {
+                            for (int i = 0; i < _selectedInstruments.length; i++) {
+                              _selectedInstruments[i] = i == index;
+                            }
+                          });
+                        },
+                        borderRadius: const BorderRadius.all(Radius.circular(8)),
+                        selectedBorderColor: AppColors.primaryColor,
+                        selectedColor: Colors.white,
+                        fillColor: AppColors.primaryColor,
+                        color: AppColors.primaryColor,
+                        constraints: const BoxConstraints(minHeight: 40.0, minWidth: 80.0),
+                        isSelected: _selectedInstruments.contains(true) ? _selectedInstruments : [Provider.of<PlaylistsModel>(context, listen: false).getSettings().instrumentType == 'PIANO', Provider.of<PlaylistsModel>(context, listen: false).getSettings().instrumentType == 'GUITAR', Provider.of<PlaylistsModel>(context, listen: false).getSettings().instrumentType == 'UKULELE'],
+                        children: getInstrumentEntries(context),
+                      ),
+                    ),
+
                     Padding(
                       padding: EdgeInsets.only(bottom:20),
                       child: DropdownMenu(
@@ -137,23 +169,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         onSelected: (value) {
                           setState(() {
                             languageValue = value;
-                          });
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom:20),
-                      child: DropdownMenu(
-                        controller: instrumentController,
-                        expandedInsets: EdgeInsets.zero,
-                        enableSearch: false,
-                        dropdownMenuEntries: getInstrumentEntries(context),
-                        initialSelection: instrumentValue ?? Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType,
-                        requestFocusOnTap: true,
-                        label: Text(AppLocalizations.of(context)!.instrument),
-                        onSelected: (value) {
-                          setState(() {
-                            instrumentValue = value;
                           });
                         },
                       ),
@@ -184,8 +199,8 @@ class _SettingsPageState extends State<SettingsPage> {
                             onPressed: isValid
                                 ? () {
                                     SettingsData settingsData = SettingsData(
-                                      themeMode: themeModeValue ?? Provider.of<PlaylistsModel>(context, listen: false).getSettings().themeMode, 
-                                      instrumentType: instrumentValue ?? Provider.of<PlaylistsModel>(context, listen: false).getSettings().instrumentType, 
+                                      themeMode: getSelectedThemeMode(), 
+                                      instrumentType: getSelectedInstrument(),
                                       countInEffect: countInEffectValue ?? Provider.of<PlaylistsModel>(context, listen: false).getSettings().countInEffect, 
                                       sessionLocale: languageValue != null ? Locale(languageValue!) : Provider.of<PlaylistsModel>(context, listen: false).getSettings().sessionLocale
                                     );
@@ -237,27 +252,74 @@ class _SettingsPageState extends State<SettingsPage> {
         )
     );
   }
+
+  String getSelectedThemeMode() {
+    if (_selectedThemes[0]) {
+      return "LIGHT";
+    }
+    if (_selectedThemes[1]) {
+      return "DARK";
+    }
+    return Provider.of<PlaylistsModel>(context, listen: false).getSettings().themeMode;
+  }
+
+  String getSelectedInstrument() {
+    if (_selectedInstruments[0]) {
+      return "PIANO";
+    }
+    if (_selectedInstruments[1]) {
+      return "GUITAR";
+    }
+    if (_selectedInstruments[2]) {
+      return "UKULELE";
+    }
+    return Provider.of<PlaylistsModel>(context, listen: false).getSettings().instrumentType;
+  }
   
-  List<DropdownMenuEntry> getThemeModeEntries(BuildContext context) {
+  List<Widget> getThemeModeEntries(BuildContext context) {
     return  [
-      DropdownMenuEntry(value: 'DARK', label: AppLocalizations.of(context)!.dark), 
-      DropdownMenuEntry(value: 'LIGHT', label: AppLocalizations.of(context)!.light)
+      Wrap(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5),
+            child: Icon(Icons.light_mode)
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+            child: Text(AppLocalizations.of(context)!.light)
+          )
+
+        ]
+      ),
+      Wrap(
+        children: [
+          Padding(
+            padding:EdgeInsets.symmetric(horizontal: 5),
+            child: Icon(Icons.dark_mode),
+          ),
+
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+            child: Text(AppLocalizations.of(context)!.dark)
+          )
+        ]
+      ),
     ];
   }
+
+  List<Widget> getInstrumentEntries(BuildContext context) {
+    return  [
+      Text(AppLocalizations.of(context)!.piano),
+      Text(AppLocalizations.of(context)!.guitar),
+      Text(AppLocalizations.of(context)!.ukulele)
+    ];
+  }  
 
   List<DropdownMenuEntry> getLanguageEntries(BuildContext context) {
     return [
       DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('US', width: 30, height:20), value: 'en', label: AppLocalizations.of(context)!.en), 
       DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('BG', width: 30, height: 20), value: 'bg', label: AppLocalizations.of(context)!.bg),
       DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('ES', width: 30, height: 20), value: 'es', label: AppLocalizations.of(context)!.es)
-    ];
-  }
-
-  List<DropdownMenuEntry> getInstrumentEntries(BuildContext context) {
-    return  [
-      DropdownMenuEntry(value: 'PIANO', label: AppLocalizations.of(context)!.piano), 
-      DropdownMenuEntry(value: 'GUITAR', label: AppLocalizations.of(context)!.guitar),
-      DropdownMenuEntry(value: 'UKULELE', label: AppLocalizations.of(context)!.ukulele),
     ];
   }
 

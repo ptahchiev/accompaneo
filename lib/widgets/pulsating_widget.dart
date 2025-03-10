@@ -72,6 +72,8 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
   @override
   Widget build(BuildContext context) {
     ChordType chord = ChordsHelper.stringToChord(widget.title);
+    AccompaneoChord? ac = ChordsHelper.accompaneoChords[chord];
+
     return Stack(
       alignment: AlignmentDirectional.center,
       children: [
@@ -93,7 +95,7 @@ class _PulsatingWidgetState extends State<PulsatingWidget>
             decoration: BoxDecoration(
               color: chord == ChordType.UNKNOWN
                   ? Colors.white
-                  : ChordsHelper.chordTypeColors[chord],
+                  : ac != null ? ac.color : Colors.black,
               border: Border.all(
                   color:
                       chord == ChordType.UNKNOWN ? Colors.orange : Colors.white,
