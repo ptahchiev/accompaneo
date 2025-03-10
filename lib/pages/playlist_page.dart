@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert' as convert;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:accompaneo/models/facet_value.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlists.dart';
@@ -20,6 +20,7 @@ import 'package:accompaneo/widgets/practice_type_chip.dart';
 import 'package:accompaneo/widgets/range_chip.dart';
 import 'package:accompaneo/widgets/select_playlist_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -185,6 +186,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
   @override
   void dispose() {
     _pagingController.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
     super.dispose();
   }
 
@@ -417,10 +419,10 @@ class _PageResultsState extends State<PageResults> {
                 maxLines: 1,
                 textDirection: TextDirection.ltr,
               )..layout(maxWidth: constraints.maxWidth);
-      
+
               double textWidth = textPainter.width;
               double remainingWidth = constraints.maxWidth - textWidth - 20;
-      
+
               Widget textWidget = Container(
                 child: Text(
                   playlistName,
@@ -567,7 +569,11 @@ class _PageResultsState extends State<PageResults> {
             }
           });
         },
-        title: Text(song.name, style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(song.name,
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge!
+                .copyWith(fontWeight: FontWeight.bold)),
         subtitle:
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(song.artist.name, style: Theme.of(context).textTheme.bodySmall),
@@ -579,7 +585,11 @@ class _PageResultsState extends State<PageResults> {
                     decoration: BoxDecoration(
                         color: Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(5)),
-                    child: Text(ch, style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black))))
+                    child: Text(ch,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall!
+                            .copyWith(color: Colors.black))))
                 .toList(),
           )
         ]),
@@ -595,7 +605,8 @@ class _PageResultsState extends State<PageResults> {
                         .then((v) {
                       Provider.of<PlaylistsModel>(context, listen: false)
                           .removeSongFromFavourites(song);
-                      SnackbarHelper.showSnackBar(AppLocalizations.of(context)!.songRemovedFromFavourites);
+                      SnackbarHelper.showSnackBar(AppLocalizations.of(context)!
+                          .songRemovedFromFavourites);
                       song.favoured = false;
                       setState(() {
                         //futurePlaylist = Future.value(snapshot.data);
@@ -605,7 +616,8 @@ class _PageResultsState extends State<PageResults> {
                     ApiService.addSongToFavouritesPlaylist(song.code).then((v) {
                       Provider.of<PlaylistsModel>(context, listen: false)
                           .addSongToFavourites(song);
-                      SnackbarHelper.showSnackBar(AppLocalizations.of(context)!.songAddedToFavourites);
+                      SnackbarHelper.showSnackBar(
+                          AppLocalizations.of(context)!.songAddedToFavourites);
                       song.favoured = true;
                       setState(() {
                         //futurePlaylist = Future.value(snapshot.data);
@@ -663,7 +675,8 @@ class _PageResultsState extends State<PageResults> {
                         Provider.of<PlaylistsModel>(context, listen: false)
                             .removeSongFromPlaylist(widget.playlist.code, song);
                         SnackbarHelper.showSnackBar(
-                            AppLocalizations.of(context)!.songRemovedFromPlaylist);
+                            AppLocalizations.of(context)!
+                                .songRemovedFromPlaylist);
                       } else {
                         var jsonResponse = convert.jsonDecode(response.body)
                             as Map<String, dynamic>;
@@ -731,7 +744,8 @@ class _PageResultsState extends State<PageResults> {
                   ? TextField(
                       controller: searchController,
                       decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context)!.searchForSongsArtists,
+                        hintText:
+                            AppLocalizations.of(context)!.searchForSongsArtists,
                         hintStyle: const TextStyle(color: Colors.grey),
                         contentPadding: const EdgeInsets.all(15),
                         prefixIcon: const Icon(Icons.search),

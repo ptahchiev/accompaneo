@@ -5,8 +5,8 @@ import 'package:accompaneo/models/simple_playlist.dart';
 import 'package:accompaneo/services/api_service.dart';
 import 'package:accompaneo/values/app_colors.dart';
 import 'package:accompaneo/widgets/placeholders.dart';
-import 'package:flutter/material.dart';
 import 'package:accompaneo/widgets/section_widget.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -18,7 +18,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   late Future<HomepageSections> futureHomepageSections;
 
   @override
@@ -40,10 +39,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      triggerMode: RefreshIndicatorTriggerMode.anywhere,
-      color: AppColors.primaryColor,
-      onRefresh: _pullRefresh,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        triggerMode: RefreshIndicatorTriggerMode.anywhere,
+        color: AppColors.primaryColor,
+        onRefresh: _pullRefresh,
         child: Scaffold(
         resizeToAvoidBottomInset:false,
         body: FutureBuilder<HomepageSections>(
