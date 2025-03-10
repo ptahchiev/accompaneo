@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
           GradientBackground(
             children: [
               Text(
-                AppLocalizations.of(context)!.signInToYourAccount,
+                AppLocalizations.of(context)!.accompaneo,
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Colors.white),
               ),
               SizedBox(height: 6),
@@ -147,8 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                             passwordObscure
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
-                            size: 20,
-                            color: Colors.black,
+                            size: 20
                           ),
                         ),
                       );
@@ -196,9 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
                           AppLocalizations.of(context)!.orLoginWith,
-                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: Colors.black,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
                         ),
                       ),
                       Expanded(child: Divider(color: Colors.grey.shade200)),
@@ -226,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                           icon: SvgPicture.asset(Vectors.google, width: 14),
                           label: Text(
                             AppLocalizations.of(context)!.google,
-                            style: TextStyle(color: Colors.black),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
                       ),
@@ -250,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                           icon: SvgPicture.asset(Vectors.facebook, width: 14),
                           label: Text(
                             AppLocalizations.of(context)!.facebook,
-                            style: TextStyle(color: Colors.black),
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
                       ),
@@ -265,7 +262,7 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               Text(
                 AppLocalizations.of(context)!.doNotHaveAnAccount,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(width: 4),
               TextButton(

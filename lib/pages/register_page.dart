@@ -271,7 +271,7 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               Text(
                 AppLocalizations.of(context)!.iHaveAnAccount,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
               TextButton(
                 onPressed: () => NavigationHelper.pushReplacementNamed(

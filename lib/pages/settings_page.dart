@@ -25,29 +25,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final List<DropdownMenuEntry> themeModeEntries = [
-    DropdownMenuEntry(value: 'DARK', label: 'Dark'), 
-    DropdownMenuEntry(value: 'LIGHT', label: 'Light')
-  ];
-
-  final List<DropdownMenuEntry> languageEntries = [DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('US', width: 30, height:20), value: 'en', label: 'English'), DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('BG', width: 30, height: 20), value: 'bg', label: 'Bulgarian')];
-  final List<DropdownMenuEntry> instrumentEntries = [
-    DropdownMenuEntry(value: 'PIANO', label: 'Piano'), 
-    DropdownMenuEntry(value: 'GUITAR', label: 'Guitar'),
-    DropdownMenuEntry(value: 'UKULELE', label: 'Ukulele'),
-  ];
-  
-  final List<DropdownMenuEntry> countInEffectEntries = [
-    DropdownMenuEntry(value: 'FINGERCLICK', label: 'Fingerclick'), 
-    DropdownMenuEntry(value: 'METRONOME', label: 'Metronome')
-  ];
-
-  String themeModeValue = 'LIGHT';
-  String languageValue = 'en';
-  String instrumentValue = 'PIANO';
-  String countInEffectValue = 'FINGERCLICK';
-
-  late Color dialogSelectColor = Colors.red;
+  String? themeModeValue;
+  String? languageValue;
+  String? instrumentValue;
+  String? countInEffectValue;
 
   List<Color> colorHistory = [];
   Color currentColor = Colors.amber;
@@ -90,18 +71,10 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
     initializeControllers();
 
-    SettingsData settingsData = Provider.of<PlaylistsModel>(context, listen: false).getSettings();
-    setState(() {
-      themeModeValue = settingsData.themeMode;
-      languageValue = settingsData.sessionLocale.languageCode;
-      instrumentValue = settingsData.instrumentType;
-      countInEffectValue = settingsData.countInEffect;
-    });
-
-    themeModeController.value = TextEditingValue(text: settingsData.themeMode);
-    languageController.value = TextEditingValue(text: settingsData.sessionLocale.languageCode);
-    instrumentController.value = TextEditingValue(text: settingsData.instrumentType);
-    countInEffectController.value = TextEditingValue(text: settingsData.countInEffect);
+    // themeModeController.value = TextEditingValue(text: settingsData.themeMode);
+    // languageController.value = TextEditingValue(text: settingsData.sessionLocale.languageCode);
+    // instrumentController.value = TextEditingValue(text: settingsData.instrumentType);
+    // countInEffectController.value = TextEditingValue(text: settingsData.countInEffect);
   }
 
   @override
@@ -141,8 +114,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: DropdownMenu(
                         controller: themeModeController,
                         expandedInsets: EdgeInsets.zero,
-                        dropdownMenuEntries: themeModeEntries,
-                        initialSelection: themeModeValue,
+                        dropdownMenuEntries: getThemeModeEntries(context),
+                        initialSelection: themeModeValue ?? Provider.of<PlaylistsModel>(context, listen: true).getSettings().themeMode,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.theme),
                         onSelected: (value) {
@@ -157,8 +130,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: DropdownMenu(
                         controller: languageController,
                         expandedInsets: EdgeInsets.zero,
-                        dropdownMenuEntries: languageEntries,
-                        initialSelection: languageValue,
+                        dropdownMenuEntries: getLanguageEntries(context),
+                        initialSelection: languageValue ?? Provider.of<PlaylistsModel>(context, listen: true).getSettings().sessionLocale.languageCode,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.language),
                         onSelected: (value) {
@@ -174,8 +147,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         controller: instrumentController,
                         expandedInsets: EdgeInsets.zero,
                         enableSearch: false,
-                        dropdownMenuEntries: instrumentEntries,
-                        initialSelection: instrumentValue,
+                        dropdownMenuEntries: getInstrumentEntries(context),
+                        initialSelection: instrumentValue ?? Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.instrument),
                         onSelected: (value) {
@@ -191,8 +164,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         controller: countInEffectController,
                         expandedInsets: EdgeInsets.zero,
                         enableSearch: false,
-                        dropdownMenuEntries: countInEffectEntries,
-                        initialSelection: countInEffectValue,
+                        dropdownMenuEntries: getCountInEntries(context),
+                        initialSelection: countInEffectValue ?? Provider.of<PlaylistsModel>(context, listen: true).getSettings().countInEffect,
                         requestFocusOnTap: true,
                         label: Text(AppLocalizations.of(context)!.countInEffect),
                         onSelected: (value) {
@@ -211,10 +184,10 @@ class _SettingsPageState extends State<SettingsPage> {
                             onPressed: isValid
                                 ? () {
                                     SettingsData settingsData = SettingsData(
-                                      themeMode: themeModeValue, 
-                                      instrumentType: instrumentValue, 
-                                      countInEffect: countInEffectValue, 
-                                      sessionLocale: Locale(languageValue)
+                                      themeMode: themeModeValue ?? Provider.of<PlaylistsModel>(context, listen: false).getSettings().themeMode, 
+                                      instrumentType: instrumentValue ?? Provider.of<PlaylistsModel>(context, listen: false).getSettings().instrumentType, 
+                                      countInEffect: countInEffectValue ?? Provider.of<PlaylistsModel>(context, listen: false).getSettings().countInEffect, 
+                                      sessionLocale: languageValue != null ? Locale(languageValue!) : Provider.of<PlaylistsModel>(context, listen: false).getSettings().sessionLocale
                                     );
                                   
                                     final result = ApiService.updateSettings(settingsData);
@@ -263,5 +236,35 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         )
     );
+  }
+  
+  List<DropdownMenuEntry> getThemeModeEntries(BuildContext context) {
+    return  [
+      DropdownMenuEntry(value: 'DARK', label: AppLocalizations.of(context)!.dark), 
+      DropdownMenuEntry(value: 'LIGHT', label: AppLocalizations.of(context)!.light)
+    ];
+  }
+
+  List<DropdownMenuEntry> getLanguageEntries(BuildContext context) {
+    return [
+      DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('US', width: 30, height:20), value: 'en', label: AppLocalizations.of(context)!.en), 
+      DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('BG', width: 30, height: 20), value: 'bg', label: AppLocalizations.of(context)!.bg),
+      DropdownMenuEntry(leadingIcon: CountryFlag.fromCountryCode('ES', width: 30, height: 20), value: 'es', label: AppLocalizations.of(context)!.es)
+    ];
+  }
+
+  List<DropdownMenuEntry> getInstrumentEntries(BuildContext context) {
+    return  [
+      DropdownMenuEntry(value: 'PIANO', label: AppLocalizations.of(context)!.piano), 
+      DropdownMenuEntry(value: 'GUITAR', label: AppLocalizations.of(context)!.guitar),
+      DropdownMenuEntry(value: 'UKULELE', label: AppLocalizations.of(context)!.ukulele),
+    ];
+  }
+
+  List<DropdownMenuEntry> getCountInEntries(BuildContext context) {
+    return [
+      DropdownMenuEntry(value: 'FINGERCLICK', label: AppLocalizations.of(context)!.fingerclick), 
+      DropdownMenuEntry(value: 'METRONOME', label: AppLocalizations.of(context)!.metronome)
+    ];
   }
 }

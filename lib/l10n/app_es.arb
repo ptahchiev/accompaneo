@@ -26,6 +26,12 @@
   "registrationComplete": "Registration Complete!",
   "profileUpdated": "Profile Updated!",
 
+  "artists" : "Artists",
+  "mostPopular" : "Most Popular",
+  "latest" : "Latest",
+  "jumpBackIn" : "Jump back in",
+  "yourFavourites" : "Your Favourites",
+
   "name": "Name",
   "pleaseEnterName": "Please, Enter Name",
   "invalidName": "Invalid Name",
@@ -62,6 +68,20 @@
   "selectCountInEffect": "Select count-in effect",
   "invalidCountInEffect": "Invalid count-in effect",
   
+  "light" : "Light",
+  "dark" : "Dark",
+
+  "en" : "English",
+  "bg" : "Bulgarian",
+  "es" : "Spanish",  
+
+  "piano": "Piano",
+  "guitar": "Guitar",
+  "ukulele": "Ukulele",
+
+  "fingerclick": "Fingerclick",
+  "metronome": "Metronome",
+
   "settingsUpdated" : "Settings updated",
 
   "newPlaylist": "New Playlist",
@@ -69,6 +89,9 @@
   "pleaseEnterPlaylistName": "Please, Enter Playlist Name",
   "invalidPlaylistName": "Invalid Playlist Name",
 
+  "songsByX" : "Songs by {artist}",
+
+  "nSongs": "{count, plural, =0{no songs} =1{1 song} other{{count} songs}}",
   "selectPlaylist": "Select Playlist",
   "playlistCreated": "Playlist created successfully",
   "playlistDeleted": "Playlist deleted successfully",
@@ -100,5 +123,12 @@
   "tempo" : "Tempo",
 
   "addToPlaylist" : "Add to playlist",
-  "viewAllSongsByArtists" : "View All Songs By Artist"
+  "viewAllSongsByArtists" : "View All Songs By Artist",
+
+  "play" : "PLAY",
+  "about" : "ABOUT",
+  "practice": "Practice",
+  "band" : "Band",
+  "plusVocals" : "+Vocals",
+  "click" : "Click"
 }

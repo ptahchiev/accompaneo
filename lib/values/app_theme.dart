@@ -84,7 +84,7 @@ class AppTheme {
       enabledBorder: darkTextFormFieldBorder,
       labelStyle: TextStyle(
         fontSize: 17,
-        color: Colors.white,
+        color: Colors.grey,
         fontWeight: FontWeight.w500,
       ),
     ),
@@ -113,6 +113,7 @@ class AppTheme {
         foregroundColor: Colors.black,
         backgroundColor: AppColors.primaryColor,
         disabledBackgroundColor: Colors.grey.shade300,
+        disabledForegroundColor: Colors.grey.shade500,
         minimumSize: const Size(double.infinity, 52),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -164,7 +165,7 @@ class AppTheme {
       headlineMedium : TextStyle(
         fontWeight: FontWeight.bold,
         color: Colors.black,
-        fontSize: 16,
+        fontSize: 24,
         letterSpacing: 0.5,
       ),
       bodyMedium : TextStyle(
@@ -223,6 +224,7 @@ class AppTheme {
         foregroundColor: Colors.black,
         backgroundColor: AppColors.primaryColor,
         disabledBackgroundColor: Colors.grey.shade300,
+        disabledForegroundColor: Colors.grey.shade500,
         minimumSize: const Size(double.infinity, 52),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),

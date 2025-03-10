@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/position_data.dart';
 import 'package:accompaneo/services/api_service.dart';
@@ -264,8 +264,8 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                       fontSize: 20,
                     ),
                     tabs: [
-                      Tab(text: 'PLAY'),
-                      Tab(text: 'ABOUT'),
+                      Tab(text: AppLocalizations.of(context)!.play),
+                      Tab(text: AppLocalizations.of(context)!.about),
                     ],
                   ),
                 ),
@@ -338,28 +338,28 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                 // instead of a List<Widget> like ToggleButtons.
                                 segments: [
                                   ButtonSegment<PracticeType>(
-                                      label: Text('Practice'),
+                                      label: Text(AppLocalizations.of(context)!.practice),
                                       value: PracticeType.PracticeFull,
                                       enabled: song.audioStreams!
                                               .firstWhereOrNull((as) =>
                                                   as.type == 'PracticeFull') !=
                                           null),
                                   ButtonSegment<PracticeType>(
-                                      label: Text('Band'),
+                                      label: Text(AppLocalizations.of(context)!.band),
                                       value: PracticeType.BandNoVocals,
                                       enabled: song.audioStreams!
                                               .firstWhereOrNull((as) =>
                                                   as.type == 'BandNoVocals') !=
                                           null),
                                   ButtonSegment<PracticeType>(
-                                      label: Text('+Vocals'),
+                                      label: Text(AppLocalizations.of(context)!.plusVocals),
                                       value: PracticeType.BandFull,
                                       enabled: song.audioStreams!
                                               .firstWhereOrNull((as) =>
                                                   as.type == 'BandFull') !=
                                           null),
                                   ButtonSegment<PracticeType>(
-                                      label: Text('Click'),
+                                      label: Text(AppLocalizations.of(context)!.click),
                                       value: PracticeType.Click),
                                 ])),
                         Align(

@@ -36,16 +36,25 @@ class ApiService {
     var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
 
     if (response.statusCode == 200) {
+      SettingsData settingsData = SettingsData.fromJson(jsonResponse['settings']);
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('token', jsonResponse['token']);
+      prefs.setString("settingsData", jsonEncode(jsonResponse['settings']));
 
-      Provider.of<PlaylistsModel>(context, listen: false).setSettingsData(SettingsData.fromJson(jsonResponse['settings']));
+      Provider.of<PlaylistsModel>(context, listen: false).setSettingsData(settingsData);
 
       return await http.post(UrlHelper.buildUrlWithQueryParams('$baseUrl/user/login/success'), headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8', AppConstants.nemesisTokenHeader : jsonResponse['token']});
     } else {
       return response;
     }
   }
+
+  static Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("token");
+  }
+
 
   static Future<Response> register(Registration registration) async {
     return await http.post(UrlHelper.buildUrlWithQueryParams('$baseUrl/account/register'), headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8'}, body: jsonEncode(registration.toJson()));
@@ -289,6 +298,8 @@ class ApiService {
 
   static Future<Response> updateSettings(SettingsData settingsData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("settingsData", jsonEncode(settingsData.toJson()));
+
     Response response = await http.post(UrlHelper.buildUrlWithQueryParams('$baseUrl/settings'), headers: {'Content-Type': 'application/json; charset=UTF-8', AppConstants.nemesisTokenHeader : prefs.getString('token')!}, body: jsonEncode(settingsData.toJson()));
     if (response.statusCode == 401) {
       prefs.remove(AppConstants.nemesisTokenHeader).then((b){

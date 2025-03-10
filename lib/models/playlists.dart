@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:accompaneo/models/playlist.dart';
 import 'package:accompaneo/models/settings_data.dart';
 import 'package:accompaneo/utils/fixed_size_fifo_queue.dart';
 import 'package:collection/collection.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlaylistsModel extends ChangeNotifier {
 
@@ -30,7 +33,18 @@ class PlaylistsModel extends ChangeNotifier {
   }
 
   SettingsData getSettings() {
+    if (_settingsData == null) {
+      getSharedPreferencesSettingsData().then((sp) {
+        _settingsData = sp;
+      });
+      
+    }
     return _settingsData ?? SettingsData.empty();
+  }
+
+  Future<SettingsData> getSharedPreferencesSettingsData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return SettingsData.fromJson(jsonDecode(prefs.getString("settingsData") ?? "{}") as Map<String, dynamic>);
   }
 
   void setSettingsData(SettingsData settingsData) {
