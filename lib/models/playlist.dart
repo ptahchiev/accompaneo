@@ -27,6 +27,7 @@ class Playlist extends SimplePlaylist {
   );
 
 
+  @override
   Playlist copy({
     String? code,
     String? name,

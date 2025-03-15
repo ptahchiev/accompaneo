@@ -9,8 +9,8 @@ class PulsatingWidget extends StatefulWidget {
     required this.isActive,
     required this.title,
     this.whenActive,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final bool isActive;
   final String title;
   final Function? whenActive;

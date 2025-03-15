@@ -30,6 +30,30 @@ class ApiService {
 
   static Future<GoogleSignInAccount?> logoutWithGoogle() => _googleSignIn.signOut();
 
+  static Future<Response> loginWithFacebook(String accessToken, String state) async {
+    print('ac: $accessToken');
+
+    final response = await http.get(UrlHelper.buildUrlWithQueryParams('$baseUrl/oauth2/callback/facebook', queryParams: {'code' : accessToken, 'state' : state}));
+
+    var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode == 200) {
+      SettingsData settingsData = SettingsData.fromJson(jsonResponse['settings']);
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('token', jsonResponse['token']);
+      prefs.setString("settingsData", jsonEncode(jsonResponse['settings']));
+
+      //Provider.of<PlaylistsModel>(context, listen: false).setSettingsData(settingsData);
+
+      return response;
+      //return await http.post(UrlHelper.buildUrlWithQueryParams('$baseUrl/user/login/success'), headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8', AppConstants.nemesisTokenHeader : jsonResponse['token']});
+    } else {
+      return response;
+    }
+  }
+
+
   static Future<Response> login(BuildContext context, String username, String password) async {
     final response = await http.get(UrlHelper.buildUrlWithQueryParams('$baseUrl/auth'), headers: {'X-Nemesis-Username' : username, 'X-Nemesis-Password' : password});
 

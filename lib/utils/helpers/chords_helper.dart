@@ -1,6 +1,4 @@
-import 'package:accompaneo/values/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_guitar_chord/flutter_guitar_chord.dart';
 
 enum ChordType {
   A,

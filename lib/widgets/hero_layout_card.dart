@@ -1,6 +1,5 @@
 import 'package:accompaneo/models/browseable.dart';
 import 'package:accompaneo/models/song/song.dart';
-import 'package:accompaneo/values/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class HeroLayoutCard extends StatelessWidget {

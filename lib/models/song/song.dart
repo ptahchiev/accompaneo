@@ -36,6 +36,7 @@ class Song extends Browseable {
     audioStreams: json['audioStreams'] != null ? (json['audioStreams'] as List).map((e) => AudioStream.fromJson(e)).toList() : [],
   );
 
+  @override
   Map<String, dynamic> toJson() => {
     'code' : code,
     'name': name,

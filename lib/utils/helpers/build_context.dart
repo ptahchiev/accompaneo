@@ -68,7 +68,7 @@ extension BuildContextEntension<T> on BuildContext {
 
   Color get errorColor => Theme.of(this).colorScheme.error;
 
-  Color get background => Theme.of(this).colorScheme.background;
+  Color get background => Theme.of(this).colorScheme.surface;
 
   // // custome theme extensions, You must have to create theme extensions first
   // // you can use them with shortcuts as well

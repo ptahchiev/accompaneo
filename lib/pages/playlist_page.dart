@@ -241,8 +241,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
 }
 
 class PageProvider extends InheritedWidget {
-  PageProvider({
-    Key? key,
+  const PageProvider({
+    super.key,
     required this.pagingController,
     required this.isLoading,
     required this.queryTerm,
@@ -252,8 +252,8 @@ class PageProvider extends InheritedWidget {
     required this.loadMore,
     required this.toggleFilters,
     required this.tempRangeValuesChanged,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final PagingController<int, Song> pagingController;
   final bool isLoading;
@@ -327,7 +327,7 @@ class _PageResultsState extends State<PageResults> {
         return SimpleDialog(children: [
           ListTile(
               title: Text(AppLocalizations.of(context)!.deletePlaylist),
-              leading: Icon(Icons.add, size: 28),
+              leading: Icon(Icons.remove, size: 28),
               onTap: () {
                 final result = ApiService.deletePlaylist(playlistCode);
                 result.then((response) {

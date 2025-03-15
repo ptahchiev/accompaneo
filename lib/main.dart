@@ -159,7 +159,7 @@ class _AccompaneoState extends State<AccompaneoApp> {
 class Accompaneo extends StatelessWidget {
   final String? token;
 
-  Accompaneo({required this.token});
+  const Accompaneo({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {

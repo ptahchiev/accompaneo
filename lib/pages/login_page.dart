@@ -1,5 +1,6 @@
 import 'package:accompaneo/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 import '../utils/helpers/snackbar_helper.dart';
@@ -22,6 +23,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   
+  Map<String, dynamic>? _userData;
+  AccessToken? _accessToken;
+
   final _formKey = GlobalKey<FormState>();
 
   final ValueNotifier<bool> passwordNotifier = ValueNotifier(true);
@@ -75,10 +79,26 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> signInWithFacebook() async {
     // final LoginResult loginResult = await FacebookAuth.instance.login();
     // print(loginResult);
+    final LoginResult loginResult = await FacebookAuth.instance.login();
 
-
-
-
+    if (loginResult.status == LoginStatus.success) {
+      _accessToken = loginResult.accessToken; //tokenString
+      ApiService.loginWithFacebook(loginResult.accessToken!.tokenString, loginResult.status.name).then((response) {
+        if (response.statusCode == 200) {
+          NavigationHelper.pushReplacementNamed(AppRoutes.home);
+        } else {
+          var jsonResponse = convert.jsonDecode(response.body) as Map<String, dynamic>;
+          if (jsonResponse['message'] != null) {
+            SnackbarHelper.showSnackBar(jsonResponse['message'], isError: true);
+          } else {
+            SnackbarHelper.showSnackBar('Failed to login: ${response.statusCode}', isError: true);
+          }
+        }
+      });
+    } else {
+      print('ResultStatus: ${loginResult.status}');
+      print('Message: ${loginResult.message}');
+    }
   }
 
 

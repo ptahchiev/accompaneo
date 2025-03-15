@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 import '../values/app_colors.dart';
 
 class MusicPlayerScreen extends StatefulWidget {
-  MusicPlayerScreen({
+  const MusicPlayerScreen({super.key, 
     required this.clickPlayer,
     required this.musicData,
     required this.playStream,
@@ -42,7 +42,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   double _segmentProgress = -0.2;
 
   TimeSignature _globalTimeSignature = TimeSignature.empty();
-  double _circleSize = 30;
+  final double _circleSize = 30;
   bool _animationEnded = false;
   int beat = 0;
   String spent = "0:0";
@@ -283,10 +283,10 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       nextChord = nextChords.isNotEmpty ? nextChords.first : null;
     }
 
-    var _selection = Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType;
-    var _useFlat = false;
+    var selection = Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType;
+    var useFlat = false;
 
-    var instrument = (_selection == null || _selection == 'GUITAR')
+    var instrument = (selection == null || selection == 'GUITAR')
         ? GuitarChordLibrary.instrument(InstrumentType.guitar)
         : GuitarChordLibrary.instrument(InstrumentType.ukulele);
 
@@ -364,7 +364,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
           horizontal: Dimensions.padding, vertical: Dimensions.padding),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          List<Widget> _elements =
+          List<Widget> elements =
               widget.musicData.bars.mapIndexed((index, bar) {
             if (index < _currentSegmentIndex - 2 ||
                 index > _currentSegmentIndex + 2) {
@@ -390,7 +390,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               decoration: const BoxDecoration(
                 color: AppColors.darkerBlue,
               ),
-              child: Stack(children: _elements),
+              child: Stack(children: elements),
             ),
           );
         },
@@ -748,7 +748,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         children: List.generate(totalBeats, (index) {
           return Positioned(
             left: (segmentWidth * (index / totalBeats)),
-            child: Container(
+            child: SizedBox(
               height: _circleSize,
               width: _circleSize,
               child: Center(

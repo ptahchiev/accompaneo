@@ -22,6 +22,7 @@ class SimplePlaylist extends Browseable {
   });
 
 
+  @override
   SimplePlaylist copy({
     String? code,
     String? name,
@@ -49,6 +50,7 @@ class SimplePlaylist extends Browseable {
         latestPlayed: json['latestPlayed'] ?? false,
       );
 
+  @override
   Map<String, dynamic> toJson() => {
         'code': code,
         'name': name,

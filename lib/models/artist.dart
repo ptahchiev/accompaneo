@@ -15,6 +15,7 @@ class Artist extends Browseable{
         picture: json['picture'] ?? ''
       );
 
+  @override
   Map<String, dynamic> toJson() => {
         'code': code,
         'name': name,

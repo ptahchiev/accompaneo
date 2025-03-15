@@ -63,7 +63,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
     if (themeMode.isEmpty && color.isEmpty &&
         language.isEmpty &&
-        instrument.isEmpty) return;
+        instrument.isEmpty) {
+      return;
+    }
 
     fieldValidNotifier.value = true;
   }

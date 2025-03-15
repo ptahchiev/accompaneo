@@ -55,7 +55,9 @@ class _RegisterPageState extends State<RegisterPage> {
     if (name.isEmpty &&
         email.isEmpty &&
         password.isEmpty &&
-        confirmPassword.isEmpty) return;
+        confirmPassword.isEmpty) {
+      return;
+    }
 
     if (AppRegex.emailRegex.hasMatch(email) &&
         AppRegex.passwordRegex.hasMatch(password) &&

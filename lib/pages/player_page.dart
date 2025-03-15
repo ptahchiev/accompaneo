@@ -26,7 +26,7 @@ class PlayerPage extends StatefulWidget {
   const PlayerPage({super.key, required this.song});
 
   @override
-  State<PlayerPage> createState() => _PlayerPageState(song: this.song);
+  State<PlayerPage> createState() => _PlayerPageState(song: song);
 }
 
 T? ambiguate<T>(T? value) => value;
@@ -590,16 +590,16 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    var _selection = Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType;
-    var _useFlat = false;
+    var selection = Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType;
+    var useFlat = false;
 
-    var instrument = (_selection == null || _selection == 'GUITAR')
+    var instrument = (selection == null || selection == 'GUITAR')
         ? GuitarChordLibrary.instrument(InstrumentType.guitar)
         : GuitarChordLibrary.instrument(InstrumentType.ukulele);
 
-    List<String> keys = instrument.getKeys(_useFlat);
+    List<String> keys = instrument.getKeys(useFlat);
 
-    List<Chord>? chords = instrument.getChordsByKey('A', _useFlat);
+    List<Chord>? chords = instrument.getChordsByKey('A', useFlat);
 
     var index = 0;
     Chord chord = chords![index];
