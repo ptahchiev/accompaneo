@@ -345,6 +345,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             firstFrameStroke: 10,
             barStroke: 0.5,
             showLabel: false,
+            differentStringStrokes: true,
             barColor: Colors.grey,
           ),
         ),
