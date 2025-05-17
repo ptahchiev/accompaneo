@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:soundpool/soundpool.dart';
+//import 'package:soundpool/soundpool.dart';
 
 ///This class provides a stream that handles the click noise.
 ///
@@ -25,7 +25,7 @@ class ClickPlayer {
 
   late Duration period;
   final StreamController _controller = StreamController(sync: true);
-  final Soundpool _pool = Soundpool.fromOptions();
+  // final Soundpool _pool = Soundpool.fromOptions();
 
   int? _up;
   int? _down;
@@ -97,17 +97,17 @@ class ClickPlayer {
   }
 
   Future<void> _loadSounds() async {
-    _up = await rootBundle
-        .load("assets/effects/sfx_up.wav")
-        .then((ByteData soundData) {
-      return _pool.load(soundData);
-    });
+    // _up = await rootBundle
+    //     .load("assets/effects/sfx_up.wav")
+    //     .then((ByteData soundData) {
+    //   return _pool.load(soundData);
+    // });
 
-    _down = await rootBundle
-        .load("assets/effects/sfx_down.wav")
-        .then((ByteData soundData) {
-      return _pool.load(soundData);
-    });
+    // _down = await rootBundle
+    //     .load("assets/effects/sfx_down.wav")
+    //     .then((ByteData soundData) {
+    //   return _pool.load(soundData);
+    // });
   }
 
   Stream get stream => _controller.stream;
@@ -115,7 +115,7 @@ class ClickPlayer {
   void dispose() {
     if (disposed) return;
     _controller.close();
-    _pool.dispose();
+    //_pool.dispose();
     _timer.cancel();
     disposed = true;
   }

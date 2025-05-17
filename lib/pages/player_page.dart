@@ -593,7 +593,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
     var selection = Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType;
     var useFlat = false;
 
-    var instrument = (selection == null || selection == 'GUITAR')
+    var instrument = (selection == 'GUITAR')
         ? GuitarChordLibrary.instrument(InstrumentType.guitar)
         : GuitarChordLibrary.instrument(InstrumentType.ukulele);
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert' as convert;
 
+import 'package:accompaneo/models/artist.dart';
 import 'package:accompaneo/models/facet_value.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlists.dart';
@@ -579,8 +580,8 @@ class _PageResultsState extends State<PageResults> {
           Text(song.artist.name, style: Theme.of(context).textTheme.bodySmall),
           Wrap(
             spacing: 10,
-            children: song.chords!
-                .map<Widget>((ch) => Container(
+            children: song.chords
+                ?.map<Widget>((ch) => Container(
                     padding: EdgeInsets.all(3),
                     decoration: BoxDecoration(
                         color: Colors.grey.shade100,
@@ -590,7 +591,7 @@ class _PageResultsState extends State<PageResults> {
                             .textTheme
                             .bodySmall!
                             .copyWith(color: Colors.black))))
-                .toList(),
+                .toList() ?? [],
           )
         ]),
         trailing: Wrap(
@@ -639,20 +640,22 @@ class _PageResultsState extends State<PageResults> {
         loop: 0,
         enabled: true,
         child: SizedBox(
-            height: 300 * .7, // 70% height
+            height: 1800 * .7, // 70% height
             width: 400 * .9,
             child: SingleChildScrollView(
                 physics: NeverScrollableScrollPhysics(),
-                child: Column(children: [
-                  AppliedFacetsPlaceholder(),
-                  ListView.builder(
-                      itemCount: 50,
-                      shrinkWrap: true,
-                      physics: ClampingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return PlaylistElementPlaceholder();
-                      }),
-                ]))));
+                child: ListView.builder(
+                    itemCount: 10,
+                    padding: EdgeInsets.all(0),
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      //return playlistSong(Song(code: '', name: '', picture: "", artist: Artist(code: '', name: 'nmam', picture: ''), bpm: 0, favoured: false));
+                      
+                      
+                      return PlaylistElementPlaceholder();
+                    }
+                  ),
+                )));
   }
 
   Future<void> _songDialogBuilder(BuildContext context, Song song) {

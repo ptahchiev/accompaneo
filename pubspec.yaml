@@ -53,12 +53,12 @@ dependencies:
   just_audio_mpv: ^0.1.7
   just_audio_windows: ^0.2.2
   audio_session: ^0.1.23
-  soundpool: ^2.4.1
+  # soundpool: ^2.4.1
   rxdart: ^0.28.0
   flutter_guitar_chord: ^0.0.3
   guitar_chord_library: ^0.0.4
   reliable_interval_timer: ^1.0.2
-  sound_generator: ^0.0.12
+  # sound_generator: ^0.0.12
   shimmer: ^3.0.0
   cupertino_icons: ^1.0.8
   provider: ^6.1.2

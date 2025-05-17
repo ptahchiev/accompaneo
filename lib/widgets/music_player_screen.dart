@@ -284,9 +284,8 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     }
 
     var selection = Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType;
-    var useFlat = false;
 
-    var instrument = (selection == null || selection == 'GUITAR')
+    var instrument = (selection == 'GUITAR')
         ? GuitarChordLibrary.instrument(InstrumentType.guitar)
         : GuitarChordLibrary.instrument(InstrumentType.ukulele);
 
@@ -295,62 +294,71 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         : ChordType.UNKNOWN;
 
     AccompaneoChord accompaneoChord = ChordsHelper.accompaneoChords[chordType] ?? AccompaneoChord("", "", Colors.black);
-    ChordPosition c = instrument.getChordPositions(accompaneoChord.prefix, accompaneoChord.suffix)![0];
+    List<ChordPosition>? chordPositions = instrument.getChordPositions(accompaneoChord.prefix, accompaneoChord.suffix);
+    //if (chordPositions != null) {
+      //ChordPosition? c = chordPositions[0];
 
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Next: ',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            if (nextChord != null)
-              Container(
-                padding: const EdgeInsets.all(Dimensions.smallMargin),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: accompaneoChord.color,
-                  border: Border.all(color: Colors.white),
+      return Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Next: ',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
-                child: Text(
-                  '${nextChord.name}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
+              ),
+              if (nextChord != null)
+                Container(
+                  padding: const EdgeInsets.all(Dimensions.smallMargin),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: accompaneoChord.color,
+                    border: Border.all(color: Colors.white),
+                  ),
+                  child: Text(
+                    '${nextChord.name}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-          ],
-        ),
-        Container(
-          height: 200,
-          padding: EdgeInsets.symmetric(
-            horizontal: portrait ? MediaQuery.of(context).size.height / 10 : 0,
+            ],
           ),
-          child: FlutterGuitarChord(
-            baseFret: c.baseFret,
-            chordName: chordType.name,
-            fingers: c.fingers,
-            frets: c.frets,
-            totalString: instrument.stringCount,
-            stringStroke: 0.4,
-            tabForegroundColor: Colors.white,
-            tabBackgroundColor: accompaneoChord.color,
-            firstFrameStroke: 10,
-            barStroke: 0.5,
-            showLabel: false,
-            differentStringStrokes: true,
-            barColor: Colors.grey,
+          Container(
+            height: 200,
+            padding: EdgeInsets.symmetric(
+              horizontal: portrait ? MediaQuery.of(context).size.height / 10 : 0,
+            ),
+            child: FlutterGuitarChord(
+              baseFret: chordPositions != null ? chordPositions[0].baseFret : 1,
+              chordName: chordType.name,
+              fingers: chordPositions != null ? chordPositions[0].fingers : "0 0 0 0 0 0",
+              frets: chordPositions != null ? chordPositions[0].frets : "0 0 0 0 0 0",
+              totalString: instrument.stringCount,
+              stringStroke: 0.4,
+              tabForegroundColor: Colors.white,
+              tabBackgroundColor: accompaneoChord.color,
+              firstFrameStroke: 10,
+              barStroke: 0.5,
+              showLabel: false,
+              differentStringStrokes: true,
+              barColor: Colors.grey,
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    // } else {
+    //   return Column(
+    //     children: [
+    //       Container()
+    //     ],
+    //   );
+    // }
   }
 
   Widget _songMainContent({

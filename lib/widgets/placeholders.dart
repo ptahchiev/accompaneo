@@ -4,65 +4,112 @@ class PlaylistElementPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return ListTile(
-        visualDensity: VisualDensity(vertical: 1),
-        isThreeLine: true,
-        titleAlignment: ListTileTitleAlignment.center,
-        //dense: true,
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: Container(
-            height: 60.0,
-            width: 60.0,
-            color: Colors.white,
-          ),
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(10.0),
+        child: Container(
+          height: 60.0,
+          width: 60.0,
+          color: Colors.white,
         ),
-        title: Column(
-          spacing: 50,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FractionallySizedBox(
-              widthFactor: 0.5,
-              alignment: Alignment.centerLeft,
-              child: Container(
-                width: 200,
-                height: 20.0,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-        subtitle: Column(
+      ),
+      visualDensity: VisualDensity(vertical: 1),
+      isThreeLine: true,
+      titleAlignment: ListTileTitleAlignment.center,
+      title: Container(
+        width: 200,
+        height: 15.0,
+        color: Colors.white,
+      ),
+      subtitle:
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text("song artist name", style: Theme.of(context).textTheme.bodySmall!.copyWith(background: Paint()..color = Colors.white)),
+        Wrap(
           spacing: 10,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FractionallySizedBox(
-              widthFactor: 0.3,
-              alignment: Alignment.centerLeft,
-              child: Container(
-                width: 10.0,
-                height: 14.0,
-                color: Colors.white
-              ),
-            ),
-            Wrap(
-              spacing: 10,
-              children: [
-                Container(color: Colors.white, width: 20, height: 10),
-                Container(color: Colors.white, width: 20, height: 10),
-                Container(color: Colors.white, width: 20, height: 10),
-              ]
-            )
-          ],
-        ),
-        trailing: Wrap(
-          children: [
-            Icon(Icons.favorite_outline_outlined),
-            Icon(Icons.more_horiz)
-          ],
-        ),
-    );
+          children: ['Am', 'Cm', 'Dm', 'Em']
+              .map<Widget>((ch) => Container(
+                  padding: EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Text(ch,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .copyWith(color: Colors.black))))
+              .toList(),
+        )
+      ]),
+      trailing: Wrap(
+        children: [
+          IconButton(
+              icon: Icon(Icons.favorite_outline_outlined),
+              onPressed: () {
+              }),
+          IconButton(
+              icon: Icon(Icons.more_horiz),
+              onPressed: () => {})
+        ],
+      ));
+
+    // return ListTile(
+    //     visualDensity: VisualDensity(vertical: 1),
+    //     isThreeLine: true,
+    //     titleAlignment: ListTileTitleAlignment.center,
+    //     //dense: true,
+    //     leading: ClipRRect(
+    //       borderRadius: BorderRadius.circular(10.0),
+    //       child: Container(
+    //         height: 60.0,
+    //         width: 60.0,
+    //         color: Colors.white,
+    //       ),
+    //     ),
+    //     title: Column(
+    //       spacing: 50,
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: [
+    //         FractionallySizedBox(
+    //           widthFactor: 0.5,
+    //           alignment: Alignment.centerLeft,
+    //           child: Container(
+    //             width: 200,
+    //             height: 20.0,
+    //             color: Colors.white,
+    //           ),
+    //         ),
+    //       ],
+    //     ),
+    //     subtitle: Column(
+    //       spacing: 10,
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: [
+    //         FractionallySizedBox(
+    //           widthFactor: 0.3,
+    //           alignment: Alignment.centerLeft,
+    //           child: Container(
+    //             width: 10.0,
+    //             height: 14.0,
+    //             color: Colors.white
+    //           ),
+    //         ),
+    //         Wrap(
+    //           spacing: 10,
+    //           children: [
+    //             Container(color: Colors.white, width: 20, height: 10),
+    //             Container(color: Colors.white, width: 20, height: 10),
+    //             Container(color: Colors.white, width: 20, height: 10),
+    //           ]
+    //         )
+    //       ],
+    //     ),
+    //     trailing: Wrap(
+    //       children: [
+    //         Icon(Icons.favorite_outline_outlined),
+    //         Icon(Icons.more_horiz)
+    //       ],
+    //     ),
+    // );
   }
 }
 

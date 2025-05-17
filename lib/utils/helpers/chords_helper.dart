@@ -56,8 +56,7 @@ class ChordsHelper {
 
   static ChordType stringToChord(String chordName) {
     try {
-      return ChordType.values
-          .firstWhere((e) => e.toString() == 'ChordType.$chordName');
+      return ChordType.values.firstWhere((e) => e.toString() == 'ChordType.$chordName');
     } catch (e) {
       return ChordType.UNKNOWN;
     }
@@ -93,6 +92,6 @@ class ChordsHelper {
     ChordType.F7:AccompaneoChord("E", "7", Colors.blue),
     ChordType.G7:AccompaneoChord("F", "7", Colors.green),
     ChordType.Asus2:AccompaneoChord("A", "sus2", Colors.blueGrey),
-    ChordType.UNKNOWN: AccompaneoChord("A", "7",Colors.grey)
+    ChordType.UNKNOWN: AccompaneoChord("", "",Colors.grey)
   };
 }
