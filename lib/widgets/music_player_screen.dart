@@ -23,7 +23,8 @@ class MusicPlayerScreen extends StatefulWidget {
     required this.musicData,
     required this.playStream,
     required this.playSeekStream,
-    required this.animationEnded,
+    required this.animationEnded
+    
   });
 
   final ClickPlayer clickPlayer;
@@ -50,7 +51,6 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   StreamSubscription? _playSubscription;
   StreamSubscription? _playSeekSubscription;
   double _wholeSongTime = 0;
-
   double animationDuration = 0.5; //milliseconds
   //this is the margin of the song source??
 
@@ -350,6 +350,36 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               barColor: Colors.grey,
             ),
           ),
+          // Container(
+          //     padding: EdgeInsets.symmetric(
+          //         horizontal: MediaQuery.of(context)
+          //                 .size
+          //                 .width /
+          //             15,
+          //         vertical: MediaQuery.of(context)
+          //                 .size
+          //                 .height /
+          //             50),
+          //     child: ProgressBar(
+          //       progress: widget.progress,
+          //       buffered: widget.buffered,
+          //       total: total,
+          //       onSeek: _player.seek,
+          //       onDragUpdate: (details) {
+          //         setState(() {
+          //           _animationEnded = false;
+          //           _playSeekSubject.add(details
+          //               .timeStamp.inMilliseconds);
+          //         });
+          //       },
+          //       thumbColor: AppColors.primaryColor,
+          //       baseBarColor: Colors.white,
+          //       bufferedBarColor: Colors.amber,
+          //       timeLabelTextStyle:
+          //           TextStyle(color: Colors.white),
+          //     )
+          // )
+       
         ],
       );
     // } else {

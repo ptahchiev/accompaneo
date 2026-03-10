@@ -1,0 +1,2 @@
+/home/petar/workspace/accompaneo/android/app/.cxx/Debug/4o53p1i3/armeabi-v7a/CMakeFiles/edit_cache.dir
+/home/petar/workspace/accompaneo/android/app/.cxx/Debug/4o53p1i3/armeabi-v7a/CMakeFiles/rebuild_cache.dir

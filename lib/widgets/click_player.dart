@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 //import 'package:soundpool/soundpool.dart';
 
 ///This class provides a stream that handles the click noise.

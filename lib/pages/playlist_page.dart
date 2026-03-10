@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert' as convert;
 
-import 'package:accompaneo/models/artist.dart';
 import 'package:accompaneo/models/facet_value.dart';
 import 'package:accompaneo/models/page.dart';
 import 'package:accompaneo/models/playlists.dart';

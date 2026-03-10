@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:accompaneo/models/playlists.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:accompaneo/models/song/song.dart';
 import 'package:accompaneo/pages/position_data.dart';
@@ -12,9 +11,7 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:guitar_chord_library/guitar_chord_library.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -153,7 +150,7 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
           playSeekStream: _playSeekSubject,
           animationEnded: () {
             _animationEnded = true;
-            _player.pause();
+            //_player.pause();
             _playerPlaySubject.add(false);
           },
         );
@@ -413,11 +410,11 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
                                           horizontal: MediaQuery.of(context)
                                                   .size
                                                   .width /
-                                              8,
+                                              15,
                                           vertical: MediaQuery.of(context)
                                                   .size
                                                   .height /
-                                              40),
+                                              50),
                                       child: ProgressBar(
                                         progress: progress,
                                         buffered: buffered,
@@ -590,27 +587,27 @@ class _PlayerPageState extends State<PlayerPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    var selection = Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType;
-    var useFlat = false;
+    // var selection = Provider.of<PlaylistsModel>(context, listen: true).getSettings().instrumentType;
+    // var useFlat = false;
 
-    var instrument = (selection == 'GUITAR')
-        ? GuitarChordLibrary.instrument(InstrumentType.guitar)
-        : GuitarChordLibrary.instrument(InstrumentType.ukulele);
+    // var instrument = (selection == 'GUITAR')
+    //     ? GuitarChordLibrary.instrument(InstrumentType.guitar)
+    //     : GuitarChordLibrary.instrument(InstrumentType.ukulele);
 
-    List<String> keys = instrument.getKeys(useFlat);
+    // List<String> keys = instrument.getKeys(useFlat);
 
-    List<Chord>? chords = instrument.getChordsByKey('A', useFlat);
+    // List<Chord>? chords = instrument.getChordsByKey('A', useFlat);
 
-    var index = 0;
-    Chord chord = chords![index];
-    var position = chord.chordPositions[0]; //I
+    // var index = 0;
+    // Chord chord = chords![index];
+    // var position = chord.chordPositions[0]; //I
 
     //FlutterGuitarChord nextChord = ChordsHelper.chordTypeOptions[ChordType.A] ?? ChordsHelper.MISSING;
 
-    BorderRadiusGeometry radius = BorderRadius.only(
-      topRight: Radius.circular(75.0),
-      bottomLeft: Radius.circular(75.0),
-    );
+    // BorderRadiusGeometry radius = BorderRadius.only(
+    //   topRight: Radius.circular(75.0),
+    //   bottomLeft: Radius.circular(75.0),
+    // );
 
     return DefaultTabController(
         length: 2,

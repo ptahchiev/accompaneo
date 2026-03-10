@@ -36,6 +36,13 @@ enum ChordType {
   E7,
   F7,
   G7,
+  Am7,
+  Bm7,
+  Cm7,
+  Dm7,
+  Em7,
+  Fm7,
+  Gm7,
   Asus2,
   UNKNOWN
 }
@@ -91,6 +98,13 @@ class ChordsHelper {
     ChordType.E7:AccompaneoChord("D", "7", Colors.brown),
     ChordType.F7:AccompaneoChord("E", "7", Colors.blue),
     ChordType.G7:AccompaneoChord("F", "7", Colors.green),
+    ChordType.Am7: AccompaneoChord("A", "m7",Colors.blueGrey),
+    ChordType.Bm7:AccompaneoChord("B", "m7", Colors.purple),
+    ChordType.Cm7:AccompaneoChord("C", "m7", Colors.red),
+    ChordType.Dm7:AccompaneoChord("D", "m7", Colors.orange),
+    ChordType.Em7:AccompaneoChord("E", "m7", Colors.brown),
+    ChordType.Fm7:AccompaneoChord("F", "m7", Colors.blue),
+    ChordType.Gm7:AccompaneoChord("G", "m7", Colors.green),    
     ChordType.Asus2:AccompaneoChord("A", "sus2", Colors.blueGrey),
     ChordType.UNKNOWN: AccompaneoChord("", "",Colors.grey)
   };
